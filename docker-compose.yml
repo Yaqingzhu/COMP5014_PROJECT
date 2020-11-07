@@ -1,0 +1,47 @@
+version: '3.1'
+
+services:
+  api:
+    build: .
+    command: npx nodemon src/backend/index.js
+    volumes:
+      - ./src/backend:/usr/app/src/backend:cached
+      - ./node_modules:/usr/app/node_modules:cached
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      API_PORT: 8080
+      DB_PORT: 3306
+      DB_DATABASE: comp4004
+      DB_USERNAME: comp4004
+      DB_PASSWORD: comp4004
+
+  web:
+    build: .
+    command: npx parcel src/frontend/index.html -p 8080
+    volumes:
+      - ./src/frontend:/usr/app/src/frontend:cached
+      - ./node_modules:/usr/app/node_modules:cached
+    ports:
+      - "8081:8080"
+    depends_on:
+      - api
+    environment:
+      API_URL: "http://localhost:8080"
+
+  db:
+    image: mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: comp4004
+      MYSQL_USER: comp4004
+      MYSQL_ROOT_PASSWORD: comp4004
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
