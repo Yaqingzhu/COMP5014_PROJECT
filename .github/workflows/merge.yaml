@@ -3,7 +3,7 @@ name: Automated testing
 on: [push, pull_request]
 
 jobs:
-  cypress-run:
+  lint-and-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

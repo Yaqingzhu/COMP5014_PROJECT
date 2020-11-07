@@ -6,10 +6,7 @@ export const App = () => {
   const [message, setMessage] = useState(null);
 
   useEffect(() => {
-    window.fetch(API_URL).then(result => {
-      debugger;
-      return result.text();
-    }).then(val => setMessage(val));
+    window.fetch(API_URL).then(result => result.text()).then(val => setMessage(val));
   }, []);
 
   return message ? (
