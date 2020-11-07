@@ -1,0 +1,50 @@
+{
+  "name": "comp5014_project",
+  "private": true,
+  "scripts": {
+    "start:frontend": "cd src/frontend && npm run start",
+    "start:backend": "cd src/backend && npm run start",
+    "lint": "eslint 'src/**/*.{js,jsx}'",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:coverage": "npm run test:frontend:coverage && npm run test:backend:coverage",
+    "test:frontend": "cd src/frontend && npm run test",
+    "test:backend": "cd src/backend && npm run test",
+    "test:frontend:coverage": "cd src/frontend && npm run test:coverage",
+    "test:backend:coverage": "cd src/backend && npm run test:coverage",
+    "test:cypress": "docker-compose up -d && cypress run",
+    "clean": "git clean -fdX ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-react": "^7.12.5",
+    "@testing-library/react": "^11.1.1",
+    "babel-jest": "^26.6.3",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.2",
+    "cypress": "^5.5.0",
+    "eslint": "^7.12.1",
+    "eslint-config-react": "^1.1.7",
+    "eslint-config-standard": "^16.0.1",
+    "eslint-plugin-cypress": "^2.11.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.1.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.21.5",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-plugin-standard": "^4.0.2",
+    "jest": "^26.6.3",
+    "jest-fetch-mock": "^3.0.3",
+    "node-fetch": "^2.6.1",
+    "nodemon": "^2.0.6",
+    "parcel": "^2.0.0-nightly.440",
+    "supertest": "^6.0.1"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  }
+}
