@@ -12,7 +12,7 @@ export const Login = () => {
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <form>
       {error && (
         <div className="error">
           {error}
@@ -37,9 +37,10 @@ export const Login = () => {
         onChange={event => setPassword(event.target.value)}
       />
       <button
-        type="submit"
+        type="button"
         disabled={loading}
         className={loading ? 'loading' : ''}
+        onClick={onSubmit}
       >
         Login
       </button>
