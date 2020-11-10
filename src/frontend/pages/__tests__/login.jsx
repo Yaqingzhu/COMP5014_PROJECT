@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 
-import { Login } from '../Login';
+import { Login } from '../login';
 
 describe('Login component', () => {
   it('Saves the value entered in fields', () => {
