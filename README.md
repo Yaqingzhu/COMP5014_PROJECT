@@ -97,6 +97,17 @@ If you need the coverage from those tests, use:
 npm run test:backend:coverage
 ```
 
+Database is hosted on GCP cloud. The project is
+```
+comp5014project
+```
+
+If you need to connect to database, the connect url is
+
+```
+comp5014project:us-central1:comp5014
+```
+
 ## Writing cucumber tests
 The application is tested with cucumber, and the tests are executed using cypress.
 
