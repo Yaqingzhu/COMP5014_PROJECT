@@ -24,7 +24,10 @@ docker-compose up -d
 
 Docker-compose will start everything and allow you to connect to the apps and the database.
 
-Wait around a minute for everything to get started, then visit [http://localhost:8080](http://localhost:8080) for the backend application or [http://localhost:8081](http://localhost:8081) for the frontend application. The database is available at localhost:3306. The username and password for the database is `comp4004`. 
+Wait around a minute for everything to get started, then visit [http://localhost:8080](http://localhost:8080) for the backend application or [http://localhost:8081](http://localhost:8081) for the frontend application. The database is available at localhost:3306. The username is `root` and password for the database is `comp4004`. 
+
+Use this command to connect to database from terminal: 
+`docker exec -it comp5014_project_db_1 mysql -uroot -p`
 
 Any code you write will automatically restart the servers, so you should never have to check if your code is up to date. The server may crash due to code crashes or build failures, if this happens and any of the sites are unavailable, rerun the commands and they will be restarted.
 
@@ -95,17 +98,6 @@ If you need the coverage from those tests, use:
 
 ```
 npm run test:backend:coverage
-```
-
-Database is hosted on GCP cloud. The project is
-```
-comp5014project
-```
-
-If you need to connect to database, the connect url is
-
-```
-comp5014project:us-central1:comp5014
 ```
 
 ## Writing cucumber tests
