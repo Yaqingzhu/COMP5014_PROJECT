@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 
+import { UserProvider } from '../../context/userContext';
 import { Login } from '../login';
 
 describe('Login component', () => {
@@ -23,7 +24,11 @@ describe('Login component', () => {
   it('Logs the user into the application', async () => {
     const username = 'test';
     const password = 'test';
-    const wrapper = render(<Login />);
+    const wrapper = render(
+      <UserProvider>
+        <Login />
+      </UserProvider>
+    );
 
     fireEvent.change(wrapper.getByPlaceholderText('Email'), { target: { value: username } });
     fireEvent.change(wrapper.getByPlaceholderText('Password'), { target: { value: password } });
@@ -32,10 +37,10 @@ describe('Login component', () => {
 
     fireEvent.click(submitButton);
 
-    expect(submitButton.classList).toContain('loading');
+    expect(submitButton.getAttribute('disabled')).toBe('');
 
-    await waitFor(() => screen.getByText('Successfully logged-in!'));
+    await waitFor(() => screen.getByText('Login'));
 
-    expect(submitButton.classList).not.toContain('loading');
+    expect(submitButton.getAttribute('disabled')).toBe(null);
   });
 });

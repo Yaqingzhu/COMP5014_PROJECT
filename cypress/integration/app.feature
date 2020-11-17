@@ -1,7 +1,6 @@
-Feature: Hello, World! App
-  I want to see a Hello, World! message from the API
+Feature: Placeholder Test
+  I want to see the Login page for this placeholder test
 
   Scenario: Opening the main page
     Given I open the "/" page
-    And   I wait for the api to respond
-    Then I see "Hello World!" in a "h1" tag
+    Then I see a page

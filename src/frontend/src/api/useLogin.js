@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
+
+import { UserContext } from '../context/userContext';
 
 export const useLogin = () => {
-  const [user, setUser] = useState(null);
+  const { user, setUser } = useContext(UserContext);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -13,10 +15,10 @@ export const useLogin = () => {
       setLoading(true);
       // TODO
       setTimeout(() => {
+        setLoading(false);
         setUser({
           username,
         });
-        setLoading(false);
       }, 200);
     },
   };
