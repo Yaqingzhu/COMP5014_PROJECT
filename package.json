@@ -4,7 +4,9 @@
   "scripts": {
     "start:frontend": "cd src/frontend && npm run start",
     "start:backend": "cd src/backend && npm run start",
-    "lint": "eslint 'src/**/*.{js,jsx}'",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd src/frontend && npm run lint",
+    "lint:backend": "cd src/backend && npm run lint",
     "test": "npm run test:frontend && npm run test:backend",
     "test:coverage": "npm run test:frontend:coverage && npm run test:backend:coverage",
     "test:frontend": "cd src/frontend && npm run test",
@@ -44,9 +46,11 @@
     "supertest": "^6.0.1"
   },
   "dependencies": {
+    "bootstrap": "^4.5.3",
     "express": "^4.17.1",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0"
   },
   "cypress-cucumber-preprocessor": {
     "nonGlobalStepDefinitions": true
