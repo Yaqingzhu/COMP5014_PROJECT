@@ -2,7 +2,7 @@
   "name": "comp5014_project_frontend",
   "private": true,
   "scripts": {
-    "start": "parcel src/frontend/index.html -p 8080",
+    "start": "parcel src/index.html -p 8080",
     "lint": "eslint 'src/**/*.{js,jsx}'",
     "test": "cross-env API_URL=http://test.test jest --env=jsdom",
     "test:coverage": "cross-env API_URL=http://test.test jest --env=jsdom --collectCoverage"

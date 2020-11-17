@@ -11,3 +11,7 @@ Given('I wait for the api to respond', () => {
 Then('I see {string} in a {string} tag', (message, tag) => {
   cy.get(tag).should('have.text', message);
 });
+
+Then('I see a page', () => {
+  cy.get('body').should('be.visible');
+});

@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon src/backend/index.js",
-    "lint": "eslint 'src/**/*.{js,jsx}'",
+    "lint": "eslint --ext .js",
     "test": "cross-env NODE_ENV=test jest",
     "test:coverage": "cross-env NODE_ENV=test jest --collectCoverage"
   },
