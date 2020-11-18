@@ -5,6 +5,8 @@ const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
 
 let connection = null;
 
+let connection = null;
+
 function getDBConnection() {
   if (!connection) {
     connection = mysql.createConnection({
