@@ -9,13 +9,11 @@ async function loginRequestProcess(req, res) {
 }
 
 function checkDB(id, password, req, res) {
-  connection.connect();
-    connection.query('SELECT 1 AS result FROM login WHERE id = ? AND password = ? AND failed_time < 4', [
-        id, password
-    ], (error, results) => {
-        setLoginStatus(error, results, req, res, id);
-    });
-  connection.end();
+  connection.query('SELECT 1 AS result FROM login WHERE id = ? AND password = ? AND failed_time < 4', [
+      id, password
+  ], (error, results) => {
+    setLoginStatus(error, results, req, res, id);
+  });
 }
 
 function setLoginStatus(error, results, req, res, id) {
@@ -65,28 +63,28 @@ function setUserRole(session, id, res) {
     new Promise((resolve, reject) => {
         mysql.checkUserRole(resolve, id);
     }).then(result => {
-        console.log('role');
-        console.log(result);
-        if (!session || !session.role) {
-            switch (result) {
-                case 1:
-                    session.role = 'admin';
-                    break;
-                case 2:
-                    session.role = 'prof';
-                    break;
-                case 3:
-                    session.role = 'student';
-                    break;
-                default:
-                    session.role = 'none';
-            }
-         }
+      console.log('role');
+      console.log(result);
+      if (!session || !session.role) {
+          switch (result) {
+              case 1:
+                  session.role = 'admin';
+                  break;
+              case 2:
+                  session.role = 'prof';
+                  break;
+              case 3:
+                  session.role = 'student';
+                  break;
+              default:
+                  session.role = 'none';
+          }
+       }
 
-         res.status(200).json({
- loginStatus: 0,
-                    message: 'none',
-                    loginRole: result
+       res.status(200).json({
+          loginStatus: 0,
+          message: 'Logged in successfully',
+          loginRole: session.role
         });
     });
 }

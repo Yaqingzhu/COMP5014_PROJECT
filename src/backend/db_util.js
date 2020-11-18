@@ -3,19 +3,22 @@ const mysql = require('mysql');
 // Environment variables for the database
 const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
 
+let connection = null;
+
 function getDBConnection() {
-  const connec = mysql.createConnection({
-    host: DB_HOST || '127.0.0.1',
-    user: DB_USERNAME || 'root',
-    password: DB_PASSWORD || 'comp4004',
-    database: DB_DATABASE || 'comp4004'
-  });
-  return connec;
+  if (!connection) {
+    connection = mysql.createConnection({
+      host: DB_HOST || '127.0.0.1',
+      user: DB_USERNAME || 'root',
+      password: DB_PASSWORD || 'comp4004',
+      database: DB_DATABASE || 'comp4004'
+    });
+  }
+  return connection;
 }
 
 function checkUserRole(resolve, userId) {
   const connection = getDBConnection();
-  connection.connect();
   connection.query('UPDATE login SET failed_time = 0 WHERE id =?', [
     userId
   ]);
@@ -26,12 +29,10 @@ function checkUserRole(resolve, userId) {
     const rest = results[0] ? results[0].result : -1;
     resolve(rest);
   });
-  connection.end();
 }
 
 function updateFailedTimes(resolve, userId) {
   const connection = getDBConnection();
-  connection.connect();
   connection.query('UPDATE login SET failed_time = failed_time + 1  WHERE id =?', [
     userId
   ], (error, results) => {
@@ -50,12 +51,10 @@ function updateFailedTimes(resolve, userId) {
       });
     }
   });
-  connection.end();
 }
 
 function insertNewUserLoginInformation(resolve, userId, password) {
   const connection = getDBConnection();
-  connection.connect();
   connection.query('INSERT IGNORE INTO login(id, password, failed_time) values(?,?,?)', [
     userId, password, 0
     // eslint-disable-next-line node/handle-callback-err
@@ -63,7 +62,6 @@ function insertNewUserLoginInformation(resolve, userId, password) {
     const rest = results[0] ? results[0].result : -1;
     resolve(rest);
   });
-  connection.end();
 }
 
 function createAdminUser() {
@@ -73,20 +71,26 @@ function createAdminUser() {
   };
 
   const connection = getDBConnection();
-  connection.connect();
   connection.query('SELECT 1 AS result FROM login WHERE id = ? AND password = ?', [
     adminUser.id, adminUser.password
-  ], error => {
-    if (!error) {
+    // eslint-disable-next-line node/handle-callback-err
+  ], (error, results) => {
+    console.log(error, results);
+    if (!results || !results.length) {
       // only insert if the user could not be found
-      insertNewUserLoginInformation(function () {
+      console.log('Inserting admin user');
+      connection.query('INSERT IGNORE INTO login(id, password, failed_time) values(?,?,?)', [
+        adminUser.id, adminUser.password, 0
+      ], () => {
+        console.log('Admin user inserted, creating admin record');
         connection.query('INSERT IGNORE INTO admin(admin_id) values(?)', [
           adminUser.id
-        ]);
-      }, adminUser.id, adminUser.password);
+        ], (error, result) => {
+          console.log('Admin record inserted', error, result);
+        });
+      });
     }
   });
-  connection.end();
 }
 
 module.exports = { getDBConnection, checkUserRole, updateFailedTimes, insertNewUserLoginInformation, createAdminUser };

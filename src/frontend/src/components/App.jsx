@@ -8,7 +8,7 @@ import Login from '../pages/login';
 export const App = () => (
   <WithUser>
     {({ user }) => user ? (
-      <h1>Hello, World!</h1>
+      <h1>Hello, {user.username}!</h1>
     ) : <Login />}
   </WithUser>
 );
