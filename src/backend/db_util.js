@@ -3,14 +3,18 @@ const mysql = require('mysql');
 // Environment variables for the database
 const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
 
+let connection = null;
+
 function getDBConnection() {
-  const connec = mysql.createConnection({
-    host: DB_HOST || '127.0.0.1',
-    user: DB_USERNAME || 'root',
-    password: DB_PASSWORD || 'comp4004',
-    database: DB_DATABASE || 'comp4004'
-  });
-  return connec;
+  if (!connection) {
+    connection = mysql.createConnection({
+      host: DB_HOST || '127.0.0.1',
+      user: DB_USERNAME || 'root',
+      password: DB_PASSWORD || 'comp4004',
+      database: DB_DATABASE || 'comp4004'
+    });
+  }
+  return connection;
 }
 
 function checkUserRole(resolve, userId) {
@@ -71,7 +75,8 @@ function createAdminUser() {
     adminUser.id, adminUser.password
     // eslint-disable-next-line node/handle-callback-err
   ], (error, results) => {
-    if (!results.length) {
+    console.log(error, results);
+    if (!results || !results.length) {
       // only insert if the user could not be found
       console.log('Inserting admin user');
       connection.query('INSERT IGNORE INTO login(id, password, failed_time) values(?,?,?)', [
