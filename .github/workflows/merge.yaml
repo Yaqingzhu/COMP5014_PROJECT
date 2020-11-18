@@ -15,7 +15,7 @@ jobs:
         ports:
           - 32574:3306
         volumes:
-          - ./src/db_scheme/comp5014_db_generation.sql:/docker-entrypoint-initdb.d/init.sql
+          - ${{ github.workspace }}/src/db_scheme/comp5014_db_generation.sql:/docker-entrypoint-initdb.d/init.sql
     steps:
       - name: Checkout
         uses: actions/checkout@v1
