@@ -8,7 +8,6 @@ jobs:
     services:
       mysql:
         image: bitnami/mysql:latest
-        options: --user 1001
         env:
           MYSQL_DATABASE: test
           MYSQL_PASSWORD: password
@@ -18,6 +17,7 @@ jobs:
         volumes:
           - ${{ github.workspace }}/src/db_scheme/comp5014_db_generation.sql:/docker-entrypoint-initdb.d/init.sql
     steps:
+      - run: sudo chown -R $USER:$USER ${{ github.workspace }}
       - name: Checkout
         uses: actions/checkout@v1
       - uses: actions/setup-node@v1
