@@ -8,6 +8,7 @@ jobs:
     services:
       mysql:
         image: bitnami/mysql:latest
+        options: --user 1001
         env:
           MYSQL_DATABASE: test
           MYSQL_PASSWORD: password
