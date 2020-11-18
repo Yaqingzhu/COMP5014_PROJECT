@@ -4,6 +4,7 @@
 .cache
 npm-debug.log*
 .idea
+.vscode
 .parcel-cache
 
 # Compiled output
