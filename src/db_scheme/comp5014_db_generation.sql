@@ -112,6 +112,7 @@ DROP TABLE IF EXISTS `comp4004`.`login` ;
 CREATE TABLE IF NOT EXISTS `comp4004`.`login` (
   `id` INT NOT NULL,
   `password` VARCHAR(45) NOT NULL,
+  `failed_time` INT NOT NULL,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
