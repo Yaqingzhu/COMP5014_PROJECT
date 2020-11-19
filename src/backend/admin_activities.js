@@ -27,20 +27,13 @@ function doProcess(body, req, res){
             responseCode: -1,
             errorMessage: err.message,
         })
-    }).then((result)=>{
-        doTimeSlotProcess(body, req, res);
-        
-        doPreclusionsProcess(body, req, res);
-
-        doPrerequisitesProcess(body, req, res);
-
-        endRequestWithFinished(res);
-        
-    });
+    }).then(doTimeSlotProcess(body, req, res)
+     );
 }
 
 function doTimeSlotProcess(body, req, res){
-    new Promise((resolve, reject)=>{
+    console.log('doTimeSlotProcess')
+    new Promise(function(resolve, reject){
         mysql.setTimeSlot(resolve,reject,body.course_slots, body.courseId);
     }).catch((err)=>{
         console.log(err);
@@ -48,10 +41,11 @@ function doTimeSlotProcess(body, req, res){
             responseCode: -1,
             errorMessage: err.message,
         })
-    }).then();
+    }).then(doPreclusionsProcess(body, req, res));
 }
 
 function doPreclusionsProcess(body, req, res){
+    console.log('doPreclusionsProcess')
     new Promise((resolve, reject)=>{
         mysql.setPreclusions(resolve,reject,body.preclusions, body.courseId);
     }).catch((err)=>{
@@ -60,10 +54,11 @@ function doPreclusionsProcess(body, req, res){
             responseCode: -1,
             errorMessage: err.message,
         })
-    }).then();
+    }).then(doPrerequisitesProcess(body, req, res));
 }
 
 function doPrerequisitesProcess(body, req, res){
+    console.log('doPrerequisitesProcess')
     new Promise((resolve, reject)=>{
         mysql.setPrerequisites(resolve,reject,body.prerequisites, body.courseId);
     }).catch((err)=>{
@@ -72,14 +67,27 @@ function doPrerequisitesProcess(body, req, res){
             responseCode: -1,
             errorMessage: err.message,
         })
-    }).then();
+    }).then(endRequestWithFinished(res, body));
 }
 
-function endRequestWithFinished(res){
-    res.status(200).json({ 
-        responseCode: 0,
-        errorMessage: "",
+function endRequestWithFinished(res, body){
+    console.log('endRequestWithFinished')
+    new Promise((resolve, reject)=>{
+        mysql.getCourse(resolve,reject, body.courseId);
+    }).catch((err)=>{
+        console.log(err);
+        res.status(400).json({ 
+            responseCode: -1,
+            errorMessage: err.message,
+        })
+    }).then(function(result){
+        res.status(200).json({ 
+            responseCode: 0,
+            errorMessage: "",
+            coursePayload: result.result
+        })
     });
+    
 }
 
 module.exports = { CourseProcess }

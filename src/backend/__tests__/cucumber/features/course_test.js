@@ -31,7 +31,7 @@ Given("course json file {string}", function (arg1){
     return testSession.post('/login').send({id: 123, password: 't'}).expect(200).then(function(){
         return testSession.post('/courseop').send(JSON.parse(arg1)).expect(200).then(function (rr){
             res = rr;
-            console.log(arg1 + 'end') 
+            console.log(rr.body) 
         });
     });
     
@@ -39,90 +39,40 @@ Given("course json file {string}", function (arg1){
 
 Given("without login, course json file {string}", function (arg1){
     return session(app).post('/courseop').send(JSON.parse(arg1)).then(function(rr){
-        res = rr;
+        res = rr; 
     });
 } );
 
 Then("return a json with responseCode equals to {int}", function (arg1){
-    console.log('response');
     assert.equal(arg1, res.body.responseCode);
 } );
 
 Then("time_slots table has a row with course id {int} and day {int}", function(arg1, arg2){
-    console.log('time slot');
-    const connection = mysql.getDBConnection();
-    connection.connect();
-    return new Promise((resolve, reject)=>{
-        connection.query('SELECT 1 AS result FROM course_slots WHERE course_id = ? AND course_slots_day = ?;', [
-            arg1, arg2
-        ], (error, results) => {  
-            const rest = results[0] ? results[0].result : -1;
-            console.log(results)
-            console.log(error)
-            resolve(rest);
-        })
-    }).then(function(resolve){
-        assert.equal(1, resolve);
-    })
-    
+        const jres= JSON.parse(res.body.coursePayload)
+        assert.equal(arg2, jres.course_slots[0].day);
+        assert.equal(arg1, jres.courseId);
 } );
 
 Then("prerequisites table has a row with course id {int} and prerequisites {int}", function (arg1, arg2){
-    console.log(arg1);
-    console.log(arg2);
-
-    return new Promise((resolve, reject)=>{
-        connection.query('SELECT 1 AS result FROM prerequisites WHERE course_id = ? AND prerequisites_course_id = ?', [
-            arg1, arg2
-        ], (error, results) => {  
-            const rest = results[0] ? results[0].result : -1;
-            resolve(rest);
-        })
-    }).then(function(resolve){
-        assert.equal(1, resolve);
-    })
-    
-    ; 
+    const jres= JSON.parse(res.body.coursePayload)
+    assert.equal(arg2, jres.prerequisites[0]);
+    assert.equal(arg1, jres.courseId); 
 } );
 
 Then("preclusions table has a row with course id {int} and preclusions {int}", function (arg1, arg2){
-    return new Promise((resolve, reject)=>{
-        connection.query('SELECT 1 AS result FROM preclusions WHERE course_id = ? AND preclusions_course_id = ?', [
-            arg1, arg2
-        ], (error, results) => {  
-            const rest = results[0] ? results[0].result : -1;
-            resolve(rest);
-        })
-    }).then(function(resolve){
-        assert.equal(1, resolve);
-    });
+    const jres= JSON.parse(res.body.coursePayload)
+    assert.equal(arg2, jres.preclusions[0]);
+    assert.equal(arg1, jres.courseId); 
 } );
 
 Then("course table has a row with course id {int} and course name {string}", function (arg1, arg2){
-
-    return new Promise((resolve, reject)=>{
-        connection.query('SELECT 1 AS result FROM course WHERE course_id = ? AND course_name = ?', [
-            arg1, arg2
-        ], (error, results) => {  
-            const rest = results[0] ? results[0].result : -1;
-            resolve(rest);
-        })
-    }).then(function(resolve){
-        assert.equal(1, resolve);
-    });
+    const jres= JSON.parse(res.body.coursePayload)
+    assert.equal(arg2, jres.courseName);
+    assert.equal(arg1, jres.courseId); 
 } );
 
 Then("course table has a row with course id {int} and course status {string}", function (arg1, arg2){
-    return new Promise((resolve, reject)=>{
-        connection.query('SELECT 1 AS result FROM course WHERE course_id = ? AND course_status = ?', [
-            arg1, arg2
-        ], (error, results) => {  
-            const rest = results[0] ? results[0].result : -1;
-            resolve(rest);
-        })
-    }).then(function(resolve){
-        assert.equal(1, resolve);
-    });
-
-   
+    const jres= JSON.parse(res.body.coursePayload)
+    assert.equal(arg2, jres.courseStatus);
+    assert.equal(arg1, jres.courseId); 
 } );

@@ -6,20 +6,21 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
 let connection = null;
 
 function getDBConnection() {
-  if (!connection) {
+  
+  if(!connection){
     connection = mysql.createConnection({
       host: DB_HOST || '127.0.0.1',
       user: DB_USERNAME || 'root',
       password: DB_PASSWORD || 'comp4004',
       database: DB_DATABASE || 'comp4004'
     });
+    connection.connect();
   }
   return connection;
 }
 
 function checkUserRole(resolve, userId){
     const connection = getDBConnection();
-    connection.connect();
     connection.query('UPDATE login SET failed_time = 0 WHERE id =?', [
         userId
     ]);
@@ -33,7 +34,6 @@ function checkUserRole(resolve, userId){
 
 function updateFailedTimes(resolve, userId){
     const connection = getDBConnection();
-    connection.connect();
     connection.query('UPDATE login SET failed_time = failed_time + 1  WHERE id =?', [
         userId
     ], (error, results) => {
@@ -89,9 +89,9 @@ function createAdminUser() {
     }
   });
 }
+
 function setCourse(resolve, reject, course){
     const connection = getDBConnection();
-    connection.connect();
     connection.query('INSERT INTO comp4004.course (course_id, course_name,course_status,course_assigned_prof_id, course_capacity)' +
     ' VALUES (?,?,?,?,?) ' +
     ' ON DUPLICATE KEY UPDATE ' +
@@ -100,70 +100,68 @@ function setCourse(resolve, reject, course){
     ' course_assigned_prof_id = VALUES(course_assigned_prof_id), ' +
     ' course_capacity = VALUES(course_capacity) ', [
         course.courseId, course.courseName, course.courseStatus,course.assignedProf, course.courseCapacity
-    ]);
-    connection.commit();
-    resolve(course.courseId);
+    ], resolve(course.courseId));
 }
 
 function setTimeSlot(resolve, reject, slots, courseId) {
     const connection = getDBConnection();
-    connection.connect();
     connection.query('DELETE FROM course_slots WHERE course_id = ?;',[courseId]);
+
     if(slots && slots.length > 0){
+      console.log('slot herere sadasdas')
         slots.forEach((element)=>{
             element.id = courseId;
         });
         connection.query('INSERT INTO course_slots(course_slots_day, course_slots_time, course_id) values ?;', [
-            slots.map(element => [element.day, element.time, element.id])]
+            slots.map(element => [element.day, element.time, element.id])], function(error, result)  {
+              console.log(slots);
+              resolve(courseId)
+            }
         );
     }
-    connection.commit();
-        resolve(courseId);
-    
     
 }
 
 function setPreclusions(resolve, reject, preclusions, courseId) {
     const connection = getDBConnection();
-    connection.connect();
     connection.query('DELETE FROM preclusions WHERE course_id = ?;',[courseId]);
     if(preclusions && preclusions.length > 0){
         console.log(preclusions);
 
         connection.query('INSERT INTO preclusions(preclusions_course_id, course_id) values ?;', [
-            preclusions.map(element => [element, courseId])]
+            preclusions.map(element => [element, courseId])], resolve(courseId)
         );
         console.log(preclusions);
     }
-        resolve(courseId);
-    
-    
 }
 
 function setPrerequisites(resolve, reject, prerequisites, courseId){
     const connection = getDBConnection();
-    connection.connect();
     connection.query('DELETE FROM prerequisites WHERE course_id = ?;',[courseId]);
     if(prerequisites && prerequisites.length > 0){
         console.log(prerequisites);
         connection.query('INSERT INTO prerequisites(prerequisites_course_id, course_id) values ?;', [
-            prerequisites.map(element => [element, courseId])]
+            prerequisites.map(element => [element, courseId])], resolve(courseId)
         );
         console.log(prerequisites);
     }
-        resolve(courseId);
-    
 }
 
 
 function getCourse(resolve, reject, courseId){
     const connection = getDBConnection();
-    connection.connect();
-    connection.query('SELECT JSON_OBJECT(\'courseId\', course_id, \'courseName\', course_name, ) FROM login WHERE id =?', [
-        userId, userId
+    connection.query('SELECT JSON_OBJECT(\'courseId\', c.course_id, \'courseName\', course_name, \'courseStatus\', course_status, \'courseCapacity\', course_capacity, \'assignedProf\', course_assigned_prof_id, '+
+    ' \'course_slots\', s.slots, \'preclusions\', p.preclusions, \'prerequisites\', p2.prerequisites) AS result'+
+    ' FROM course c LEFT JOIN '+
+    ' (SELECT JSON_ARRAYAGG(JSON_OBJECT(\'day\', course_slots_day, \'time\', course_slots_time)) AS slots, course_id FROM course_slots group by course_id) s ON s.course_id = c.course_id '+
+    ' LEFT JOIN (SELECT JSON_ARRAYAGG(preclusions_course_id) preclusions, course_id FROM preclusions group by course_id) p ON p.course_id = c.course_id '+
+    ' LEFT JOIN (SELECT JSON_ARRAYAGG(prerequisites_course_id) prerequisites, course_id FROM prerequisites group by course_id) p2 ON p2.course_id = c.course_id WHERE c.course_id = ?', [
+      courseId
     ], (error, results) => {
         if(!error){
-            const rest = results[0] ? results[0].result : -1;
+          console.log('getCourse');
+          console.log(results);
+            const rest = results[0] ? results[0] : -1;
 
         resolve(rest);
         }
@@ -181,4 +179,6 @@ module.exports = { getDBConnection,
     setCourse, 
     setTimeSlot,
     setPreclusions,
-    setPrerequisites }
+    setPrerequisites,
+    getCourse,
+    createAdminUser }

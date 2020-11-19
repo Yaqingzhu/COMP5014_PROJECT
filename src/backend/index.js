@@ -7,7 +7,6 @@ const bodyParser = require('body-parser');
 
 const { createAdminUser } = require('./db_util');
 const admin = require('./admin_activities');
-const bodyParser = require("body-parser")
 
 const app = express();
 const port = process.env.API_PORT || 11234; // Port for the API
