@@ -49,9 +49,7 @@ function updateFailedTimes(resolve, userId) {
 
           resolve(rest);
         }
-      });
-    }
-  });
+    });
 }
 
 function insertNewUserLoginInformation(resolve, userId, password) {
@@ -95,6 +93,90 @@ function createAdminUser() {
     }
   });
 }
+function setCourse(resolve, reject, course){
+    const connection = getDBConnection();
+    connection.connect();
+    connection.query('INSERT INTO comp4004.course (course_id, course_name,course_status,course_assigned_prof_id, course_capacity)' +
+    ' VALUES (?,?,?,?,?) ' +
+    ' ON DUPLICATE KEY UPDATE ' +
+    ' course_name = VALUES(course_name), ' +
+    ' course_status = VALUES(course_status), ' +
+    ' course_assigned_prof_id = VALUES(course_assigned_prof_id), ' +
+    ' course_capacity = VALUES(course_capacity) ', [
+        course.courseId, course.courseName, course.courseStatus,course.assignedProf, course.courseCapacity
+    ]);
+    connection.commit();
+    resolve(course.courseId);
+}
+
+function setTimeSlot(resolve, reject, slots, courseId) {
+    const connection = getDBConnection();
+    connection.connect();
+    connection.query('DELETE FROM course_slots WHERE course_id = ?;',[courseId]);
+    if(slots && slots.length > 0){
+        slots.forEach((element)=>{
+            element.id = courseId;
+        });
+        connection.query('INSERT INTO course_slots(course_slots_day, course_slots_time, course_id) values ?;', [
+            slots.map(element => [element.day, element.time, element.id])]
+        );
+    }
+    connection.commit();
+        resolve(courseId);
+    
+    
+}
+
+function setPreclusions(resolve, reject, preclusions, courseId) {
+    const connection = getDBConnection();
+    connection.connect();
+    connection.query('DELETE FROM preclusions WHERE course_id = ?;',[courseId]);
+    if(preclusions && preclusions.length > 0){
+        console.log(preclusions);
+
+        connection.query('INSERT INTO preclusions(preclusions_course_id, course_id) values ?;', [
+            preclusions.map(element => [element, courseId])]
+        );
+        console.log(preclusions);
+    }
+        resolve(courseId);
+    
+    
+}
+
+function setPrerequisites(resolve, reject, prerequisites, courseId){
+    const connection = getDBConnection();
+    connection.connect();
+    connection.query('DELETE FROM prerequisites WHERE course_id = ?;',[courseId]);
+    if(prerequisites && prerequisites.length > 0){
+        console.log(prerequisites);
+        connection.query('INSERT INTO prerequisites(prerequisites_course_id, course_id) values ?;', [
+            prerequisites.map(element => [element, courseId])]
+        );
+        console.log(prerequisites);
+    }
+        resolve(courseId);
+    
+}
+
+
+function getCourse(resolve, reject, courseId){
+    const connection = getDBConnection();
+    connection.connect();
+    connection.query('SELECT JSON_OBJECT(\'courseId\', course_id, \'courseName\', course_name, ) FROM login WHERE id =?', [
+        userId, userId
+    ], (error, results) => {
+        if(!error){
+            const rest = results[0] ? results[0].result : -1;
+
+        resolve(rest);
+        }
+        
+    });
+    
+}
+
+
 
 function setCourse(resolve, reject, course) {
   const connection = getDBConnection();
