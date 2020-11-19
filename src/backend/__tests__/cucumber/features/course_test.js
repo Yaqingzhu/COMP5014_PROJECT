@@ -15,11 +15,7 @@ let testSession;
 
 new Promise((resolve, reject) => {
     mysql.insertNewUserLoginInformation(resolve, 123, 't')
-}).then((result) => {
-    if (result) {
-
-    }
-});
+}).then();
 
 server = http.createServer(app);
 server.listen();
