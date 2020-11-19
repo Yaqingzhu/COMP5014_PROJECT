@@ -42,7 +42,7 @@ function doTimeSlotProcess(body, req, res) {
   }).then(doPreclusionsProcess(body, req, res));
 }
 
-function doPreclusionsProcess(body, req, res) {
+function doPreclusionsProcess(body, res) {
   console.log('doPreclusionsProcess');
   new Promise((resolve, reject) => {
     mysql.setPreclusions(resolve, reject, body.preclusions, body.courseId);
