@@ -49,7 +49,9 @@ function updateFailedTimes(resolve, userId) {
 
           resolve(rest);
         }
-    });
+      });
+    }
+  });
 }
 
 function insertNewUserLoginInformation(resolve, userId, password) {
@@ -175,8 +177,6 @@ function getCourse(resolve, reject, courseId){
     });
     
 }
-
-
 
 function setCourse(resolve, reject, course) {
   const connection = getDBConnection();
