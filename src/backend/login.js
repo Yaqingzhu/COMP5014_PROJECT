@@ -9,7 +9,7 @@ async function loginRequestProcess(req, res) {
 function checkDB(id, password, req, res) {
     connection.query('SELECT 1 AS result FROM login WHERE id = ? AND password = ? AND failed_time < 4', [
         id, password
-    ], (error, results) => {  
+    ], (error, results) => {
         setLoginStatus(error, results, req, res, id)
     });
 }
@@ -20,7 +20,7 @@ function setLoginStatus(error, results, req, res, id) {
 
     if (rest === 1) {
         if (req.session && !req.session.isLogin) {
-           req.session.isLogin = true;
+            req.session.isLogin = true;
         }
         setUserRole(req.session, id, res);
     } else {
@@ -28,25 +28,28 @@ function setLoginStatus(error, results, req, res, id) {
     }
 }
 
-function setErrorMessage(res, id){
-    new Promise((resolve, reject)=>{
+function setErrorMessage(res, id) {
+    new Promise((resolve, reject) => {
         mysql.updateFailedTimes(resolve, id)
-    }).catch((err)=>{
-        res.status(500).json({ loginStatus: -5,
+    }).catch((err) => {
+        res.status(500).json({
+            loginStatus: -5,
             message: 'login failed due to server issue',
             loginRole: 'none',
             loginName: ''
         })
-    }).then((result)=>{
-        if(result){
-            if(result > 4){
-                res.status(403).json({ loginStatus: -2,
+    }).then((result) => {
+        if (result) {
+            if (result > 4) {
+                res.status(403).json({
+                    loginStatus: -2,
                     message: 'login failed. You tried more than 4 times and your account is locked. Please talk to admin to unlock your account.',
                     loginRole: 'none',
                     loginName: ''
                 })
-            }else{
-                res.status(403).json({ loginStatus: -1,
+            } else {
+                res.status(403).json({
+                    loginStatus: -1,
                     message: 'login failed. Please check your password and user id.',
                     loginRole: 'none',
                     loginName: ''
@@ -56,12 +59,12 @@ function setErrorMessage(res, id){
     });
 }
 
-function setUserRole(session, id, res){
-    new Promise((resolve, reject)=>{
+function setUserRole(session, id, res) {
+    new Promise((resolve, reject) => {
         mysql.checkUserRole(resolve, id)
-    }).then((result)=>{
+    }).then((result) => {
         if (!session || !session.role) {
-            switch(result.result){
+            switch (result.result) {
                 case 1:
                     session.role = 'admin';
                     break;
@@ -74,16 +77,16 @@ function setUserRole(session, id, res){
                 default:
                     session.role = 'none';
             }
-         }
+        }
 
-         res.status(200).json({ 
-                    loginStatus: 0,
-                    message: 'none',
-                    loginRole: result.result,
-                    loginName: result.name
+        res.status(200).json({
+            loginStatus: 0,
+            message: 'none',
+            loginRole: result.result,
+            loginName: result.name
         })
     })
-    
+
 }
 
 module.exports = { loginRequestProcess };
