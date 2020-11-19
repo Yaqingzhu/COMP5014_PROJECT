@@ -6,6 +6,8 @@ const mysql = require('mysql');
 const bodyParser = require('body-parser');
 
 const { createAdminUser } = require('./db_util');
+const admin = require('./admin_activities');
+const bodyParser = require("body-parser")
 
 const app = express();
 const port = process.env.API_PORT || 11234; // Port for the API
@@ -35,6 +37,8 @@ app.get('/', (req, res) => {
 app.post('/login', login.loginRequestProcess);
 
 createAdminUser();
+
+app.post('/courseop', admin.CourseProcess);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {

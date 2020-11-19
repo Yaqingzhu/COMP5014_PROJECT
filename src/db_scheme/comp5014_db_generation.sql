@@ -55,7 +55,6 @@ CREATE TABLE IF NOT EXISTS `comp4004`.`course` (
   `course_status` VARCHAR(45) NOT NULL,
   `course_assigned_prof_id` INT NULL,
   `course_capacity` INT NULL,
-  `course_slots_id` VARCHAR(45) NULL,
   PRIMARY KEY (`course_id`),
   INDEX `fk_course_prof_idx` (`course_assigned_prof_id` ASC) VISIBLE,
   CONSTRAINT `fk_course_prof`
@@ -112,7 +111,7 @@ DROP TABLE IF EXISTS `comp4004`.`login` ;
 CREATE TABLE IF NOT EXISTS `comp4004`.`login` (
   `id` INT NOT NULL,
   `password` VARCHAR(45) NOT NULL,
-  `failed_time` INT NOT NULL,
+  `failed_time` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`))
 ENGINE = InnoDB;
 
@@ -130,11 +129,6 @@ CREATE TABLE IF NOT EXISTS `comp4004`.`preclusions` (
     FOREIGN KEY (`course_id`)
     REFERENCES `comp4004`.`course` (`course_id`)
     ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_preclusions_cours2`
-    FOREIGN KEY (`preclusions_course_id`)
-    REFERENCES `comp4004`.`course` (`course_id`)
-    ON DELETE CASCADE
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
@@ -150,11 +144,6 @@ CREATE TABLE IF NOT EXISTS `comp4004`.`prerequisites` (
   INDEX `fk_prerequisites_cours2_idx` (`prerequisites_course_id` ASC) VISIBLE,
   CONSTRAINT `fk_prerequisites_course1`
     FOREIGN KEY (`course_id`)
-    REFERENCES `comp4004`.`course` (`course_id`)
-    ON DELETE CASCADE
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_prerequisites_cours2`
-    FOREIGN KEY (`prerequisites_course_id`)
     REFERENCES `comp4004`.`course` (`course_id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION)
