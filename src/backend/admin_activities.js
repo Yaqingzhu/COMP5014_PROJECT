@@ -27,7 +27,7 @@ function doProcess(body, req, res) {
             errorMessage: err.message,
         });
     }).then(doTimeSlotProcess(body, req, res)
-     );
+    );
 }
 
 function doTimeSlotProcess(body, req, res) {
@@ -77,8 +77,12 @@ function endRequestWithFinished(res, body) {
             errorMessage: '',
             coursePayload: result.result
         });
+    }).then(function (result) {
+    res.status(200).json({
+      responseCode: 0,
+      errorMessage: '',
+      coursePayload: result.result
     });
-    
 }
 
 module.exports = { CourseProcess };
