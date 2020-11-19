@@ -78,6 +78,7 @@ function endRequestWithFinished(res, body) {
             coursePayload: result.result
         });
     });
+    
 }
 
 module.exports = { CourseProcess };
