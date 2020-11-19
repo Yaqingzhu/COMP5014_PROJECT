@@ -6,7 +6,6 @@ const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
 let connection = null;
 
 function getDBConnection() {
-
   if (!connection) {
     connection = mysql.createConnection({
       host: DB_HOST || '127.0.0.1',
@@ -19,7 +18,7 @@ function getDBConnection() {
   return connection;
 }
 
-function checkUserRole(resolve, userId) {
+function checkUserRole(resolve, reject, userId) {
   const connection = getDBConnection();
   connection.query('UPDATE login SET failed_time = 0 WHERE id =?', [
     userId
@@ -27,8 +26,12 @@ function checkUserRole(resolve, userId) {
   connection.query('SELECT 1 AS result, admin_name AS name FROM admin WHERE admin_id = ? UNION SELECT 2 AS result, prof_name AS name FROM prof WHERE prof_id = ? UNION SELECT 2 AS result, student_name AS name FROM student WHERE student_id = ?', [
     userId, userId, userId
   ], (error, results) => {
-    const rest = results[0] ? results[0] : -1;
-    resolve(rest);
+    if (!error) {
+      const rest = results[0] ? results[0] : -1;
+      resolve(rest);
+    } else {
+      reject(error);
+    }
   });
 }
 
@@ -46,7 +49,6 @@ function updateFailedTimes(resolve, userId) {
 
           resolve(rest);
         }
-
       });
     }
   });
@@ -65,7 +67,7 @@ function insertNewUserLoginInformation(resolve, userId, password) {
 function createAdminUser() {
   const adminUser = {
     id: process.env.ADMIN_USERNAME || '1',
-    password: process.env.ADMIN_USERNAME || 'admin',
+    password: process.env.ADMIN_USERNAME || 'admin'
   };
   const connection = getDBConnection();
   connection.query('SELECT 1 AS result FROM login WHERE id = ? AND password = ?', [
@@ -108,18 +110,18 @@ function setTimeSlot(resolve, reject, slots, courseId) {
   connection.query('DELETE FROM course_slots WHERE course_id = ?;', [courseId]);
 
   if (slots && slots.length > 0) {
-    console.log('slot herere sadasdas')
-    slots.forEach((element) => {
+    console.log('slot herere sadasdas');
+    slots.forEach(element => {
       element.id = courseId;
     });
     connection.query('INSERT INTO course_slots(course_slots_day, course_slots_time, course_id) values ?;', [
       slots.map(element => [element.day, element.time, element.id])], function (error, result) {
-        console.log(slots);
-        resolve(courseId)
-      }
+      if (error) { reject(error); }
+      console.log(slots);
+      resolve(courseId);
+    }
     );
   }
-
 }
 
 function setPreclusions(resolve, reject, preclusions, courseId) {
@@ -147,7 +149,6 @@ function setPrerequisites(resolve, reject, prerequisites, courseId) {
   }
 }
 
-
 function getCourse(resolve, reject, courseId) {
   const connection = getDBConnection();
   connection.query('SELECT JSON_OBJECT(\'courseId\', c.course_id, \'courseName\', course_name, \'courseStatus\', course_status, \'courseCapacity\', course_capacity, \'assignedProf\', course_assigned_prof_id, ' +
@@ -165,9 +166,7 @@ function getCourse(resolve, reject, courseId) {
 
       resolve(rest);
     }
-
   });
-
 }
 
 module.exports = {
@@ -181,4 +180,4 @@ module.exports = {
   setPrerequisites,
   getCourse,
   createAdminUser
-}
+};
