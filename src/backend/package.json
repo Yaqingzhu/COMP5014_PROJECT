@@ -4,8 +4,8 @@
   "scripts": {
     "start": "nodemon src/backend/index.js",
     "lint": "eslint **.js",
-    "test": "cross-env NODE_ENV=test nyc --silent --no-clean ../../node_modules/.bin/cucumber-js ./cucumber/features/",
-    "test:coverage": "cross-env NODE_ENV=test nyc --silent --no-clean ../../node_modules/.bin/cucumber-js ./cucumber/features/"
+    "test": "cross-env NODE_ENV=test cucumber-js ./cucumber/features/",
+    "test:coverage": "cross-env NODE_ENV=test nyc cucumber-js ./cucumber/features/"
   },
   "author": "",
   "license": "ISC",

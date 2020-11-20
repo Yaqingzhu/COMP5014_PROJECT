@@ -2,6 +2,9 @@
   "name": "comp5014_project",
   "private": true,
   "scripts": {
+    "postinstall": "npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd src/frontend && npm install",
+    "install:backend": "cd src/backend && npm install",
     "start:frontend": "cd src/frontend && npm run start",
     "start:backend": "cd src/backend && npm run start",
     "lint": "npm run lint:frontend && npm run lint:backend",
