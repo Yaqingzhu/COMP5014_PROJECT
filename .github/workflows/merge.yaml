@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       mysql:
-        image: bitnami/mysql:latest
+        image: bitnami/mysql:5.7
         env:
           MYSQL_DATABASE: comp4004
           MYSQL_PASSWORD: password
