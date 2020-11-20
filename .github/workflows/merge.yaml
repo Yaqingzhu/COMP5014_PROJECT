@@ -31,11 +31,11 @@ jobs:
           sleep 10
           npm run test:coverage
         env:
-          DB_PORT: 32574
+          DB_PORT: 3306
           DB_HOST: 127.0.0.1
           DB_DATABASE: comp4004
           DB_USERNAME: root
-          DB_PASSWORD: password
+          DB_PASSWORD: comp4004
       - name: Cypress run
         run: npm run test:cypress
       - name: Upload coverage to codecov
