@@ -19,12 +19,9 @@ async function CourseProcess(req, res) {
 }
 
 function doProcess(body, req, res) {
-    const courseId = body.courseId;
-
     new Promise((resolve, reject) => {
         mysql.setCourse(resolve, reject, body);
     }).catch(err => {
-        console.log(err);
         res.status(400).json({
             responseCode: -1,
             errorMessage: err.message,
@@ -34,11 +31,9 @@ function doProcess(body, req, res) {
 }
 
 function doTimeSlotProcess(body, req, res) {
-    console.log('doTimeSlotProcess');
     new Promise(function (resolve, reject) {
         mysql.setTimeSlot(resolve, reject, body.course_slots, body.courseId);
     }).catch(err => {
-        console.log(err);
         res.status(400).json({
             responseCode: -1,
             errorMessage: err.message,
@@ -47,11 +42,9 @@ function doTimeSlotProcess(body, req, res) {
 }
 
 function doPreclusionsProcess(body, req, res) {
-    console.log('doPreclusionsProcess');
     new Promise((resolve, reject) => {
         mysql.setPreclusions(resolve, reject, body.preclusions, body.courseId);
     }).catch(err => {
-        console.log(err);
         res.status(400).json({
             responseCode: -1,
             errorMessage: err.message,
@@ -60,11 +53,9 @@ function doPreclusionsProcess(body, req, res) {
 }
 
 function doPrerequisitesProcess(body, req, res) {
-    console.log('doPrerequisitesProcess');
     new Promise((resolve, reject) => {
         mysql.setPrerequisites(resolve, reject, body.prerequisites, body.courseId);
     }).catch(err => {
-        console.log(err);
         res.status(400).json({
             responseCode: -1,
             errorMessage: err.message,
@@ -73,11 +64,9 @@ function doPrerequisitesProcess(body, req, res) {
 }
 
 function endRequestWithFinished(res, body) {
-    console.log('endRequestWithFinished');
     new Promise((resolve, reject) => {
         mysql.getCourse(resolve, reject, body.courseId);
     }).catch(err => {
-        console.log(err);
         res.status(400).json({
             responseCode: -1,
             errorMessage: err.message,

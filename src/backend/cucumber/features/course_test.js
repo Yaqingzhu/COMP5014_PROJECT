@@ -1,8 +1,8 @@
-const { Given, Then, Before, After } = require('cucumber');
+const { Given, Then } = require('cucumber');
 const assert = require('assert').strict;
-const mysql = require('../../../db_util');
+const mysql = require('../../db_util');
 const http = require('http');
-const app = require('../../../index');
+const app = require('../../index');
 const session = require('supertest-session');
 
 let res;
@@ -13,23 +13,12 @@ new Promise(resolve => {
 }).then();
 
 const server = http.createServer(app);
-Before(function () {
-    server.listen();
-
-    new Promise(resolve => {
-        mysql.insertNewUserLoginInformation(resolve, 123, 't');
-    }).then();
-});
-
-After(function () { server.close(); });
 
 Given('course json file {string}', function (arg1) {
   testSession = session(app);
-  console.log(arg1);
   return testSession.post('/login').send({ id: 123, password: 't' }).expect(200).then(function () {
     return testSession.post('/courseop').send(JSON.parse(arg1)).expect(200).then(function (rr) {
       res = rr;
-      console.log(rr.body);
     });
   });
 });

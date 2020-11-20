@@ -1,5 +1,10 @@
 Feature: testing for course operation backend
 
+# create this Scenario to 
+Scenario: start server can be correct
+Given start server
+Then no error 
+
 Scenario: course insert
 Given course json file "{\"courseId\": 1234,\"courseName\": \"Java1\",\"courseStatus\": \"scheduled\",\"courseCapacity\": 30}"
 Then return a json with responseCode equals to 0

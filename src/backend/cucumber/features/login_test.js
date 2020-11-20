@@ -1,23 +1,22 @@
-const { Given, Then, Before, After } = require('cucumber');
+const { Given, Then } = require('cucumber');
 const assert = require('assert').strict;
-const mysql = require('../../../db_util');
+const mysql = require('../../db_util');
 const http = require('http');
-const app = require('../../../index');
+const app = require('../../index');
 const request = require('supertest');
 
-let server;
 let res;
+let err;
+let error;
+const server = http.createServer(app);
 
-Before(function () {
-    server = http.createServer(app);
-    server.listen();
-
-    new Promise(resolve => {
-        mysql.insertNewUserLoginInformation(resolve, 123, 't');
-    }).then();
+Given('start server', function () {
+    err = server.listen();
 });
 
-After(function () { server.close(); });
+Then('no error', function () {
+    assert.notEqual(err, undefined);
+});
 
 Given('a user id set to {int} and password set to {string}', async (arg1, arg2) => {
         res = await request(app).post('/login').send({ id: arg1, password: arg2 });
@@ -31,4 +30,17 @@ Then('re-try this for 4 times a user id set to {int} and password set to {string
     for (let i = 0; i < 4; i++) {
         res = await request(app).post('/login').send({ id: arg1, password: arg2 });
     }
+});
+
+Given('close server', function () {
+        server.close(function (e) {
+            error = e;
+        });
+        console.log('server closed');
+        mysql.getDBConnection().destroy();
+        console.log(mysql.getDBConnection().state);
+});
+
+Then('no error occurred', function () {
+    assert.equal(error, undefined);
 });

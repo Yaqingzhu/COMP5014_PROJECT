@@ -13,7 +13,6 @@ function getDBConnection() {
       password: DB_PASSWORD || 'comp4004',
       database: DB_DATABASE || 'comp4004'
     });
-    connection.connect();
   }
   return connection;
 }
@@ -56,7 +55,10 @@ function updateFailedTimes(resolve, userId) {
 
 function insertNewUserLoginInformation(resolve, userId, password) {
   const connection = getDBConnection();
-  connection.query('INSERT IGNORE INTO login(id, password, failed_time) values(?,?,?)', [
+  connection.query('INSERT INTO login(id, password, failed_time) values(?,?,?)' +
+  ' ON DUPLICATE KEY UPDATE ' +
+  ' password = VALUES(password), ' +
+    ' failed_time = VALUES(failed_time) ', [
     userId, password, 0
     // eslint-disable-next-line node/handle-callback-err
   ], (error, results) => {
@@ -64,6 +66,7 @@ function insertNewUserLoginInformation(resolve, userId, password) {
     resolve(rest);
   });
 }
+
 function createAdminUser() {
   const adminUser = {
     id: process.env.ADMIN_USERNAME || '1',
@@ -110,14 +113,12 @@ function setTimeSlot(resolve, reject, slots, courseId) {
   connection.query('DELETE FROM course_slots WHERE course_id = ?;', [courseId]);
 
   if (slots && slots.length > 0) {
-    console.log('slot herere sadasdas');
     slots.forEach(element => {
       element.id = courseId;
     });
     connection.query('INSERT INTO course_slots(course_slots_day, course_slots_time, course_id) values ?;', [
       slots.map(element => [element.day, element.time, element.id])], function (error, result) {
       if (error) { reject(error); }
-      console.log(slots);
       resolve(courseId);
     }
     );
@@ -128,12 +129,9 @@ function setPreclusions(resolve, reject, preclusions, courseId) {
   const connection = getDBConnection();
   connection.query('DELETE FROM preclusions WHERE course_id = ?;', [courseId]);
   if (preclusions && preclusions.length > 0) {
-    console.log(preclusions);
-
     connection.query('INSERT INTO preclusions(preclusions_course_id, course_id) values ?;', [
       preclusions.map(element => [element, courseId])], resolve(courseId)
     );
-    console.log(preclusions);
   }
 }
 
@@ -141,11 +139,9 @@ function setPrerequisites(resolve, reject, prerequisites, courseId) {
   const connection = getDBConnection();
   connection.query('DELETE FROM prerequisites WHERE course_id = ?;', [courseId]);
   if (prerequisites && prerequisites.length > 0) {
-    console.log(prerequisites);
     connection.query('INSERT INTO prerequisites(prerequisites_course_id, course_id) values ?;', [
       prerequisites.map(element => [element, courseId])], resolve(courseId)
     );
-    console.log(prerequisites);
   }
 }
 
