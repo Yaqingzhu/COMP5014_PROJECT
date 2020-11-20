@@ -2,7 +2,6 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const login = require('./login');
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
 
 const { createAdminUser } = require('./db_util');

@@ -29,7 +29,7 @@ Given('course json file {string}', function (arg1) {
   testSession = session(app);
   return testSession
     .post('/login')
-    .send({ id: 123, password: 't' })
+    .send({ id: 1, password: 'admin' })
     .expect(200)
     .then(function () {
       return testSession

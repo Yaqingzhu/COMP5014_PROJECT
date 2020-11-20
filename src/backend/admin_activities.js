@@ -2,12 +2,14 @@ const mysql = require('./db_util');
 
 async function CourseProcess(req, res) {
     if (!req.session || !req.session.isLogin) {
+        console.warn('User is not logged in');
         res.status(403).json({
             responseCode: -1,
             // eslint-disable-next-line no-tabs
             errorMessage: 'You need to login before doing this operation.'
         });
     } else if (req.session.role !== 'admin') {
+        console.warn('User is not an admin');
         res.status(403).json({
             responseCode: -1,
             // eslint-disable-next-line no-tabs
