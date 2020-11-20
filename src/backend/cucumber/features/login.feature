@@ -25,3 +25,8 @@ Examples:
     | 100    |         "5"      |
     |  436345|      "asdd"      |
     |  23556 |   "select * from login"   |
+
+# create this Scenario to 
+Scenario: close server can be correct
+Given close server
+Then no error occurred

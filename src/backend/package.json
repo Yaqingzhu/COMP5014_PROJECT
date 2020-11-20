@@ -4,16 +4,19 @@
   "scripts": {
     "start": "nodemon src/backend/index.js",
     "lint": "eslint **.js",
-    "test": "cross-env NODE_ENV=test jest",
-    "test:coverage": "cross-env NODE_ENV=test jest --collectCoverage"
+    "test": "cross-env NODE_ENV=test nyc --silent --no-clean ../../node_modules/.bin/cucumber-js ./cucumber/features/",
+    "test:coverage": "cross-env NODE_ENV=test nyc --silent --no-clean ../../node_modules/.bin/cucumber-js ./cucumber/features/"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "all": "0.0.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.2",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "mysql": "^2.18.1"
+    "mysql": "^2.18.1",
+    "nyc": "^15.1.0",
+    "nodemon": "^2.0.6"
   }
 }

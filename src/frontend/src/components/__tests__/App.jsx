@@ -19,7 +19,7 @@ describe('App component', () => {
 
     customRender(<App />, { providerProps: { value: { user } } });
 
-    expect(screen.getByText('Hello, World!')).toBeDefined();
+    expect(screen.getByText(`Hello, ${user.username}!`)).toBeDefined();
   });
 
   it('Renders a Login page when not logged in', () => {
