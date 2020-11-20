@@ -22,12 +22,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Verify MySQL connection
-          env:
-            PORT: 3306
-          run: |
-            while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
-              sleep 1
-            done
+        env:
+          PORT: 3306
+        run: |
+          while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
+            sleep 1
+          done
       - uses: actions/setup-node@v1
       - name: Cache node modules
         uses: actions/cache@v2
