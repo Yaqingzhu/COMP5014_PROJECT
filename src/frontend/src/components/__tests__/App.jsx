@@ -20,7 +20,7 @@ describe('App component', () => {
 
     customRender(<MemoryRouter><App /></MemoryRouter>, { providerProps: { value: { user } } });
 
-    expect(screen.getByText(`Hello, World!`)).toBeDefined();
+    expect(screen.getByText('Hello, World!')).toBeDefined();
   });
 
   it('Renders a Login page when not logged in', () => {
