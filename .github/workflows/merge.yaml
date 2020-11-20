@@ -30,7 +30,7 @@ jobs:
           done
 
           >&2 echo "Mysql is up - executing command"
-          mysql -h "127.0.0.1" -P 32574 -u root -ppassword comp4004 -e 'SHOW TABLES from comp4004'
+          mysql -h "127.0.0.1" -P 32574 -u root -ppassword comp4004 -e 'SHOW TABLES from comp4004\G'
       - uses: actions/setup-node@v1
       - name: Cache node modules
         uses: actions/cache@v2
