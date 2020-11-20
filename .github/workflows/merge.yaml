@@ -9,7 +9,7 @@ jobs:
       mysql:
         image: bitnami/mysql:latest
         env:
-          MYSQL_DATABASE: test
+          MYSQL_DATABASE: comp4004
           MYSQL_PASSWORD: password
           MYSQL_ROOT_PASSWORD: password
         ports:
@@ -42,7 +42,7 @@ jobs:
         env:
           DB_PORT: 3306
           DB_HOST: mysql
-          DB_DATABASE: test
+          DB_DATABASE: comp4004
           DB_USERNAME: root
           DB_PASSWORD: password
       - name: Cypress run
