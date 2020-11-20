@@ -19,6 +19,7 @@ function setLoginStatus(error, results, req, res, id) {
   const rest = results[0] ? results[0].result : -1;
 
   if (rest === 1) {
+    console.log(req.session);
     if (req.session && !req.session.isLogin) {
       req.session.isLogin = true;
     }

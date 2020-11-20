@@ -32,7 +32,7 @@ Then('no error', function () {
 });
 
 Given('a user id set to {int} and password set to {string}', async (arg1, arg2) => {
-        res = await request(app).post('/login').send({ id: arg1, password: arg2 });
+    res = await request(app).post('/login').send({ id: arg1, password: arg2 });
 });
 
 Then('return a json with {string} equals to {int}', async (arg1, arg2) => {

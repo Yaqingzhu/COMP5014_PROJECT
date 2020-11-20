@@ -16,9 +16,8 @@ app.use(session({
   saveUninitialized: true,
   resave: false,
   cookie: {
-    httpOnly: false,
     maxAge: 20 * 60 * 1000, // 20 mins
-    secure: !process.env.TEST,
+    secure: false,
   },
 }));
 

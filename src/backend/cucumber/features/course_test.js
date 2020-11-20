@@ -6,6 +6,7 @@ const app = require('../../index');
 const session = require('supertest-session');
 
 let res;
+let cookie;
 let testSession;
 let server;
 
@@ -30,8 +31,7 @@ Given('course json file {string}', function (arg1) {
     .post('/login')
     .send({ id: 123, password: 't' })
     .expect(200)
-    .then(function (test) {
-      console.log(test.headers);
+    .then(function () {
       return testSession
         .post('/courseop')
         .send(JSON.parse(arg1))
