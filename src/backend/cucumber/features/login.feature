@@ -21,12 +21,7 @@ Given a user id set to <var_id> and password set to <var_password>
 Then return a json with "loginStatus" equals to -1
 
 Examples:
-    | var_id | var_password   | 
+    | var_id | var_password   |
     | 100    |         "5"      |
     |  436345|      "asdd"      |
     |  23556 |   "select * from login"   |
-
-# create this Scenario to 
-Scenario: close server can be correct
-Given close server
-Then no error occurred

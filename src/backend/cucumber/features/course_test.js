@@ -1,4 +1,4 @@
-const { Given, Then } = require('cucumber');
+const { Given, Then, AfterAll, BeforeAll } = require('cucumber');
 const assert = require('assert').strict;
 const mysql = require('../../db_util');
 const http = require('http');
@@ -7,20 +7,39 @@ const session = require('supertest-session');
 
 let res;
 let testSession;
+let server;
 
 new Promise(resolve => {
   mysql.insertNewUserLoginInformation(resolve, 123, 't');
 }).then();
 
-const server = http.createServer(app);
+BeforeAll(() => {
+  server = http.createServer(app);
+});
+
+AfterAll(() => {
+  server.close(function (e) {
+    console.error(e);
+  });
+  mysql.getDBConnection().destroy();
+});
 
 Given('course json file {string}', function (arg1) {
   testSession = session(app);
-  return testSession.post('/login').send({ id: 123, password: 't' }).expect(200).then(function () {
-    return testSession.post('/courseop').send(JSON.parse(arg1)).expect(200).then(function (rr) {
-      res = rr;
+  return testSession
+    .post('/login')
+    .send({ id: 123, password: 't' })
+    .expect(200)
+    .then(function (test) {
+      console.log(test.headers);
+      return testSession
+        .post('/courseop')
+        .send(JSON.parse(arg1))
+        .expect(200)
+        .then(function (rr) {
+          res = rr;
+        });
     });
-  });
 });
 
 Given('without login, course json file {string}', function (arg1) {

@@ -15,7 +15,11 @@ app.use(session({
   secret: 'somesecrettoken',
   saveUninitialized: true,
   resave: false,
-  cookie: { maxAge: 20 * 60 * 1000 } // 20 mins
+  cookie: {
+    httpOnly: false,
+    maxAge: 20 * 60 * 1000, // 20 mins
+    secure: !process.env.TEST,
+  },
 }));
 
 app.use(bodyParser.urlencoded({ extended: true }));

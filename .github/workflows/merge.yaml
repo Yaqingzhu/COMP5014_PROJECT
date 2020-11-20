@@ -29,7 +29,6 @@ jobs:
         run: |
           docker-compose up -d db
           sleep 30
-          docker-compose logs db
           npm run test:coverage
           docker-compose down -v
         env:
