@@ -12,6 +12,7 @@ jobs:
           MYSQL_DATABASE: comp4004
           MYSQL_PASSWORD: password
           MYSQL_ROOT_PASSWORD: password
+        options: --health-cmd="mysqladmin ping"
         ports:
           - 32574:3306
         volumes:
@@ -20,6 +21,13 @@ jobs:
       - run: sudo chown -R $USER:$USER ${{ github.workspace }}
       - name: Checkout
         uses: actions/checkout@v1
+      - name: Verify MySQL connection
+          env:
+            PORT: 3306
+          run: |
+            while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
+              sleep 1
+            done
       - uses: actions/setup-node@v1
       - name: Cache node modules
         uses: actions/cache@v2
