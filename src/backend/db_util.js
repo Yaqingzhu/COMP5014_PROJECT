@@ -1,13 +1,14 @@
 const mysql = require('mysql');
 
 // Environment variables for the database
-const { DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
+const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
 
 let connection = null;
 
 function getDBConnection() {
   if (!connection) {
     connection = mysql.createConnection({
+      port: DB_PORT || 3306,
       host: DB_HOST || '35.222.224.200',
       user: DB_USERNAME || 'root',
       password: DB_PASSWORD || 'comp4004',
