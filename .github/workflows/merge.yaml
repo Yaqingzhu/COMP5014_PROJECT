@@ -28,8 +28,10 @@ jobs:
       - name: Run unit tests
         run: |
           docker-compose up -d db
-          sleep 10
+          sleep 30
+          docker-compose logs db
           npm run test:coverage
+          docker-compose down -v
         env:
           DB_PORT: 3306
           DB_HOST: 127.0.0.1
