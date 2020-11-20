@@ -35,6 +35,7 @@ DROP TABLE IF EXISTS `comp4004`.`admin` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`admin` (
   `admin_id` INT NOT NULL,
+  `admin_name` VARCHAR(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`admin_id`),
   CONSTRAINT `fk_admin_login`
     FOREIGN KEY (`admin_id`)

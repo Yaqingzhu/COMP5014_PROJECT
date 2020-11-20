@@ -100,6 +100,12 @@ If you need the coverage from those tests, use:
 npm run test:backend:coverage
 ```
 
+To generate coverage report from raw file, use:
+
+```
+nyc report --reporter=lcov
+```
+
 ## Writing cucumber tests
 The application is tested with cucumber, and the tests are executed using cypress.
 
