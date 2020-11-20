@@ -12,7 +12,6 @@ jobs:
           MYSQL_DATABASE: comp4004
           MYSQL_PASSWORD: password
           MYSQL_ROOT_PASSWORD: password
-        options: --health-cmd="mysqladmin ping"
         ports:
           - 32574:3306
         volumes:
@@ -25,9 +24,12 @@ jobs:
         env:
           PORT: 3306
         run: |
-          while ! mysqladmin ping -h"127.0.0.1" -P"$PORT" --silent; do
+          until mysql -h "$host" -u root -ppassword comp4004 -e 'select 1'; do
+            >&2 echo "MySQL is unavailable - sleeping"
             sleep 1
           done
+
+          >&2 echo "Mysql is up - executing command"
       - uses: actions/setup-node@v1
       - name: Cache node modules
         uses: actions/cache@v2
