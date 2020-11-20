@@ -83,6 +83,7 @@ function endRequestWithFinished(res, body) {
       errorMessage: '',
       coursePayload: result.result
     });
+  });
 }
 
 module.exports = { CourseProcess };
