@@ -20,6 +20,7 @@ jobs:
       - run: sudo chown -R $USER:$USER ${{ github.workspace }}
       - name: load db schema
         run: |
+          sudo apt-get install -y mysql-client
           mysql --host 127.0.0.1 --port 32574 -uroot -ppassword -e "source ${{ github.workspace }}/src/db_scheme/comp5014_db_generation.sql"
       - name: Checkout
         uses: actions/checkout@v1
