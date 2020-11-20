@@ -25,7 +25,6 @@ describe('Login component', () => {
     expect(passwordInput.value).toBe(password);
   });
 
-  // TODO: Update when we use the API instead of a timeout
   it('Logs the user into the application', async () => {
     const username = 'test';
     const password = 'test';

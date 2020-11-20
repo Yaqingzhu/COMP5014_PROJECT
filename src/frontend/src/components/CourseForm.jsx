@@ -15,6 +15,7 @@ export const CourseForm = ({ course, handleSave }) => {
             type="text"
             className="form-control"
             id="name"
+            data-testid="name"
             placeholder="Some name"
             value={name}
             onChange={event => setName(event.target.value)}
@@ -26,6 +27,7 @@ export const CourseForm = ({ course, handleSave }) => {
             type="text"
             className="form-control"
             id="status"
+            data-testid="status"
             placeholder="Some status"
             value={status}
             onChange={event => setStatus(event.target.value)}
@@ -37,6 +39,7 @@ export const CourseForm = ({ course, handleSave }) => {
             type="number"
             className="form-control"
             id="capacity"
+            data-testid="capacity"
             placeholder="200"
             value={capacity}
             onChange={event => setCapacity(event.target.value)}
