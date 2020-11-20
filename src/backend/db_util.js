@@ -8,7 +8,7 @@ let connection = null;
 function getDBConnection() {
   if (!connection) {
     connection = mysql.createConnection({
-      host: DB_HOST || '127.0.0.1',
+      host: DB_HOST || '35.222.224.200',
       user: DB_USERNAME || 'root',
       password: DB_PASSWORD || 'comp4004',
       database: DB_DATABASE || 'comp4004'
@@ -160,10 +160,7 @@ function getCourse(resolve, reject, courseId) {
     courseId
   ], (error, results) => {
     if (!error) {
-      console.log('getCourse');
-      console.log(results);
       const rest = results[0] ? results[0] : -1;
-
       resolve(rest);
     }
   });

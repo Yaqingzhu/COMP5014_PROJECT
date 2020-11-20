@@ -63,7 +63,7 @@ function setUserRole(session, id, res) {
   new Promise((resolve, reject) => {
     mysql.checkUserRole(resolve, reject, id);
   }).then(result => {
-    if (!session || !session.role) {
+    if (session) {
       switch (result.result) {
         case 1:
           session.role = 'admin';
@@ -78,7 +78,6 @@ function setUserRole(session, id, res) {
           session.role = 'none';
       }
     }
-
     res.status(200).json({
       loginStatus: 0,
       message: 'none',

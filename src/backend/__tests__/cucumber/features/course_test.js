@@ -1,4 +1,4 @@
-const { Given, Then } = require('cucumber');
+const { Given, Then, Before, After } = require('cucumber');
 const assert = require('assert').strict;
 const mysql = require('../../../db_util');
 const http = require('http');
@@ -13,7 +13,15 @@ new Promise(resolve => {
 }).then();
 
 const server = http.createServer(app);
-server.listen();
+Before(function () {
+    server.listen();
+
+    new Promise(resolve => {
+        mysql.insertNewUserLoginInformation(resolve, 123, 't');
+    }).then();
+});
+
+After(function () { server.close(); });
 
 Given('course json file {string}', function (arg1) {
   testSession = session(app);
