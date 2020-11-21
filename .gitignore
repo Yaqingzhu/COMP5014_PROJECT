@@ -19,6 +19,7 @@ node_modules
 
 # Coverage output
 coverage
+.nyc_output
 
 # OSX files
 .DS_Store

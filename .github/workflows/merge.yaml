@@ -5,25 +5,7 @@ on: [push]
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
-    services:
-      mysql:
-        image: bitnami/mysql:5.7
-        env:
-          MYSQL_DATABASE: comp4004
-          MYSQL_PASSWORD: password
-          MYSQL_ROOT_PASSWORD: password
-        ports:
-          - 32574:3306
-        volumes:
-          - ${{ github.workspace }}/src/db_scheme/comp5014_db_generation.sql:/docker-entrypoint-initdb.d/init.sql
     steps:
-      - run: sudo chown -R $USER:$USER ${{ github.workspace }}
-      - name: install db client
-        run: 
-          sudo apt-get install -y mysql-client
-      - name: create db schema
-        run:
-          mysql --host 127.0.0.1 --port 32574 -uroot -ppassword -e "source ${{ github.workspace }}/src/db_scheme/comp5014_db_generation.sql"
       - name: Checkout
         uses: actions/checkout@v1
       - uses: actions/setup-node@v1
@@ -44,13 +26,17 @@ jobs:
       - name: Run eslint
         run: npm run lint
       - name: Run unit tests
-        run: npm run test:coverage
+        run: |
+          docker-compose up -d db
+          sleep 30
+          npm run test:coverage
+          docker-compose down -v
         env:
-          DB_PORT: 32574
+          DB_PORT: 3306
           DB_HOST: 127.0.0.1
           DB_DATABASE: comp4004
           DB_USERNAME: root
-          DB_PASSWORD: password
+          DB_PASSWORD: comp4004
       - name: Cypress run
         run: npm run test:cypress
       - name: Upload coverage to codecov

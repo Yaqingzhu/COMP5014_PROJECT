@@ -2,6 +2,9 @@
   "name": "comp5014_project",
   "private": true,
   "scripts": {
+    "postinstall": "npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd src/frontend && npm install",
+    "install:backend": "cd src/backend && npm install",
     "start:frontend": "cd src/frontend && npm run start",
     "start:backend": "cd src/backend && npm run start",
     "lint": "npm run lint:frontend && npm run lint:backend",
@@ -55,6 +58,7 @@
     "nyc": "^15.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-hook-form": "^6.11.3",
     "react-router-dom": "^5.2.0",
     "sinon": "^9.2.1",
     "supertest-session": "^4.1.0"

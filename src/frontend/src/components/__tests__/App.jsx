@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { render, screen } from '@testing-library/react';
 
 import { UserContext } from '../../context/userContext';
@@ -17,9 +18,9 @@ describe('App component', () => {
       username: 'test',
     };
 
-    customRender(<App />, { providerProps: { value: { user } } });
+    customRender(<MemoryRouter><App /></MemoryRouter>, { providerProps: { value: { user } } });
 
-    expect(screen.getByText(`Hello, ${user.username}!`)).toBeDefined();
+    expect(screen.getByText('Hello, World!')).toBeDefined();
   });
 
   it('Renders a Login page when not logged in', () => {

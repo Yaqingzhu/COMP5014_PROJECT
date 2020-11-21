@@ -2,7 +2,6 @@ const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
 const login = require('./login');
-const mysql = require('mysql');
 const bodyParser = require('body-parser');
 
 const { createAdminUser } = require('./db_util');
@@ -16,7 +15,10 @@ app.use(session({
   secret: 'somesecrettoken',
   saveUninitialized: true,
   resave: false,
-  cookie: { maxAge: 20 * 60 * 1000 } // 20 mins
+  cookie: {
+    maxAge: 20 * 60 * 1000, // 20 mins
+    secure: false,
+  },
 }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
