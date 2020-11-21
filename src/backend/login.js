@@ -81,7 +81,7 @@ function setUserRole(session, id, res) {
     res.status(200).json({
       loginStatus: 0,
       message: 'none',
-      loginRole: result.result,
+      loginRole: session.role,
       loginName: result.name
     });
   });

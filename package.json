@@ -58,6 +58,7 @@
     "nyc": "^15.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-hook-form": "^6.11.3",
     "react-router-dom": "^5.2.0",
     "sinon": "^9.2.1",
     "supertest-session": "^4.1.0"
