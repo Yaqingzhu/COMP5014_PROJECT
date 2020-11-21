@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 
 const { createAdminUser } = require('./db_util');
 const admin = require('./admin_activities');
+const general = require('./general_APIs');
 
 const app = express();
 const port = process.env.API_PORT || 11234; // Port for the API
@@ -39,7 +40,9 @@ createAdminUser();
 
 app.post('/courseop', admin.CourseProcess);
 
-if ((process.env.NODE_ENV || 'test') !== 'test') {
+app.get('/course', general.getCourse);
+
+if ((process.env.NODE_ENV) !== 'test') {
   app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`);
   });
