@@ -11,9 +11,9 @@ export const CoursePage = () => {
   const history = useHistory();
   const { loading, course } = useCourse(id);
 
-  const handleSave = (name, status, capacity) => {
-    editCourse(id, { name, status, capacity }).then(() => {
-      history.push(`/courses/${id}`);
+  const handleSave = data => {
+    editCourse(parseInt(data.id), data).then(() => {
+      history.push(`/courses/${data.id}`);
     });
   };
 

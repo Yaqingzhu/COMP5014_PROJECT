@@ -41,7 +41,7 @@ createAdminUser();
 
 app.post('/courseop', admin.CourseProcess);
 
-if ((process.env.NODE_ENV || 'test') !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`);
   });

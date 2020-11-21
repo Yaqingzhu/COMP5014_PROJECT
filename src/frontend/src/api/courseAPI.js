@@ -1,19 +1,18 @@
 import { courses as mockCourses } from '../mocks/courses';
 
-export const createCourse = (name, status, capacity) => new Promise(resolve => {
+export const createCourse = course => new Promise(resolve => {
   setTimeout(() => {
     const added = {
       id: mockCourses.length + 1,
-      name,
-      status,
-      capacity,
+      ...course,
     };
     mockCourses.push(added);
     resolve(added);
   }, 200);
 });
 
-export const editCourse = (id, { name, status, capacity }) => new Promise((resolve, reject) => {
+// eslint-disable-next-line camelcase
+export const editCourse = (id, { name, status, capacity, course_slots }) => new Promise((resolve, reject) => {
   setTimeout(() => {
     const course = mockCourses.find(course => course.id === id);
     if (!course) {
@@ -23,6 +22,8 @@ export const editCourse = (id, { name, status, capacity }) => new Promise((resol
     course.name = name;
     course.status = status;
     course.capacity = capacity;
+    // eslint-disable-next-line camelcase
+    course.course_slots = course_slots;
 
     resolve(course);
   }, 200);

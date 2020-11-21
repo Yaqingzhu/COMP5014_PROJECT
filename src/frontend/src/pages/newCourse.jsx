@@ -7,8 +7,8 @@ import CourseForm from '../components/CourseForm';
 export const NewCoursePage = () => {
   const history = useHistory();
 
-  const handleSave = (name, status, capacity) => {
-    createCourse(name, status, capacity).then(course => {
+  const handleSave = data => {
+    createCourse(data).then(course => {
       history.push(`/courses/${course.id}`);
     });
   };

@@ -40,11 +40,13 @@ describe('Course component', () => {
     useCourse.mockReturnValue({
       loading: true,
     });
-    render(
-      <MemoryRouter>
-        <CoursePage />
-      </MemoryRouter>
-    );
+    act(() => {
+      render(
+        <MemoryRouter>
+          <CoursePage />
+        </MemoryRouter>
+      );
+    });
 
     expect(screen.getByText('Loading...')).toBeDefined();
   });
@@ -73,15 +75,19 @@ describe('Course component', () => {
     const statusInput = screen.getByDisplayValue(course.status);
     const capacityInput = screen.getByTestId('capacity');
 
-    fireEvent.change(nameInput, { target: { value: newName } });
-    fireEvent.change(statusInput, { target: { value: newStatus } });
-    fireEvent.change(capacityInput, { target: { value: newCapacity } });
+    act(() => {
+      fireEvent.change(nameInput, { target: { value: newName } });
+      fireEvent.change(statusInput, { target: { value: newStatus } });
+      fireEvent.change(capacityInput, { target: { value: newCapacity } });
+    });
 
     expect(nameInput.value).toBe(newName);
     expect(statusInput.value).toBe(newStatus);
     expect(capacityInput.value).toBe(`${newCapacity}`);
 
-    fireEvent.click(screen.getByText('Save changes'));
+    act(() => {
+      fireEvent.click(screen.getByText('Save changes'));
+    });
 
     // TODO: Validate the API was called
   });
