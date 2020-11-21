@@ -82,4 +82,72 @@ function endRequestWithFinished(res, body) {
     });
 }
 
-module.exports = { CourseProcess };
+//helper functions
+
+function validateAdmin(req, res) {
+    if (!req.session || !req.session.isLogin) {
+        console.warn('User is not logged in');
+        return res.status(403).json({
+            responseCode: -1,
+            // eslint-disable-next-line no-tabs
+            errorMessage: 'You need to login before doing this operation.'
+        });
+
+    } else if (req.session.role !== 'admin') {
+        console.warn('User is not an admin');
+        return res.status(403).json({
+            responseCode: -1,
+            // eslint-disable-next-line no-tabs
+            errorMessage: 'You do not have permission to do this operation.'
+        });
+    }
+
+    return true;
+}
+
+//Cancel a course
+//
+async function CancelCourse(req, res) {
+
+    if(validateAdmin(req, res)) {
+        // Find all record with course_id in
+        // tables named "registration", "deliverable", "course_slots"
+        // Remove these records
+        // Set status of course_id in "course" table to "Cancelled"
+
+        const course_id = req.body.course_id || null;
+
+        if(!course_id) {
+            return res.status(403).json({
+                responseCode: -1,
+                errorMessage: 'No course_id specified.'
+            })
+        }
+
+        new Promise((resolve, reject) => {
+            mysql.removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, course_id)
+        }).catch( err => {
+            return res.status(403).json({
+                responseCode: -1,
+                errorMessage: err.message
+            })
+        });
+
+        new Promise((resolve, reject) => {
+            mysql.changeCourseStatusInCourseTable(resolve, reject, course_id, 'Cancelled');
+        }).catch(err => {
+            return res.status(403).json({
+                responseCode: -1,
+                errorMessage: err.message
+            })
+        });
+
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true
+        });
+    }   
+}
+
+module.exports = { CourseProcess, CancelCourse };
