@@ -29,7 +29,7 @@ function doProcess(body, req, res) {
             errorMessage: err.message,
         });
     }).then(doTimeSlotProcess(body, req, res)
-     );
+    );
 }
 
 function doTimeSlotProcess(body, req, res) {
@@ -82,7 +82,7 @@ function endRequestWithFinished(res, body) {
     });
 }
 
-//helper functions
+// helper functions
 
 function validateAdmin(req, res) {
     if (!req.session || !req.session.isLogin) {
@@ -92,7 +92,6 @@ function validateAdmin(req, res) {
             // eslint-disable-next-line no-tabs
             errorMessage: 'You need to login before doing this operation.'
         });
-
     } else if (req.session.role !== 'admin') {
         console.warn('User is not an admin');
         return res.status(403).json({
@@ -105,41 +104,39 @@ function validateAdmin(req, res) {
     return true;
 }
 
-//Cancel a course
-//
+// Cancel a course
 async function CancelCourse(req, res) {
-
-    if(validateAdmin(req, res)) {
+    if (validateAdmin(req, res)) {
         // Find all record with course_id in
         // tables named "registration", "deliverable", "course_slots"
         // Remove these records
         // Set status of course_id in "course" table to "Cancelled"
 
-        const course_id = req.body.course_id || null;
+        const courseId = req.body.course_id || null;
 
-        if(!course_id) {
+        if (!courseId) {
             return res.status(403).json({
                 responseCode: -1,
                 errorMessage: 'No course_id specified.'
-            })
+            });
         }
 
         new Promise((resolve, reject) => {
-            mysql.removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, course_id)
-        }).catch( err => {
-            return res.status(403).json({
-                responseCode: -1,
-                errorMessage: err.message
-            })
-        });
-
-        new Promise((resolve, reject) => {
-            mysql.changeCourseStatusInCourseTable(resolve, reject, course_id, 'Cancelled');
+            mysql.removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, courseId);
         }).catch(err => {
             return res.status(403).json({
                 responseCode: -1,
                 errorMessage: err.message
-            })
+            });
+        });
+
+        new Promise((resolve, reject) => {
+            mysql.changeCourseStatusInCourseTable(resolve, reject, courseId, 'Cancelled');
+        }).catch(err => {
+            return res.status(403).json({
+                responseCode: -1,
+                errorMessage: err.message
+            });
         });
 
         return res.status(200).json({
@@ -147,7 +144,7 @@ async function CancelCourse(req, res) {
             errorMessage: '',
             success: true
         });
-    }   
+    }
 }
 
 module.exports = { CourseProcess, CancelCourse };

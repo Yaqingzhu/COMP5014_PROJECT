@@ -13,7 +13,7 @@ function getDBConnection() {
       user: DB_USERNAME || 'root',
       password: DB_PASSWORD || 'comp4004',
       database: DB_DATABASE || 'comp4004',
-      //allow multiple line statements in one query
+      // allow multiple line statements in one query
       multipleStatements: true,
     });
   }
@@ -59,8 +59,8 @@ function updateFailedTimes(resolve, userId) {
 function insertNewUserLoginInformation(resolve, userId, password) {
   const connection = getDBConnection();
   connection.query('INSERT INTO login(id, password, failed_time) values(?,?,?)' +
-  ' ON DUPLICATE KEY UPDATE ' +
-  ' password = VALUES(password), ' +
+    ' ON DUPLICATE KEY UPDATE ' +
+    ' password = VALUES(password), ' +
     ' failed_time = VALUES(failed_time) ', [
     userId, password, 0
     // eslint-disable-next-line node/handle-callback-err
@@ -121,9 +121,9 @@ function setTimeSlot(resolve, reject, slots, courseId) {
     });
     connection.query('INSERT INTO course_slots(course_slots_day, course_slots_time, course_id) values ?;', [
       slots.map(element => [element.day, element.time, element.id])], function (error, result) {
-      if (error) { reject(error); }
-      resolve(courseId);
-    }
+        if (error) { reject(error); }
+        resolve(courseId);
+      }
     );
   }
 }
@@ -165,43 +165,40 @@ function getCourse(resolve, reject, courseId) {
   });
 }
 
-//Remove all records with course_id
-//Affected tables: registration, deliverable, course_slots
-//Used by: Cancel a class
-function removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, course_id) {
-
+// Remove all records with course_id
+// Affected tables: registration, deliverable, course_slots
+// Used by: Cancel a class
+function removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, courseId) {
   const connection = getDBConnection();
 
   connection.query(`
-    DELETE FROM registration WHERE course_id = ${course_id};
-    DELETE FROM deliverable WHERE course_id = ${course_id};
-    DELETE FROM course_slots WHERE course_id = ${course_id};
+    DELETE FROM registration WHERE course_id = ${courseId};
+    DELETE FROM deliverable WHERE course_id = ${courseId};
+    DELETE FROM course_slots WHERE course_id = ${courseId};
   `, (error, results) => {
-    if(error) {
-      reject(error)
-    } else {
-      resolve(course_id);
-    }
-  });
-
-
-}
-
-//Change a course's status
-//Affected tables: course
-//Used by: Cancel a class
-function changeCourseStatusInCourseTable(resolve, reject, course_id, status) {
-  const connection = getDBConnection();
-
-  connection.query(`
-    UPDATE course SET course_status = ${status} WHERE course_id = ${course_id};
-  `, (error, results) => {
-    if(error) {
+    if (error) {
       reject(error);
     } else {
-      resolve(course_id);
+      resolve(courseId);
     }
-  })
+  });
+}
+
+// Change a course's status
+// Affected tables: course
+// Used by: Cancel a class
+function changeCourseStatusInCourseTable(resolve, reject, courseId, status) {
+  const connection = getDBConnection();
+
+  connection.query(`
+    UPDATE course SET course_status = ${status} WHERE course_id = ${courseId};
+  `, (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(courseId);
+    }
+  });
 }
 
 module.exports = {
@@ -216,7 +213,7 @@ module.exports = {
   getCourse,
   createAdminUser,
 
-  //cancel course
+  // cancel course
   removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots,
   changeCourseStatusInCourseTable,
 };
