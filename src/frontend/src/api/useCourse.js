@@ -1,22 +1,37 @@
 import { useState, useEffect } from 'react';
 
-import { courses as mockCourses } from '../mocks/courses';
+const apiurl = process.env.API_URL;
 
 export const useCourse = courseId => {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [course, setCourse] = useState(null);
 
-  useEffect(() => {
+  const load = () => {
     setLoading(true);
-    // TODO
-    setTimeout(() => {
+    window.fetch(`${apiurl}/course?courseId=${courseId}`, {
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }).then(body => body.json()).then(result => {
       setLoading(false);
-      setCourse(mockCourses.find(course => course.id === parseInt(courseId)));
-    }, 500);
-  }, [courseId]);
+      if (result.responseCode === 0) {
+        setCourse(JSON.parse(result.coursePayload));
+      } else {
+        setError(result.errorMessage);
+      }
+    }).catch(error => {
+      setError(error);
+    });
+  };
+
+  useEffect(load, [courseId]);
 
   return {
     loading,
+    error,
     course,
+    reload: load,
   };
 };

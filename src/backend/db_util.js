@@ -106,7 +106,10 @@ function setCourse(resolve, reject, course) {
     ' course_assigned_prof_id = VALUES(course_assigned_prof_id), ' +
     ' course_capacity = VALUES(course_capacity) ', [
     course.courseId, course.courseName, course.courseStatus, course.assignedProf, course.courseCapacity
-  ], resolve(course.courseId));
+    // eslint-disable-next-line node/handle-callback-err
+  ], (error, results) => {
+    resolve(results.insertId || course.courseId);
+  });
 }
 
 function setTimeSlot(resolve, reject, slots, courseId) {
@@ -146,14 +149,15 @@ function setPrerequisites(resolve, reject, prerequisites, courseId) {
   }
 }
 
-function getCourse(resolve, reject, courseId) {
+function getCourse(resolve, reject, courseId, showDeleted = false) {
   const connection = getDBConnection();
   connection.query('SELECT JSON_OBJECT(\'courseId\', c.course_id, \'courseName\', course_name, \'courseStatus\', course_status, \'courseCapacity\', course_capacity, \'assignedProf\', course_assigned_prof_id, ' +
-    ' \'course_slots\', s.slots, \'preclusions\', p.preclusions, \'prerequisites\', p2.prerequisites) AS result' +
+    ' \'courseSlots\', COALESCE(s.slots, JSON_ARRAY()), \'preclusions\', COALESCE(p.preclusions, JSON_ARRAY()), \'prerequisites\', COALESCE(p2.prerequisites, JSON_ARRAY())) AS result' +
     ' FROM course c LEFT JOIN ' +
     ' (SELECT JSON_ARRAYAGG(JSON_OBJECT(\'day\', course_slots_day, \'time\', course_slots_time)) AS slots, course_id FROM course_slots group by course_id) s ON s.course_id = c.course_id ' +
     ' LEFT JOIN (SELECT JSON_ARRAYAGG(preclusions_course_id) preclusions, course_id FROM preclusions group by course_id) p ON p.course_id = c.course_id ' +
-    ' LEFT JOIN (SELECT JSON_ARRAYAGG(prerequisites_course_id) prerequisites, course_id FROM prerequisites group by course_id) p2 ON p2.course_id = c.course_id WHERE c.course_id = ?', [
+    ' LEFT JOIN (SELECT JSON_ARRAYAGG(prerequisites_course_id) prerequisites, course_id FROM prerequisites group by course_id) p2 ON p2.course_id = c.course_id WHERE c.course_id = ?' +
+    (showDeleted ? '' : ' AND c.course_status != \'deleted\''), [
     courseId
   ], (error, results) => {
     if (!error) {
@@ -166,11 +170,12 @@ function getCourse(resolve, reject, courseId) {
 function getAllCourse(resolve, reject) {
   const connection = getDBConnection();
   connection.query('SELECT JSON_OBJECT(\'courseId\', c.course_id, \'courseName\', course_name, \'courseStatus\', course_status, \'courseCapacity\', course_capacity, \'assignedProf\', course_assigned_prof_id, ' +
-    ' \'course_slots\', s.slots, \'preclusions\', p.preclusions, \'prerequisites\', p2.prerequisites) AS result' +
+    ' \'courseSlots\', COALESCE(s.slots, JSON_ARRAY()), \'preclusions\', COALESCE(p.preclusions, JSON_ARRAY()), \'prerequisites\', COALESCE(p2.prerequisites, JSON_ARRAY())) AS result' +
     ' FROM course c LEFT JOIN ' +
     ' (SELECT JSON_ARRAYAGG(JSON_OBJECT(\'day\', course_slots_day, \'time\', course_slots_time)) AS slots, course_id FROM course_slots group by course_id) s ON s.course_id = c.course_id ' +
     ' LEFT JOIN (SELECT JSON_ARRAYAGG(preclusions_course_id) preclusions, course_id FROM preclusions group by course_id) p ON p.course_id = c.course_id ' +
-    ' LEFT JOIN (SELECT JSON_ARRAYAGG(prerequisites_course_id) prerequisites, course_id FROM prerequisites group by course_id) p2 ON p2.course_id = c.course_id',
+    ' LEFT JOIN (SELECT JSON_ARRAYAGG(prerequisites_course_id) prerequisites, course_id FROM prerequisites group by course_id) p2 ON p2.course_id = c.course_id' +
+    ' WHERE c.course_status != \'deleted\'',
     (error, results) => {
     if (!error) {
       const rest = results || -1;

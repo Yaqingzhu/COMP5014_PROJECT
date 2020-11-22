@@ -9,7 +9,7 @@ export const NewCoursePage = () => {
 
   const handleSave = data => {
     createCourse(data).then(course => {
-      history.push(`/courses/${course.id}`);
+      history.push(`/courses/${course.courseId}`);
     });
   };
 

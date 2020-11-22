@@ -17,7 +17,7 @@ app.use(session({
   resave: false,
   cookie: {
     maxAge: 20 * 60 * 1000, // 20 mins
-    secure: false,
+    sameSite: false,
   },
 }));
 
@@ -29,7 +29,9 @@ app.use(bodyParser.json());
 // use bodyParser-text
 app.use(bodyParser.text({ type: 'txt' }));
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:8081']
+  origin: 'http://localhost:8081',
+  credentials: true,
+  exposedHeaders: ['set-cookie'],
 }));
 
 app.get('/', (req, res) => {
@@ -44,7 +46,7 @@ app.post('/courseop', admin.CourseProcess);
 
 app.get('/course', general.getCourse);
 
-if ((process.env.NODE_ENV) !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`);
   });

@@ -1,24 +1,22 @@
 import * as React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { render, act, waitFor, screen } from '@testing-library/react';
+import { render, act, waitFor, screen, fireEvent } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
 
 import { CoursesPage } from '../courses';
 import { courses } from '../../mocks/courses';
-import { useCourses } from '../../api/useCourses';
-jest.mock('../../api/useCourses');
 
 describe('Courses component', () => {
   afterEach(() => {
-    useCourses.mockReset();
     fetchMock.resetMocks();
   });
 
   it('Shows the courses once loaded', async () => {
-    useCourses.mockReturnValue({
-      loading: false,
-      courses,
-    });
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
+    }));
+
     act(() => {
       render(
         <MemoryRouter>
@@ -31,15 +29,15 @@ describe('Courses component', () => {
     expect(screen.getByText('Available courses')).toBeDefined();
 
     courses.forEach(course => {
-      expect(screen.getByText(course.name)).toBeDefined();
+      expect(screen.getByText(course.courseName)).toBeDefined();
     });
   });
 
   it('Shows a no courses messages if there are no courses loaded', async () => {
-    useCourses.mockReturnValue({
-      loading: false,
-      courses: [],
-    });
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: [],
+    }));
 
     act(() => {
       render(
@@ -54,9 +52,9 @@ describe('Courses component', () => {
   });
 
   it('Shows a loader while the courses are loading', () => {
-    useCourses.mockReturnValue({
-      loading: true,
-    });
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: -1,
+    }));
     render(
       <MemoryRouter>
         <CoursesPage />
@@ -66,5 +64,31 @@ describe('Courses component', () => {
     expect(screen.getByText('Loading...')).toBeDefined();
   });
 
-  // TODO: add deletion test when we use the API
+  it('Deletes a course when the button is clicked', async () => {
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
+    }));
+    fetchMock.mockOnce(JSON.stringify({}));
+
+    act(() => {
+      render(
+        <MemoryRouter>
+          <CoursesPage />
+        </MemoryRouter>
+      );
+    });
+
+    await waitFor(() => screen.getByText('Available courses'));
+
+    act(async () => {
+      fireEvent.click(screen.getAllByText('Delete')[0]);
+    });
+
+    const calls = fetchMock.mock.calls;
+
+    expect(calls).toHaveLength(2);
+    expect(calls[1][0]).toContain('/courseop');
+    expect(calls[1][1].body).toContain('"courseStatus":"deleted"');
+  });
 });

@@ -54,7 +54,7 @@ Then('return a json with responseCode equals to {int}', function (arg1) {
 
 Then('time_slots table has a row with course id {int} and day {int}', function (arg1, arg2) {
   const jres = JSON.parse(res.body.coursePayload);
-  assert.equal(arg2, jres.course_slots[0].day);
+  assert.equal(arg2, jres.courseSlots[0].day);
   assert.equal(arg1, jres.courseId);
 });
 
