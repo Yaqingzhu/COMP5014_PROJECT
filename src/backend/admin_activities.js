@@ -84,67 +84,115 @@ function endRequestWithFinished(res, body) {
 
 // helper functions
 
-function validateAdmin(req, res) {
+function validateLogin(req) {
     if (!req.session || !req.session.isLogin) {
         console.warn('User is not logged in');
-        return res.status(403).json({
-            responseCode: -1,
-            // eslint-disable-next-line no-tabs
-            errorMessage: 'You need to login before doing this operation.'
-        });
-    } else if (req.session.role !== 'admin') {
-        console.warn('User is not an admin');
-        return res.status(403).json({
-            responseCode: -1,
-            // eslint-disable-next-line no-tabs
-            errorMessage: 'You do not have permission to do this operation.'
-        });
+        return false;
     }
 
     return true;
 }
 
-// Cancel a course
-async function CancelCourse(req, res) {
-    if (validateAdmin(req, res)) {
-        // Find all record with course_id in
-        // tables named "registration", "deliverable", "course_slots"
-        // Remove these records
-        // Set status of course_id in "course" table to "Cancelled"
-
-        const courseId = req.body.course_id || null;
-
-        if (!courseId) {
-            return res.status(403).json({
-                responseCode: -1,
-                errorMessage: 'No course_id specified.'
-            });
-        }
-
-        new Promise((resolve, reject) => {
-            mysql.removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, courseId);
-        }).catch(err => {
-            return res.status(403).json({
-                responseCode: -1,
-                errorMessage: err.message
-            });
-        });
-
-        new Promise((resolve, reject) => {
-            mysql.changeCourseStatusInCourseTable(resolve, reject, courseId, 'Cancelled');
-        }).catch(err => {
-            return res.status(403).json({
-                responseCode: -1,
-                errorMessage: err.message
-            });
-        });
-
-        return res.status(200).json({
-            responseCode: 0,
-            errorMessage: '',
-            success: true
-        });
+function validateAdmin(req) {
+    if (req.session.role !== 'admin') {
+        console.warn('User is not an admin');
+        return false;
     }
+
+    return true;
 }
 
-module.exports = { CourseProcess, CancelCourse };
+// Determines whether a given email string is valid
+function validateEmail(email) {
+    return (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email));
+}
+
+// Cancel a course
+const CancelCourse = async (req, res) => {
+    // Find all record with course_id in
+    // tables named "registration", "deliverable", "course_slots"
+    // Remove these records
+    // Set status of course_id in "course" table to "Cancelled"
+
+    if (!validateLogin(req)) {
+        res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!validateAdmin(req)) {
+        res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    const courseId = req.body.course_id || null;
+
+    if (!courseId) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'No course_id specified.'
+        });
+    }
+
+    await new Promise((resolve, reject) => {
+        mysql.removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, courseId);
+    }).catch(err => {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: err.message
+        });
+    });
+
+    await new Promise((resolve, reject) => {
+        mysql.changeCourseStatusInCourseTable(resolve, reject, courseId, 'Cancelled');
+    }).catch(err => {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: err.message
+        });
+    });
+
+    return res.status(200).json({
+        responseCode: 0,
+        errorMessage: '',
+        success: true
+    });
+};
+
+// Create Student
+const CreateStudent = async (req, res) => {
+    // Get form information
+    const email = req.body.email;
+    const birthDate = req.body.birthDate;
+    const name = req.body.name;
+    const password = req.body.password;
+    const admitted = req.body.admitted;
+
+    // Validate email
+    if (!validateEmail(email)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'Invalid email format'
+        });
+    }
+
+    // Find the previous maximum id
+    await new Promise((resolve, reject) => {
+        mysql.createStudentUser(resolve, reject, email, birthDate, name, password, admitted);
+    }).then(id => {
+        res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            studentId: id
+        });
+    }).catch(error => {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: error
+        });
+    });
+};
+
+module.exports = { CourseProcess, CancelCourse, CreateStudent };

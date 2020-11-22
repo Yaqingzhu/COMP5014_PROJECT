@@ -201,6 +201,43 @@ function changeCourseStatusInCourseTable(resolve, reject, courseId, status) {
   });
 }
 
+// Add a new student
+// Affected tables: student, login
+function createStudentUser(resolve, reject, email, birthDate, name, password, admitted) {
+  const connection = getDBConnection();
+
+  let id = -1;
+
+  connection.query(`
+    SELECT MAX(id) FROM login;
+  `, (error, results) => {
+    if (error) {
+      return reject(error);
+    } else {
+      // id is incremented from previous max
+      id = results[0]['MAX(id)'] + 1;
+      // default value for birthDate
+      const defaultBirthDate = new Date().toISOString().slice(0, 10);
+      // default value for password
+      const defaultPassword = 'password';
+
+      // Create new student record in 'student' table
+      // Create new login in 'login' table
+      connection.query(`
+        INSERT INTO comp4004.login (id, password) VALUES (${id},'${password || defaultPassword}');
+        INSERT INTO comp4004.student (student_id, student_name, student_email, admitted, birth_date) VALUES (${id},'${name}','${email}',${admitted || 0},'${birthDate || defaultBirthDate}');
+      `, (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          // success
+          resolve(id);
+        }
+      });
+    }
+  });
+}
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -216,4 +253,7 @@ module.exports = {
   // cancel course
   removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots,
   changeCourseStatusInCourseTable,
+
+  // create student
+  createStudentUser,
 };

@@ -43,8 +43,12 @@ app.post('/courseop', admin.CourseProcess);
 
 app.post('/cancelcourse', admin.CancelCourse);
 
-app.listen(port, () => {
-  console.log(`App listening at http://localhost:${port}`);
-});
+app.post('/createstudent', admin.CreateStudent);
+
+if (process.env.NODE_ENV !== 'test') {
+  app.listen(port, () => {
+    console.log(`App listening at http://localhost:${port}`);
+  });
+}
 
 module.exports = app;
