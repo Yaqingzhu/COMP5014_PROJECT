@@ -46,7 +46,7 @@ app.post('/courseop', admin.CourseProcess);
 
 app.get('/course', general.getCourse);
 
-if ((process.env.NODE_ENV) !== 'test') {
+if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`);
   });

@@ -5,21 +5,19 @@ import fetchMock from 'jest-fetch-mock';
 
 import { CoursePage } from '../course';
 import { courses } from '../../mocks/courses';
-import { useCourse } from '../../api/useCourse';
-jest.mock('../../api/useCourse');
 
 describe('Course component', () => {
   afterEach(() => {
-    useCourse.mockReset();
     fetchMock.resetMocks();
   });
 
   it('Shows the course once loaded', async () => {
     const course = courses[0];
-    useCourse.mockReturnValue({
-      loading: false,
-      course,
-    });
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: JSON.stringify(course),
+    }));
+
     act(() => {
       render(
         <MemoryRouter>
@@ -28,18 +26,19 @@ describe('Course component', () => {
       );
     });
 
-    await waitFor(() => screen.getByText(course.name));
-    expect(screen.getByText(course.name)).toBeDefined();
+    await waitFor(() => screen.getByText(course.courseName));
+    expect(screen.getByText(course.courseName)).toBeDefined();
 
-    expect(screen.getByDisplayValue(course.name)).toBeDefined();
-    expect(screen.getByDisplayValue(course.status)).toBeDefined();
+    expect(screen.getByDisplayValue(course.courseName)).toBeDefined();
+    expect(screen.getByTestId('status')).toBeDefined();
     expect(screen.getByTestId('capacity')).toBeDefined();
   });
 
   it('Shows a loader while the courses are loading', () => {
-    useCourse.mockReturnValue({
-      loading: true,
-    });
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: -1,
+      coursePayload: null,
+    }));
     act(() => {
       render(
         <MemoryRouter>
@@ -54,12 +53,13 @@ describe('Course component', () => {
   it('Update a course when saving', async () => {
     const course = courses[0];
     const newName = 'test';
-    const newStatus = 'test';
+    const newStatus = 'closed';
     const newCapacity = 10;
-    useCourse.mockReturnValue({
-      loading: false,
-      course,
-    });
+
+    fetchMock.mockResponse(JSON.stringify({
+      responseCode: 0,
+      coursePayload: JSON.stringify(course),
+    }));
     act(() => {
       render(
         <MemoryRouter>
@@ -68,11 +68,11 @@ describe('Course component', () => {
       );
     });
 
-    await waitFor(() => screen.getByText(course.name));
-    expect(screen.getByText(course.name)).toBeDefined();
+    await waitFor(() => screen.getByText(course.courseName));
+    expect(screen.getByText(course.courseName)).toBeDefined();
 
-    const nameInput = screen.getByDisplayValue(course.name);
-    const statusInput = screen.getByDisplayValue(course.status);
+    const nameInput = screen.getByDisplayValue(course.courseName);
+    const statusInput = screen.getByTestId('status');
     const capacityInput = screen.getByTestId('capacity');
 
     act(() => {
@@ -85,10 +85,17 @@ describe('Course component', () => {
     expect(statusInput.value).toBe(newStatus);
     expect(capacityInput.value).toBe(`${newCapacity}`);
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByText('Save changes'));
+      await new Promise(resolve => setTimeout(resolve, 100));
     });
 
-    // TODO: Validate the API was called
+    const calls = fetchMock.mock.calls;
+
+    expect(calls).toHaveLength(3);
+    expect(calls[1][0]).toContain('/courseop');
+    expect(calls[1][1].body).toContain(`"courseName":"${newName}"`);
+    expect(calls[1][1].body).toContain(`"courseStatus":"${newStatus}"`);
+    expect(calls[1][1].body).toContain(`"courseCapacity":"${newCapacity}"`);
   });
 });
