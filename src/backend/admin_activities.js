@@ -69,7 +69,7 @@ function doPrerequisitesProcess(body, req, res) {
 
 function endRequestWithFinished(res, body) {
     new Promise((resolve, reject) => {
-        mysql.getCourse(resolve, reject, body.courseId);
+        mysql.getCourse(resolve, reject, body.courseId, true);
     }).catch(err => {
         res.status(400).json({
             responseCode: -1,
