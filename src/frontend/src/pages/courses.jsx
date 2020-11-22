@@ -6,12 +6,12 @@ import { deleteCourse } from '../api/courseAPI';
 import { Loader } from '../components/Loader';
 
 export const CoursesPage = () => {
-  const { loading, courses } = useCourses();
+  const { loading, courses, reload } = useCourses();
   const history = useHistory();
 
-  const handleDeleteCourse = (event, id) => {
-    deleteCourse(id).then(() => {
-      history.push('/courses');
+  const handleDeleteCourse = (event, course) => {
+    deleteCourse(course).then(() => {
+      reload();
     });
     event.preventDefault();
   };
@@ -50,16 +50,16 @@ export const CoursesPage = () => {
           </thead>
           <tbody>
           {courses.map(course => (
-            <tr key={course.id}>
-              <th scope="row">{course.id}</th>
+            <tr key={course.courseId}>
+              <th scope="row">{course.courseId}</th>
               <td>
-                <Link to={`/courses/${course.id}`}>{course.name}</Link>
+                <Link to={`/courses/${course.courseId}`}>{course.courseName}</Link>
               </td>
-              <td>{course.status}</td>
-              <td>{course.capacity}</td>
+              <td>{course.courseStatus}</td>
+              <td>{course.courseCapacity}</td>
               <td>
-                <Link to={`/courses/${course.id}`}>Edit</Link>
-                <a href="#" onClick={event => handleDeleteCourse(event, course.id)} className="ml-2">Delete</a>
+                <Link to={`/courses/${course.courseId}`}>Edit</Link>
+                <a href="#" onClick={event => handleDeleteCourse(event, course)} className="ml-2">Delete</a>
               </td>
             </tr>
           ))}

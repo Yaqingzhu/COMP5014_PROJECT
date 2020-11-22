@@ -28,13 +28,15 @@ function doProcess(body, req, res) {
             responseCode: -1,
             errorMessage: err.message,
         });
-    }).then(doTimeSlotProcess(body, req, res)
-     );
+    }).then(id => doTimeSlotProcess({
+        ...body,
+        courseId: id,
+      }, req, res));
 }
 
 function doTimeSlotProcess(body, req, res) {
     new Promise(function (resolve, reject) {
-        mysql.setTimeSlot(resolve, reject, body.course_slots, body.courseId);
+        mysql.setTimeSlot(resolve, reject, body.courseSlots, body.courseId);
     }).catch(err => {
         res.status(400).json({
             responseCode: -1,

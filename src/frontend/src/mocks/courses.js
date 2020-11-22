@@ -1,16 +1,16 @@
 export const courses = [
   {
-    id: 1,
-    name: 'COMP3004',
-    status: 'closed',
-    capacity: 200,
-    course_slots: [],
+    courseId: 1,
+    courseName: 'COMP3004',
+    courseStatus: 'closed',
+    courseCapacity: 200,
+    courseSlots: [],
   },
   {
-    id: 2,
-    name: 'COMP4004',
-    status: 'open',
-    capacity: 40,
-    course_slots: [],
+    courseId: 2,
+    courseName: 'COMP4004',
+    courseStatus: 'open',
+    courseCapacity: 40,
+    courseSlots: [],
   },
 ];

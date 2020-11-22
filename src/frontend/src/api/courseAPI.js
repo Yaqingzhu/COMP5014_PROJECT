@@ -1,42 +1,61 @@
-import { courses as mockCourses } from '../mocks/courses';
+const apiurl = process.env.API_URL;
 
-export const createCourse = course => new Promise(resolve => {
-  setTimeout(() => {
-    const added = {
-      id: mockCourses.length + 1,
+export const createCourse = course => new Promise((resolve, reject) => {
+  window.fetch(`${apiurl}/courseop`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
       ...course,
-    };
-    mockCourses.push(added);
-    resolve(added);
-  }, 200);
+      courseId: undefined,
+    }),
+  }).then(res => res.json()).then(res => {
+    if (res.responseCode === 0) {
+      resolve(JSON.parse(res.coursePayload));
+    } else {
+      reject(new Error(res.errorMessage));
+    }
+  });
 });
 
-// eslint-disable-next-line camelcase
-export const editCourse = (id, { name, status, capacity, course_slots }) => new Promise((resolve, reject) => {
-  setTimeout(() => {
-    const course = mockCourses.find(course => course.id === id);
-    if (!course) {
-      reject(new Error('Course not found'));
-      return;
+export const editCourse = (id, course) => new Promise((resolve, reject) => {
+  window.fetch(`${apiurl}/courseop`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ...course,
+      courseId: id,
+    }),
+  }).then(res => res.json()).then(res => {
+    if (res.responseCode === 0) {
+      resolve(JSON.parse(res.coursePayload));
+    } else {
+      reject(new Error(res.errorMessage));
     }
-    course.name = name;
-    course.status = status;
-    course.capacity = capacity;
-    // eslint-disable-next-line camelcase
-    course.course_slots = course_slots;
-
-    resolve(course);
-  }, 200);
+  });
 });
 
-export const deleteCourse = id => new Promise((resolve, reject) => {
-  setTimeout(() => {
-    const course = mockCourses.findIndex(course => course.id === id);
-    if (course < 0) {
-      reject(new Error('Course not found'));
-      return;
+export const deleteCourse = course => new Promise((resolve, reject) => {
+  window.fetch(`${apiurl}/courseop`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      ...course,
+      courseStatus: 'deleted',
+    }),
+  }).then(res => res.json()).then(res => {
+    if (res.responseCode === 0) {
+      resolve();
+    } else {
+      reject(new Error(res.errorMessage));
     }
-
-    resolve(mockCourses.splice(course, 1)[0]);
-  }, 200);
+  });
 });

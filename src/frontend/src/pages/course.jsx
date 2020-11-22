@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { useCourse } from '../api/useCourse';
 import { editCourse } from '../api/courseAPI';
@@ -8,12 +8,11 @@ import CourseForm from '../components/CourseForm';
 
 export const CoursePage = () => {
   const { id } = useParams();
-  const history = useHistory();
-  const { loading, course } = useCourse(id);
+  const { loading, course, reload } = useCourse(id);
 
   const handleSave = data => {
-    editCourse(parseInt(data.id), data).then(() => {
-      history.push(`/courses/${data.id}`);
+    editCourse(parseInt(data.courseId), data).then(() => {
+      reload();
     });
   };
 

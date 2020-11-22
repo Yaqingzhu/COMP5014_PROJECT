@@ -1,6 +1,7 @@
 import { useState, useContext } from 'react';
 
 import { UserContext } from '../context/userContext';
+import Cookies from 'js-cookie';
 
 const apiurl = process.env.API_URL;
 
@@ -19,6 +20,7 @@ export const useLogin = () => {
 
       window.fetch(`${apiurl}/login`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -27,6 +29,7 @@ export const useLogin = () => {
           password,
         }),
       }).then(body => body.json()).then(result => {
+        console.log(Cookies.get('connect.sid'));
         setLoading(false);
         if (result.loginStatus === 0) {
           setUser({
