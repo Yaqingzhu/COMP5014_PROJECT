@@ -238,6 +238,23 @@ function createStudentUser(resolve, reject, email, birthDate, name, password, ad
   });
 }
 
+// Deletes a student from DB
+// Affected tables: student, login
+const deleteStudentUser = (resolve, reject, studentId) => {
+  const connection = getDBConnection();
+  connection.query(`
+    DELETE FROM login WHERE id = ${studentId};
+    DELETE FROM student WHERE student_id = ${studentId};
+  `, (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      resolve(studentId);
+    }
+  });
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -256,4 +273,7 @@ module.exports = {
 
   // create student
   createStudentUser,
+
+  // delete student
+  deleteStudentUser
 };

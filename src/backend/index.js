@@ -44,6 +44,7 @@ app.post('/courseop', admin.CourseProcess);
 app.post('/cancelcourse', admin.CancelCourse);
 
 app.post('/createstudent', admin.CreateStudent);
+app.delete('/deletestudent', admin.DeleteStudent);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {

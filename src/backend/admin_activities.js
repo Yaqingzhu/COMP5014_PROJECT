@@ -109,29 +109,25 @@ function validateEmail(email) {
 
 // Cancel a course
 const CancelCourse = async (req, res) => {
-    // Find all record with course_id in
-    // tables named "registration", "deliverable", "course_slots"
-    // Remove these records
-    // Set status of course_id in "course" table to "Cancelled"
-
+    // Validation
     if (!validateLogin(req)) {
-        res.status(403).json({
+        return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You need to login before doing this operation.',
         });
     } else if (!validateAdmin(req)) {
-        res.status(403).json({
+        return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You do not have permission to do this operation.',
         });
     }
 
-    const courseId = req.body.course_id || null;
+    const courseId = req.body.courseId || null;
 
     if (!courseId) {
         return res.status(403).json({
             responseCode: -1,
-            errorMessage: 'No course_id specified.'
+            errorMessage: 'No courseId specified.'
         });
     }
 
@@ -162,6 +158,19 @@ const CancelCourse = async (req, res) => {
 
 // Create Student
 const CreateStudent = async (req, res) => {
+    // Validation
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
     // Get form information
     const email = req.body.email;
     const birthDate = req.body.birthDate;
@@ -177,11 +186,11 @@ const CreateStudent = async (req, res) => {
         });
     }
 
-    // Find the previous maximum id
+    // Perform operation in DB
     await new Promise((resolve, reject) => {
         mysql.createStudentUser(resolve, reject, email, birthDate, name, password, admitted);
     }).then(id => {
-        res.status(200).json({
+        return res.status(200).json({
             responseCode: 0,
             errorMessage: '',
             success: true,
@@ -195,4 +204,46 @@ const CreateStudent = async (req, res) => {
     });
 };
 
-module.exports = { CourseProcess, CancelCourse, CreateStudent };
+// Delete Student, given a student_id
+const DeleteStudent = async (req, res) => {
+    // Validation
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    // Get form information
+    const studentId = req.body.studentId;
+
+    // Perform operation in DB
+    await new Promise((resolve, reject) => {
+        mysql.deleteStudentUser(resolve, reject, studentId);
+    }).then(id => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            studentId: id
+        });
+    }).catch(error => {
+        console.log(error);
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: error
+        });
+    });
+};
+
+module.exports = {
+    CourseProcess,
+    CancelCourse,
+    CreateStudent,
+    DeleteStudent
+};
