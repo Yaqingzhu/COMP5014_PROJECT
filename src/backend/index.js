@@ -44,6 +44,11 @@ createAdminUser();
 
 app.post('/courseop', admin.CourseProcess);
 
+app.post('/cancelcourse', admin.CancelCourse);
+
+app.post('/createstudent', admin.CreateStudent);
+app.delete('/deletestudent', admin.DeleteStudent);
+
 app.get('/course', general.getCourse);
 
 if (process.env.NODE_ENV !== 'test') {

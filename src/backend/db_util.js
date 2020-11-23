@@ -12,7 +12,9 @@ function getDBConnection() {
       host: DB_HOST || '35.222.224.200',
       user: DB_USERNAME || 'root',
       password: DB_PASSWORD || 'comp4004',
-      database: DB_DATABASE || 'comp4004'
+      database: DB_DATABASE || 'comp4004',
+      // allow multiple line statements in one query
+      multipleStatements: true,
     });
   }
   return connection;
@@ -57,8 +59,8 @@ function updateFailedTimes(resolve, userId) {
 function insertNewUserLoginInformation(resolve, userId, password) {
   const connection = getDBConnection();
   connection.query('INSERT INTO login(id, password, failed_time) values(?,?,?)' +
-  ' ON DUPLICATE KEY UPDATE ' +
-  ' password = VALUES(password), ' +
+    ' ON DUPLICATE KEY UPDATE ' +
+    ' password = VALUES(password), ' +
     ' failed_time = VALUES(failed_time) ', [
     userId, password, 0
     // eslint-disable-next-line node/handle-callback-err
@@ -122,9 +124,9 @@ function setTimeSlot(resolve, reject, slots, courseId) {
     });
     connection.query('INSERT INTO course_slots(course_slots_day, course_slots_time, course_id) values ?;', [
       slots.map(element => [element.day, element.time, element.id])], function (error, result) {
-      if (error) { reject(error); }
-      resolve(courseId);
-    }
+        if (error) { reject(error); }
+        resolve(courseId);
+      }
     );
   }
 }
@@ -167,6 +169,27 @@ function getCourse(resolve, reject, courseId, showDeleted = false) {
   });
 }
 
+// Remove all records with course_id
+// Affected tables: registration, deliverable, course_slots
+// Used by: Cancel a class
+function removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, courseId) {
+  const connection = getDBConnection();
+
+  connection.query(`
+    DELETE FROM registration WHERE course_id = ${courseId};
+    DELETE FROM deliverable WHERE course_id = ${courseId};
+    DELETE FROM course_slots WHERE course_id = ${courseId};
+  `, (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(courseId);
+    }
+  });
+}
+
+
+    
 function getAllCourse(resolve, reject) {
   const connection = getDBConnection();
   connection.query('SELECT JSON_OBJECT(\'courseId\', c.course_id, \'courseName\', course_name, \'courseStatus\', course_status, \'courseCapacity\', course_capacity, \'assignedProf\', course_assigned_prof_id, ' +
@@ -184,6 +207,77 @@ function getAllCourse(resolve, reject) {
   });
 }
 
+// Change a course's status
+// Affected tables: course
+// Used by: Cancel a class
+function changeCourseStatusInCourseTable(resolve, reject, courseId, status) {
+  const connection = getDBConnection();
+
+  connection.query(`
+    UPDATE course SET course_status = ${status} WHERE course_id = ${courseId};
+  `, (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(courseId);
+    }
+  });
+}
+
+// Add a new student
+// Affected tables: student, login
+function createStudentUser(resolve, reject, email, birthDate, name, password, admitted) {
+  const connection = getDBConnection();
+
+  let id = -1;
+
+  connection.query(`
+    SELECT MAX(id) FROM login;
+  `, (error, results) => {
+    if (error) {
+      return reject(error);
+    } else {
+      // id is incremented from previous max
+      id = results[0]['MAX(id)'] + 1;
+      // default value for birthDate
+      const defaultBirthDate = new Date().toISOString().slice(0, 10);
+      // default value for password
+      const defaultPassword = 'password';
+
+      // Create new student record in 'student' table
+      // Create new login in 'login' table
+      connection.query(`
+        INSERT INTO comp4004.login (id, password) VALUES (${id},'${password || defaultPassword}');
+        INSERT INTO comp4004.student (student_id, student_name, student_email, admitted, birth_date) VALUES (${id},'${name}','${email}',${admitted || 0},'${birthDate || defaultBirthDate}');
+      `, (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          // success
+          resolve(id);
+        }
+      });
+    }
+  });
+}
+
+// Deletes a student from DB
+// Affected tables: student, login
+const deleteStudentUser = (resolve, reject, studentId) => {
+  const connection = getDBConnection();
+  connection.query(`
+    DELETE FROM login WHERE id = ${studentId};
+    DELETE FROM student WHERE student_id = ${studentId};
+  `, (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      resolve(studentId);
+    }
+  });
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -195,5 +289,15 @@ module.exports = {
   setPrerequisites,
   getCourse,
   createAdminUser,
+
+  // cancel course
+  removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots,
+  changeCourseStatusInCourseTable,
+
+  // create student
+  createStudentUser,
+
+  // delete student
+  deleteStudentUser,
   getAllCourse
 };

@@ -23,3 +23,7 @@ coverage
 
 # OSX files
 .DS_Store
+
+# custom
+docker-compose_new.yml
+docker-compose_old.yml
