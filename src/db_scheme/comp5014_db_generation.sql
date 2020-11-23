@@ -34,7 +34,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `comp4004`.`admin` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`admin` (
-  `admin_id` INT NOT NULL,
+  `admin_id` INT NOT NULL AUTO_INCREMENT,
   `admin_name` VARCHAR(50) NOT NULL DEFAULT '',
   PRIMARY KEY (`admin_id`),
   CONSTRAINT `fk_admin_login`
@@ -51,7 +51,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `comp4004`.`course` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`course` (
-  `course_id` INT NOT NULL,
+  `course_id` INT NOT NULL AUTO_INCREMENT,
   `course_name` VARCHAR(45) NOT NULL,
   `course_status` VARCHAR(45) NOT NULL,
   `course_assigned_prof_id` INT NULL,
@@ -90,7 +90,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `comp4004`.`deliverable` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`deliverable` (
-  `deliverable_id` INT NOT NULL,
+  `deliverable_id` INT NOT NULL AUTO_INCREMENT,
   `course_id` INT NOT NULL,
   `deliverable_type` VARCHAR(45) NOT NULL,
   `deliverable_deadline` DATETIME NOT NULL,
@@ -110,7 +110,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `comp4004`.`login` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`login` (
-  `id` INT NOT NULL,
+  `id` INT NOT NULL AUTO_INCREMENT,
   `password` VARCHAR(45) NOT NULL,
   `failed_time` INT NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`))
@@ -157,7 +157,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `comp4004`.`prof` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`prof` (
-  `prof_id` INT NOT NULL,
+  `prof_id` INT NOT NULL AUTO_INCREMENT,
   `prof_name` VARCHAR(45) NOT NULL,
   `login_password` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`prof_id`),
@@ -175,7 +175,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `comp4004`.`registration` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`registration` (
-  `registration_id` INT NOT NULL,
+  `registration_id` INT NOT NULL AUTO_INCREMENT,
   `course_id` INT NOT NULL,
   `student_id` INT NOT NULL,
   `registration_date` DATETIME NOT NULL,
@@ -207,7 +207,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `comp4004`.`student` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`student` (
-  `student_id` INT NOT NULL,
+  `student_id` INT NOT NULL AUTO_INCREMENT,
   `student_name` VARCHAR(45) NOT NULL,
   `student_email` VARCHAR(45) NOT NULL,
   `admitted` TINYINT NOT NULL DEFAULT 0,
@@ -227,7 +227,7 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `comp4004`.`submitation` ;
 
 CREATE TABLE IF NOT EXISTS `comp4004`.`submitation` (
-  `submitation_id` INT NOT NULL,
+  `submitation_id` INT NOT NULL AUTO_INCREMENT,
   `registration_id` INT NOT NULL,
   `deliverable_id` INT NOT NULL,
   `submitation_date` DATETIME NOT NULL,

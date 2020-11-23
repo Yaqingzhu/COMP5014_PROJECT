@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 
 const { createAdminUser } = require('./db_util');
 const admin = require('./admin_activities');
+const general = require('./general_APIs');
 
 const app = express();
 const port = process.env.API_PORT || 11234; // Port for the API
@@ -16,7 +17,7 @@ app.use(session({
   resave: false,
   cookie: {
     maxAge: 20 * 60 * 1000, // 20 mins
-    secure: false,
+    sameSite: false,
   },
 }));
 
@@ -28,7 +29,9 @@ app.use(bodyParser.json());
 // use bodyParser-text
 app.use(bodyParser.text({ type: 'txt' }));
 app.use(cors({
-  origin: ['http://localhost:8080', 'http://localhost:8081']
+  origin: 'http://localhost:8081',
+  credentials: true,
+  exposedHeaders: ['set-cookie'],
 }));
 
 app.get('/', (req, res) => {
@@ -45,6 +48,8 @@ app.post('/cancelcourse', admin.CancelCourse);
 
 app.post('/createstudent', admin.CreateStudent);
 app.delete('/deletestudent', admin.DeleteStudent);
+
+app.get('/course', general.getCourse);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {

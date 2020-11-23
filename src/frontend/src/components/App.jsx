@@ -4,11 +4,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { WithUser } from '../context/userContext';
 import Login from '../pages/login';
+import Dashboard from './Dashboard';
 
 export const App = () => (
   <WithUser>
     {({ user }) => user ? (
-      <h1>Hello, {user.username}!</h1>
+      <Dashboard user={user} />
     ) : <Login />}
   </WithUser>
 );
