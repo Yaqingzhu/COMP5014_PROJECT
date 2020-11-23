@@ -188,8 +188,6 @@ function removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolv
   });
 }
 
-
-    
 function getAllCourse(resolve, reject) {
   const connection = getDBConnection();
   connection.query('SELECT JSON_OBJECT(\'courseId\', c.course_id, \'courseName\', course_name, \'courseStatus\', course_status, \'courseCapacity\', course_capacity, \'assignedProf\', course_assigned_prof_id, ' +
