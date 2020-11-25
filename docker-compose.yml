@@ -19,6 +19,7 @@ services:
       DB_USERNAME: root
       DB_PASSWORD: comp4004
       WAIT_HOSTS: db:3306
+      WAIT_HOSTS_TIMEOUT: 120
 
   web:
     build: .

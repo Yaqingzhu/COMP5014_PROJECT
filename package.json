@@ -16,7 +16,7 @@
     "test:backend": "cd src/backend && npm run test",
     "test:frontend:coverage": "cd src/frontend && npm run test:coverage",
     "test:backend:coverage": "cd src/backend && npm run test:coverage",
-    "test:cypress": "docker-compose up -d && cypress run",
+    "test:cypress": "docker-compose up -d && cypress run --record --key 000948f1-80f0-47da-9149-fb1d0b2a3fe2",
     "clean": "git clean -fdX ."
   },
   "author": "",
