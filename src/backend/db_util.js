@@ -276,6 +276,41 @@ const deleteStudentUser = (resolve, reject, studentId) => {
   });
 };
 
+function approveStudentCreation(resolve, reject, studentId) {
+  const connection = getDBConnection();
+  connection.query('UPDATE student SET admitted = true WHERE student_id = ?;', [studentId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      resolve(studentId);
+    }
+  });
+}
+
+function registerCourse(resolve, reject, studentId, courseId) {
+  const connection = getDBConnection();
+  connection.query('SELECT registration_deadline FROM academic;', [studentId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      const deadline = results[0] ? results[0] : -1;
+      const today = new Date();
+      if (Date.parse(deadline) > today.getDate()) {
+        connection.query('UPDATE student SET admitted = true WHERE student_id = ?;', [studentId], (error, results) => {
+          if (error) {
+            console.log(error);
+            return reject(error);
+          } else {
+            resolve(studentId);
+          }
+        });
+      }
+    }
+  });
+}
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -297,5 +332,7 @@ module.exports = {
 
   // delete student
   deleteStudentUser,
-  getAllCourse
+  getAllCourse,
+  approveStudentCreation,
+  registerCourse
 };

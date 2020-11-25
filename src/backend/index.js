@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 
 const { createAdminUser } = require('./db_util');
 const admin = require('./admin_activities');
+const student = require('./student_activities');
 const general = require('./general_APIs');
 
 const app = express();
@@ -47,6 +48,8 @@ app.post('/courseop', admin.CourseProcess);
 app.post('/cancelcourse', admin.CancelCourse);
 
 app.post('/createstudent', admin.CreateStudent);
+app.post('/approvestudent', admin.ApproveStudentCreationApply);
+app.post('/applycreatestudent', student.applyCreateStudent);
 app.delete('/deletestudent', admin.DeleteStudent);
 
 app.get('/course', general.getCourse);

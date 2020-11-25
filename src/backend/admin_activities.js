@@ -1,4 +1,5 @@
 const mysql = require('./db_util');
+const util = require('./general_APIs');
 
 async function CourseProcess(req, res) {
     if (!req.session || !req.session.isLogin) {
@@ -84,40 +85,15 @@ function endRequestWithFinished(res, body) {
     });
 }
 
-// helper functions
-
-function validateLogin(req) {
-    if (!req.session || !req.session.isLogin) {
-        console.warn('User is not logged in');
-        return false;
-    }
-
-    return true;
-}
-
-function validateAdmin(req) {
-    if (req.session.role !== 'admin') {
-        console.warn('User is not an admin');
-        return false;
-    }
-
-    return true;
-}
-
-// Determines whether a given email string is valid
-function validateEmail(email) {
-    return (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email));
-}
-
 // Cancel a course
 const CancelCourse = async (req, res) => {
     // Validation
-    if (!validateLogin(req)) {
+    if (!util.validateLogin(req)) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You need to login before doing this operation.',
         });
-    } else if (!validateAdmin(req)) {
+    } else if (!util.validateAdmin(req)) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You do not have permission to do this operation.',
@@ -161,12 +137,12 @@ const CancelCourse = async (req, res) => {
 // Create Student
 const CreateStudent = async (req, res) => {
     // Validation
-    if (!validateLogin(req)) {
+    if (!util.validateLogin(req)) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You need to login before doing this operation.',
         });
-    } else if (!validateAdmin(req)) {
+    } else if (!util.validateAdmin(req)) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You do not have permission to do this operation.',
@@ -181,7 +157,7 @@ const CreateStudent = async (req, res) => {
     const admitted = req.body.admitted;
 
     // Validate email
-    if (!validateEmail(email)) {
+    if (!util.validateEmail(email)) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'Invalid email format'
@@ -209,12 +185,12 @@ const CreateStudent = async (req, res) => {
 // Delete Student, given a student_id
 const DeleteStudent = async (req, res) => {
     // Validation
-    if (!validateLogin(req)) {
+    if (!util.validateLogin(req)) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You need to login before doing this operation.',
         });
-    } else if (!validateAdmin(req)) {
+    } else if (!util.validateAdmin(req)) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You do not have permission to do this operation.',
@@ -243,9 +219,47 @@ const DeleteStudent = async (req, res) => {
     });
 };
 
+// Approve a student's creation apply, given a student_id
+const ApproveStudentCreationApply = async (req, res) => {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    // Get form information
+    const studentId = req.body.studentId;
+
+    // Perform operation in DB
+    await new Promise((resolve, reject) => {
+        mysql.approveStudentCreation(resolve, reject, studentId);
+    }).then(id => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            studentId: id
+        });
+    }).catch(error => {
+        console.log(error);
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: error
+        });
+    });
+};
+
 module.exports = {
     CourseProcess,
     CancelCourse,
     CreateStudent,
-    DeleteStudent
+    DeleteStudent,
+    ApproveStudentCreationApply
 };
