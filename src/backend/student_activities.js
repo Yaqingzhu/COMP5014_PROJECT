@@ -11,7 +11,6 @@ function applyCreateStudent(req, res) {
 
    // Validate email
    if (!util.validateEmail(email)) {
-       console.log('email wrong');
        return res.status(403).json({
            responseCode: -1,
            errorMessage: 'Invalid email format'
@@ -21,7 +20,7 @@ function applyCreateStudent(req, res) {
    // Perform operation in DB
    new Promise((resolve, reject) => {
        mysql.createStudentUser(resolve, reject, email, birthDate, name, password, admitted);
-   }).then(id => {
+   }).then(() => {
        return res.status(200).json({
            responseCode: 0,
            errorMessage: '',
@@ -51,13 +50,75 @@ function registerCourse(req, res) {
 }
    // Perform operation in DB
    new Promise((resolve, reject) => {
-       mysql.registerCourse(resolve, reject, req.body);
+       mysql.registerCourse(resolve, reject, req.body.studentId, req.body.courseId);
    }).then(result => {
        return res.status(200).json({
            responseCode: 0,
            errorMessage: result,
            success: true,
-           CourseId: req.body.id
+           CourseId: req.body.courseId
+       });
+   }).catch(error => {
+       return res.status(403).json({
+           responseCode: -1,
+           errorMessage: error
+       });
+   });
+}
+
+function dropCourse(req, res) {
+    // Validation
+    if (!util.validateLogin(req)) {
+       return res.status(403).json({
+           responseCode: -1,
+           errorMessage: 'You need to login before doing this operation.',
+       });
+   } else if (!util.validateStudent(req)) {
+    return res.status(403).json({
+        responseCode: -1,
+        errorMessage: 'You do not have permission to do this operation.',
+    });
+}
+   // Perform operation in DB
+   new Promise((resolve, reject) => {
+       mysql.dropCourse(resolve, reject, req.body.studentId, req.body.courseId);
+   }).then(result => {
+       return res.status(200).json({
+           responseCode: 0,
+           errorMessage: result,
+           success: true,
+           CourseId: req.body.courseId
+       });
+   }).catch(error => {
+       return res.status(403).json({
+           responseCode: -1,
+           errorMessage: error
+       });
+   });
+}
+
+function listCourse(req, res) {
+    // Validation
+    if (!util.validateLogin(req)) {
+       return res.status(403).json({
+           responseCode: -1,
+           errorMessage: 'You need to login before doing this operation.',
+       });
+   } else if (!util.validateStudent(req)) {
+    return res.status(403).json({
+        responseCode: -1,
+        errorMessage: 'You do not have permission to do this operation.',
+    });
+}
+   // Perform operation in DB
+   new Promise((resolve, reject) => {
+       mysql.getRegisteredCourse(resolve, reject, req.body.studentId);
+   }).then(result => {
+       return res.status(200).json({
+           responseCode: 0,
+           errorMessage: '',
+           success: true,
+           courses: result
        });
    }).catch(error => {
        return res.status(403).json({
@@ -68,5 +129,8 @@ function registerCourse(req, res) {
 }
 
 module.exports = {
-    applyCreateStudent
+    applyCreateStudent,
+    registerCourse,
+    dropCourse,
+    listCourse
 };

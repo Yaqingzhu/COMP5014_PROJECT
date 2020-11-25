@@ -188,6 +188,7 @@ CREATE TABLE IF NOT EXISTS `comp4004`.`registration` (
   INDEX `fk_registration_course_idx` (`course_id` ASC) VISIBLE,
   INDEX `fk_registration_student_idx` (`student_id` ASC) VISIBLE,
   PRIMARY KEY (`registration_id`),
+  CONSTRAINT `unique_course_student` UNIQUE (`course_id`, `student_id`),
   CONSTRAINT `fk_registration_course`
     FOREIGN KEY (`course_id`)
     REFERENCES `comp4004`.`course` (`course_id`)

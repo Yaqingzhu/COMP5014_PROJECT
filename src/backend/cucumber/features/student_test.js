@@ -25,7 +25,7 @@ Given('a student want to apply for creation with this payload {string}', functio
     testSession = session(app);
     return testSession
       .post('/applycreatestudent')
-      .send(arg1)
+      .send(JSON.parse(arg1))
       .expect(200)
       .then(function (rr) {
         res = rr;
@@ -33,6 +33,6 @@ Given('a student want to apply for creation with this payload {string}', functio
 });
 
 Then('return a json with admitted equals to {int}', function (arg1) {
-    const jres = JSON.parse(res.body);
-    assert.equal(arg1, jres.admitted);
+    const jres = res.body;
+    assert.equal(Boolean(arg1), jres.admitted);
 });

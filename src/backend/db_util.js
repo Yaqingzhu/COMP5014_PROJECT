@@ -25,7 +25,7 @@ function checkUserRole(resolve, reject, userId) {
   connection.query('UPDATE login SET failed_time = 0 WHERE id =?', [
     userId
   ]);
-  connection.query('SELECT 1 AS result, admin_name AS name FROM admin WHERE admin_id = ? UNION SELECT 2 AS result, prof_name AS name FROM prof WHERE prof_id = ? UNION SELECT 2 AS result, student_name AS name FROM student WHERE student_id = ?', [
+  connection.query('SELECT 1 AS result, admin_name AS name FROM admin WHERE admin_id = ? UNION SELECT 2 AS result, prof_name AS name FROM prof WHERE prof_id = ? UNION SELECT 3 AS result, student_name AS name FROM student WHERE student_id = ?', [
     userId, userId, userId
   ], (error, results) => {
     if (!error) {
@@ -290,23 +290,143 @@ function approveStudentCreation(resolve, reject, studentId) {
 
 function registerCourse(resolve, reject, studentId, courseId) {
   const connection = getDBConnection();
-  connection.query('SELECT registration_deadline FROM academic;', [studentId], (error, results) => {
+  connection.query('SELECT admitted FROM student WHERE student_id = ?;', [studentId], (error, results) => {
     if (error) {
       console.log(error);
       return reject(error);
     } else {
-      const deadline = results[0] ? results[0] : -1;
-      const today = new Date();
-      if (Date.parse(deadline) > today.getDate()) {
-        connection.query('UPDATE student SET admitted = true WHERE student_id = ?;', [studentId], (error, results) => {
-          if (error) {
-            console.log(error);
-            return reject(error);
-          } else {
-            resolve(studentId);
-          }
-        });
+      const admitted = results[0] ? results[0].admitted : -1;
+      if (admitted <= 0) {
+        return reject('You are not admitted to be a student yet');
       }
+      connection.query('SELECT course_status AS result FROM course WHERE course_id = ?;', [courseId], (error, results) => {
+        if (error) {
+          console.log(error);
+          return reject(error);
+        } else {
+          const courseStatus = results[0] ? results[0].result : -1;
+
+          if (!String(courseStatus).match('scheduled')) {
+            return reject('This course is not open for registration');
+          }
+
+          connection.query('SELECT registration_deadline FROM academic;', [], (error, results) => {
+            if (error) {
+              console.log(error);
+              return reject(error);
+            } else {
+              const deadline = results[0] ? results[0].registration_deadline : -1;
+              const today = new Date();
+              if (Date.parse(deadline) > today) {
+                connection.query('INSERT INTO registration(registration_id, course_id, student_id, registration_date, drop_date, late_registration, late_registration_approval, late_drop, late_drop_approval) ' +
+                ' VALUES(null,?,?,?,null,0,null,0,null)' +
+                ' ON DUPLICATE KEY UPDATE ' +
+                ' registration_date = VALUES(registration_date), ' +
+                ' drop_date = null, ' +
+                ' late_registration_approval = VALUES(late_registration_approval), ' +
+                ' late_drop = VALUES(late_drop), ' +
+                ' late_registration = VALUES(late_registration)', [courseId, studentId, today], (error, results) => {
+                  if (error) {
+                    console.log(error);
+                    return reject(error);
+                  } else {
+                    resolve('Your registration for course ' + courseId + ' is done!');
+                  }
+                });
+              } else {
+                connection.query('INSERT INTO registration(registration_id, course_id, student_id, registration_date, drop_date, late_registration, late_registration_approval, late_drop, late_drop_approval) ' +
+                ' VALUES(null,?,?,?,null,1,0,0,null) ' +
+                ' ON DUPLICATE KEY UPDATE ' +
+                ' registration_date = VALUES(registration_date), ' +
+                ' drop_date = null, ' +
+                ' late_registration_approval = VALUES(late_registration_approval), ' +
+                ' late_drop = VALUES(late_drop), ' +
+                ' late_registration = VALUES(late_registration)', [courseId, studentId, today], (error, results) => {
+                  if (error) {
+                    console.log(error);
+                    return reject(error);
+                  } else {
+                    resolve('You missed the deadline. So, your late registration for course ' + courseId + ' is subject to be approved by admin');
+                  }
+                });
+              }
+            }
+          });
+        }
+      })
+
+      ;
+    }
+  });
+}
+
+function dropCourse(resolve, reject, studentId, courseId) {
+  const connection = getDBConnection();
+  connection.query('SELECT admitted FROM student WHERE student_id = ?;', [studentId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      const admitted = results[0] ? results[0].admitted : -1;
+      if (admitted <= 0) {
+        return reject('You are not admitted to be a student yet');
+      }
+      connection.query('SELECT drop_deadline FROM academic;', [], (error, results) => {
+        if (error) {
+          console.log(error);
+          return reject(error);
+        } else {
+          const deadline = results[0] ? results[0].drop_deadline : -1;
+          const today = new Date();
+          if (Date.parse(deadline) > today) {
+            connection.query('UPDATE registration SET drop_date = ?, late_drop = 0, late_drop_approval = NULL ' +
+            ' WHERE course_id = ? AND student_id = ?', [today, courseId, studentId], (error, results) => {
+              if (error) {
+                console.log(error);
+                return reject(error);
+              } else {
+                resolve('Your drop for course ' + courseId + ' is done!');
+              }
+            });
+          } else {
+            connection.query('UPDATE registration SET drop_date = ?, late_drop = 1, late_drop_approval = 0 ' +
+            ' WHERE course_id = ? AND student_id = ?', [today, courseId, studentId], (error, results) => {
+              if (error) {
+                console.log(error);
+                return reject(error);
+              } else {
+                resolve('You missed the deadline. So, your late drop for course ' + courseId + ' is subject to be approved by admin');
+              }
+            });
+          }
+        }
+      });
+    }
+  });
+}
+
+function getRegisteredCourse(resolve, reject, studentId) {
+  const connection = getDBConnection();
+  connection.query('SELECT admitted FROM student WHERE student_id = ?;', [studentId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      const admitted = results[0] ? results[0].admitted : -1;
+      if (admitted <= 0) {
+        return reject('You are not admitted to be a student yet');
+      }
+      connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'courseId\', course_id, \'studentId\', student_id, \'registrationDate\', ' +
+      ' registration_date, \'dropDate\', drop_date, \'lateRegistration\', late_registration, \'lateRegistrationApproval\', late_registration_approval, ' +
+      ' \'lateDrop\', late_drop, \'lateDropApproval\', late_drop_approval, \'finalGrade\', final_grade)) FROM registration WHERE student_id =?;', [studentId], (error, results) => {
+        if (error) {
+          console.log(error);
+          return reject(error);
+        } else {
+          const registration = results[0] ? results[0] : -1;
+          return resolve(registration);
+        }
+      });
     }
   });
 }
@@ -334,5 +454,7 @@ module.exports = {
   deleteStudentUser,
   getAllCourse,
   approveStudentCreation,
-  registerCourse
+  registerCourse,
+  getRegisteredCourse,
+  dropCourse
 };
