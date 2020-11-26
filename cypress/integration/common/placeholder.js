@@ -106,11 +106,11 @@ Then('I want to change capacity of the last course created to {int}', (capacity)
             const course = $elem.text();
             cy.click_button('Edit', `:nth-child(5) > [href="/courses/${course}"]`)
         })
+        cy.get('[data-testid=capacity]').clear().type(capacity);
+        cy.click_button('Save changes', '.btn-primary');
+        cy.click_button('Courses', ':nth-child(2) > .nav-link');
+        cy.contains(`tbody > :nth-child(${rows}) > :nth-child(4)`, capacity).should('be.visible');
     })
-    cy.get('[data-testid=capacity]').clear().type(capacity);
-    cy.click_button('Save changes', '.btn-primary');
-    cy.click_button('Courses', ':nth-child(2) > .nav-link');
-    cy.contains('tbody > :nth-child(1) > :nth-child(4)', capacity).should('be.visible');
 })
 
 Then('I want to delete the last course created', () => {
