@@ -13,7 +13,7 @@ Given a session role is "prof"
 Then vaildation for admin is 0 for student is 0 for prof is 1
 
 Scenario: test login session vaildation
-Given a session login is 0
+Given a session login is 1
 Then vaildation login is 1
 
 Scenario: test login session vaildation
