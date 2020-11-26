@@ -256,10 +256,87 @@ const ApproveStudentCreationApply = async (req, res) => {
     });
 };
 
+// Schedule a course
+// Given courseId
+const ScheduleCourse = async (req, res) => {
+    // Validation
+    // if (!util.validateLogin(req)) {
+    //     return res.status(403).json({
+    //         responseCode: -1,
+    //         errorMessage: 'You need to login before doing this operation.',
+    //     });
+    // } else if (!util.validateAdmin(req)) {
+    //     return res.status(403).json({
+    //         responseCode: -1,
+    //         errorMessage: 'You do not have permission to do this operation.',
+    //     });
+    // }
+
+    // Retrieve courseId
+    const courseId = req.body.courseId;
+    const courseSlotDay = req.body.courseSlotDay;
+    const courseSlotTime = req.body.courseSlotTime;
+
+    // Verify courseSlotDay is between (1-7)
+    // Verify courseTimeSlot is of the format HH:MM, 24 hour format
+
+
+    // Verify courseId exists in course table
+    let verifyInCourse = false;
+
+    try {
+        verifyInCourse = await new Promise((resolve, reject) => {
+            mysql.checkCourseIdInCourseTable(resolve, reject, courseId);
+        });
+
+        // Return format:
+        // [
+        //     {
+        //         "EXISTS(SELECT * FROM course WHERE course_id = 1234)": (0 or 1)
+        //     }
+        // ]
+        // Get the value by using Object.values(verifyInCourse[0])
+
+        verifyInCourse = Object.values(verifyInCourse[0]);
+        
+    } catch (error) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: "Could not find courseId. Create the course first."
+        });
+    }
+
+    // Verify courseId exists in course_slots table and update row in course_slots
+    
+    try {
+        await new Promise((resolve, reject) => {
+            mysql.createCourseIdInCourseSlotsTable(resolve, reject, courseId, courseSlotDay, courseSlotTime);
+        });
+
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            courseId
+        });
+
+    } catch (error) {
+
+        console.log(error);
+
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: "Could not create slot."
+        });
+    }
+
+}
+
 module.exports = {
     CourseProcess,
     CancelCourse,
     CreateStudent,
     DeleteStudent,
-    ApproveStudentCreationApply
+    ApproveStudentCreationApply,
+    ScheduleCourse
 };
