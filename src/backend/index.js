@@ -58,6 +58,7 @@ app.get('/listcourse', student.listCourse);
 app.delete('/deletestudent', admin.DeleteStudent);
 
 app.post('/schedulecourse', admin.ScheduleCourse);
+app.post('/unschedulecourse', admin.UnscheduleCourse);
 
 app.get('/course', general.getCourse);
 

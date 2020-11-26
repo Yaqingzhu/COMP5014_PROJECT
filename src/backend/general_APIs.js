@@ -77,11 +77,17 @@ function validateEmail(email) {
     return (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email));
 }
 
+// Determine whether a string conforms to time format of HH:MM (24 hour)
+function validateTime(time) {
+    return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]/.test(time);
+}
+
 module.exports = {
     getCourse,
     validateLogin,
     validateAdmin,
     validateStudent,
     validateProf,
-    validateEmail
+    validateEmail,
+    validateTime
 };

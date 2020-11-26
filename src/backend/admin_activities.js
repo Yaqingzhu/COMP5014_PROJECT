@@ -260,17 +260,17 @@ const ApproveStudentCreationApply = async (req, res) => {
 // Given courseId
 const ScheduleCourse = async (req, res) => {
     // Validation
-    // if (!util.validateLogin(req)) {
-    //     return res.status(403).json({
-    //         responseCode: -1,
-    //         errorMessage: 'You need to login before doing this operation.',
-    //     });
-    // } else if (!util.validateAdmin(req)) {
-    //     return res.status(403).json({
-    //         responseCode: -1,
-    //         errorMessage: 'You do not have permission to do this operation.',
-    //     });
-    // }
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
 
     // Retrieve courseId
     const courseId = req.body.courseId;
@@ -278,8 +278,20 @@ const ScheduleCourse = async (req, res) => {
     const courseSlotTime = req.body.courseSlotTime;
 
     // Verify courseSlotDay is between (1-7)
-    // Verify courseTimeSlot is of the format HH:MM, 24 hour format
+    if (courseSlotDay < 1 || courseSlotDay > 7) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'courseSlotDay must be between 1 and 7, exclusive.',
+        });
+    }
 
+    // Verify courseTimeSlot is of the format HH:MM, 24 hour format
+    if (!util.validateTime(courseSlotTime)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'courseSlotTime must be in HH:MM format.',
+        });
+    }
 
     // Verify courseId exists in course table
     let verifyInCourse = false;
@@ -296,18 +308,15 @@ const ScheduleCourse = async (req, res) => {
         //     }
         // ]
         // Get the value by using Object.values(verifyInCourse[0])
-
         verifyInCourse = Object.values(verifyInCourse[0]);
-        
     } catch (error) {
         return res.status(403).json({
             responseCode: -1,
-            errorMessage: "Could not find courseId. Create the course first."
+            errorMessage: 'Could not find courseId. Create the course first.'
         });
     }
 
     // Verify courseId exists in course_slots table and update row in course_slots
-    
     try {
         await new Promise((resolve, reject) => {
             mysql.createCourseIdInCourseSlotsTable(resolve, reject, courseId, courseSlotDay, courseSlotTime);
@@ -319,18 +328,51 @@ const ScheduleCourse = async (req, res) => {
             success: true,
             courseId
         });
-
     } catch (error) {
-
-        console.log(error);
-
         return res.status(403).json({
             responseCode: -1,
-            errorMessage: "Could not create slot."
+            errorMessage: 'Could not create slot.'
+        });
+    }
+};
+
+// Unschedule a course
+// Given a courseId
+const UnscheduleCourse = async (req, res) => {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
         });
     }
 
-}
+    // Retrieve courseId
+    const courseId = req.body.courseId;
+
+    // Delete from course_slots table
+    try {
+        await new Promise((resolve, reject) => {
+            mysql.deleteCourseIdInCourseSlotsTable(resolve, reject, courseId);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            courseId
+        });
+    } catch (error) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'Could not delete course slot.'
+        });
+    }
+};
 
 module.exports = {
     CourseProcess,
@@ -338,5 +380,6 @@ module.exports = {
     CreateStudent,
     DeleteStudent,
     ApproveStudentCreationApply,
-    ScheduleCourse
+    ScheduleCourse,
+    UnscheduleCourse
 };
