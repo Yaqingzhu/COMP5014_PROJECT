@@ -306,7 +306,7 @@ function registerCourse(resolve, reject, studentId, courseId) {
         } else {
           const courseStatus = results[0] ? results[0].result : -1;
 
-          if (!String(courseStatus).match('scheduled')) {
+          if (!String(courseStatus).includes('scheduled')) {
             return reject('This course is not open for registration');
           }
 
@@ -418,17 +418,63 @@ function getRegisteredCourse(resolve, reject, studentId) {
       }
       connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'courseId\', course_id, \'studentId\', student_id, \'registrationDate\', ' +
       ' registration_date, \'dropDate\', drop_date, \'lateRegistration\', late_registration, \'lateRegistrationApproval\', late_registration_approval, ' +
-      ' \'lateDrop\', late_drop, \'lateDropApproval\', late_drop_approval, \'finalGrade\', final_grade)) FROM registration WHERE student_id =?;', [studentId], (error, results) => {
+      ' \'lateDrop\', late_drop, \'lateDropApproval\', late_drop_approval, \'finalGrade\', final_grade)) AS result FROM registration WHERE student_id =?;', [studentId], (error, results) => {
         if (error) {
           console.log(error);
           return reject(error);
         } else {
-          const registration = results[0] ? results[0] : -1;
+          const registration = results[0].result;
           return resolve(registration);
         }
       });
     }
   });
+}
+
+function addTestDataForStudentTest() {
+  const connection = getDBConnection();
+  connection.query('INSERT IGNORE INTO comp4004.course (course_id, course_name,course_status,course_assigned_prof_id, course_capacity)' +
+    // eslint-disable-next-line node/handle-callback-err
+    ' VALUES (123,\'test\',\'scheduled\',null,30), ' +
+    '  (1234,\'test2\',\'cancel\',null,30) ', [], (error, results) => {
+      if (error) {
+        console.log(error);
+      }
+      console.log('student insert');
+      connection.query('INSERT IGNORE INTO comp4004.login (id, password,failed_time)' +
+      // eslint-disable-next-line node/handle-callback-err
+      ' VALUES (223,\'test\',0), ' +
+      '  (2234,\'test\',0), ' +
+      '  (22345,\'test\',0) ', [], (error, results) => {
+        if (error) {
+          console.log(error);
+        }
+        console.log('student insert done');
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        connection.query('INSERT IGNORE INTO comp4004.academic (registration_deadline, drop_deadline) VALUES(?,?)', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)]);
+        connection.query('INSERT IGNORE INTO comp4004.student (student_id, student_name,student_email,admitted, birth_date)' +
+        // eslint-disable-next-line node/handle-callback-err
+        ' VALUES (223,\'test\',\'test@test.ca\',1,\'2020-10-10\'), ' +
+        '  (2234,\'test2\',\'test2@test.ca\',0,\'2020-10-10\'), ' +
+        '  (22345,\'test3\',\'test3@test.ca\',1,\'2020-10-10\') ', [], (error, results) => {
+          if (error) {
+            console.log(error);
+          }
+        });
+    });
+  });
+}
+
+function updateAcademicForTest(resolve, reject) {
+  const date = new Date();
+  date.setDate(date.getDate() - 1);
+  connection.query('UPDATE academic SET  registration_deadline = ?, drop_deadline = ?', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)], (error, results) => {
+          if (error) {
+            return reject(error);
+          }
+          resolve(results);
+        });
 }
 
 module.exports = {
@@ -456,5 +502,7 @@ module.exports = {
   approveStudentCreation,
   registerCourse,
   getRegisteredCourse,
-  dropCourse
+  dropCourse,
+  addTestDataForStudentTest,
+  updateAcademicForTest
 };

@@ -4,7 +4,7 @@ const cors = require('cors');
 const login = require('./login');
 const bodyParser = require('body-parser');
 
-const { createAdminUser } = require('./db_util');
+const { createAdminUser, addTestDataForStudentTest } = require('./db_util');
 const admin = require('./admin_activities');
 const student = require('./student_activities');
 const general = require('./general_APIs');
@@ -42,6 +42,7 @@ app.get('/', (req, res) => {
 app.post('/login', login.loginRequestProcess);
 
 createAdminUser();
+addTestDataForStudentTest();
 
 app.post('/courseop', admin.CourseProcess);
 
