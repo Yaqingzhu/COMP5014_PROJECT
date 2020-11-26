@@ -1,3 +1,4 @@
+
 const { Given, Then, AfterAll, BeforeAll } = require('cucumber');
 const assert = require('assert').strict;
 const mysql = require('../../db_util');
@@ -5,6 +6,7 @@ const http = require('http');
 const util = require('../../general_APIs');
 const app = require('../../index');
 const session = require('supertest-session');
+
 
 const req = {
     session: {
@@ -73,3 +75,4 @@ Then('return a payload with list of courses {int} and {int}', function (arg1, ar
     assert.equal(arg1, courseName[0].courseId);
     assert.equal(arg2, courseName[1].courseId);
 });
+
