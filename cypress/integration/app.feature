@@ -34,7 +34,7 @@ Feature: Placeholder Test
     Given I log in with valid credentials
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
     And I see the courses in a table
-    Then I want to change capacity of "CompGeom" course with id 1 to 20
+    Then I want to change capacity of the last course created to 20
 
   Scenario: I delete a course
     Given I log in with valid credentials
