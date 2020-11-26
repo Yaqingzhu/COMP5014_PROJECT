@@ -5,7 +5,7 @@ const util = require('../../general_APIs');
 const req = {
     session: {
         role: '',
-        login: false
+        isLogin: false
     }
 };
 
@@ -20,7 +20,7 @@ Then('vaildation for admin is {int} for student is {int} for prof is {int}', fun
 });
 
 Given('a session login is {int}', function (arg1) {
-    req.session.login = Boolean(arg1);
+    req.session.isLogin = Boolean(arg1);
 });
 
 Then('vaildation login is {int}', function (arg1) {
