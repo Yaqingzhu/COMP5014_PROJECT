@@ -100,7 +100,7 @@ Then('I see the course in the course dashboard', () => {
 })
 
 Then('I want to change capacity of {string} course with id {int} to {int}', (name, id, capacity) => {
-    cy.click_button('Edit', ':nth-child(5) > [href="/courses/' + id.toString + '"]');
+    cy.click_button('Edit', `:nth-child(5) > [href="/courses/${id}"]`);
     cy.get('h1.mb-3').should('contain', name);
     cy.get('[data-testid=capacity]').clear().type('20');
     cy.click_button('Save changes', '.btn-primary');
@@ -111,7 +111,7 @@ Then('I want to change capacity of {string} course with id {int} to {int}', (nam
 Then('I want to delete the last course created', () => {
     cy.get('tr').its('length').then(($length) => {
         const rows = $length - 1;
-        cy.click_button('Delete', ':nth-child(' + rows + ') > :nth-child(5) > .ml-2');
+        cy.click_button('Delete', `:nth-child(${rows}) > :nth-child(5) > .ml-2`);
         cy.get('tbody > :nth-child(' + rows + ')').should('not.exist');
     })
 })
