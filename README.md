@@ -1,3 +1,5 @@
+Code smell detect score:
+<a href="https://deepscan.io/dashboard#view=project&tid=11683&pid=14604&bid=275649"><img src="https://deepscan.io/api/teams/11683/projects/14604/branches/275649/badge/grade.svg?token=a1fa0980263b30233c0ddf1e9c3ed778290db2ee" alt="DeepScan grade"></a>
 # COMP5014_PROJECT
 This is a repository for COMP5014 project.
 
