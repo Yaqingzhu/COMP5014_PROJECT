@@ -34,4 +34,54 @@ function getCourseFromDB(res, body) {
     });
 }
 
-module.exports = { getCourse };
+// helper functions
+
+function validateLogin(req) {
+    if (!req.session || !req.session.isLogin) {
+        console.warn('User is not logged in');
+        return false;
+    }
+
+    return true;
+}
+
+function validateAdmin(req) {
+    if (req.session.role !== 'admin') {
+        console.warn('User is not an admin');
+        return false;
+    }
+
+    return true;
+}
+
+function validateStudent(req) {
+    if (req.session.role !== 'student') {
+        console.warn('User is not an student');
+        return false;
+    }
+
+    return true;
+}
+
+function validateProf(req) {
+    if (req.session.role !== 'prof') {
+        console.warn('User is not an prof');
+        return false;
+    }
+
+    return true;
+}
+
+// Determines whether a given email string is valid
+function validateEmail(email) {
+    return (/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/.test(email));
+}
+
+module.exports = {
+    getCourse,
+    validateLogin,
+    validateAdmin,
+    validateStudent,
+    validateProf,
+    validateEmail
+};
