@@ -19,3 +19,11 @@ Then vaildation login is 1
 Scenario: test login session vaildation
 Given a session login is 0
 Then vaildation login is 0
+
+Scenario: test get course detail
+Given a course id "{\"courseId\": 123}"
+Then return a payload with course name "test"
+
+Scenario: test get all courses
+Given a course id "{}"
+Then return a payload with list of courses 123 and 1234

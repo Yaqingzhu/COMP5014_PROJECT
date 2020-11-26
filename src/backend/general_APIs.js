@@ -8,7 +8,7 @@ async function getCourse(req, res) {
             errorMessage: 'You need to login before doing this operation.'
         });
     } else {
-        getCourseFromDB(res, req.query);
+        getCourseFromDB(res, req.body);
     }
 }
 
