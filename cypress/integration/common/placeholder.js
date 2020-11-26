@@ -99,18 +99,24 @@ Then('I see the course in the course dashboard', () => {
     cy.contains('.h2', 'Available courses').should('be.visible');
 })
 
-Then('I want to change capacity of {string} course with id {int} to {int}', (name, id, capacity) => {
-    cy.click_button('Edit', ':nth-child(5) > [href="/courses/' + id + '"]');
-    cy.get('h1.mb-3').should('contain', name);
-    cy.get('[data-testid=capacity]').clear().type('20');
-    cy.click_button('Save changes', '.btn-primary');
-    cy.click_button('Courses', ':nth-child(2) > .nav-link');
-    cy.contains('tbody > :nth-child(1) > :nth-child(4)', capacity).should('be.visible');
+Then('I want to change capacity of the last course created to {int}', (capacity) => {
+    cy.get('tr').its('length').then(($length) => {
+        const rows = $length - 1;
+        cy.get(`:nth-child(${rows}) > th`).each($elem => {
+            const course = $elem.text();
+            cy.click_button('Edit', `:nth-child(5) > [href="/courses/${course}"]`)
+        })
+        cy.get('[data-testid=capacity]').clear().type(capacity);
+        cy.click_button('Save changes', '.btn-primary');
+        cy.click_button('Courses', ':nth-child(2) > .nav-link');
+        cy.contains(`tbody > :nth-child(${rows}) > :nth-child(4)`, capacity).should('be.visible');
+    })
 })
 
 Then('I want to delete the last course created', () => {
     cy.get('tr').its('length').then(($length) => {
         const rows = $length - 1;
-        cy.click_button('Delete', ':nth-child(' + rows + ') > :nth-child(5) > .ml-2');
+        cy.click_button('Delete', `:nth-child(${rows}) > :nth-child(5) > .ml-2`);
+        cy.get('tbody > :nth-child(' + rows + ')').should('not.exist');
     })
 })
