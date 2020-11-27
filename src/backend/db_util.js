@@ -222,6 +222,19 @@ function changeCourseStatusInCourseTable(resolve, reject, courseId, status) {
   });
 }
 
+// Retrieve a student
+// Affected tables: student
+const getStudentUser = (resolve, reject, studentId) => {
+  const connection = getDBConnection();
+
+  connection.query(`
+    SELECT * FROM student WHERE student_id = ?;
+  `, [studentId], (error, results) => {
+    console.log(results);
+    resolve(results);
+  });
+}
+
 // Add a new student
 // Affected tables: student, login
 function createStudentUser(resolve, reject, email, birthDate, name, password, admitted) {
@@ -638,6 +651,9 @@ module.exports = {
   // cancel course
   removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots,
   changeCourseStatusInCourseTable,
+
+  // retrieve a student
+  getStudentUser,
 
   // create student
   createStudentUser,
