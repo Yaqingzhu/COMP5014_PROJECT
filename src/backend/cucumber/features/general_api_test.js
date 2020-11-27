@@ -7,7 +7,6 @@ const util = require('../../general_APIs');
 const app = require('../../index');
 const session = require('supertest-session');
 
-
 const req = {
     session: {
         role: '',
@@ -48,7 +47,8 @@ Then('vaildation login is {int}', function (arg1) {
     assert.equal(Boolean(arg1), util.validateLogin(req));
 });
 
-Given('a course id {string}', function (arg1) {
+Given('a course id {int}', function (arg1) {
+  const query = arg1 === -1 ? '/course' : '/course?courseId=' + arg1;
     testSession = session(app);
     return testSession
       .post('/login')
@@ -56,8 +56,8 @@ Given('a course id {string}', function (arg1) {
       .expect(200)
       .then(function () {
         return testSession
-          .get('/course')
-          .send(JSON.parse(arg1))
+          .get(query)
+          .send()
           .expect(200)
           .then(function (rr) {
             res = rr;
@@ -75,4 +75,3 @@ Then('return a payload with list of courses {int} and {int}', function (arg1, ar
     assert.equal(arg1, courseName[0].courseId);
     assert.equal(arg2, courseName[1].courseId);
 });
-

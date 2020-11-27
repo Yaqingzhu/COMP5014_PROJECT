@@ -32,6 +32,15 @@ Given('course json file {string}', function (arg1) {
     .send({ id: 1, password: 'admin' })
     .expect(200)
     .then(function () {
+      if (arg1.includes('prof')) {
+        return testSession
+        .post('/assignprof')
+        .send(JSON.parse(arg1))
+        .expect(200)
+        .then(function (rr) {
+          res = rr;
+        });
+      }
       return testSession
         .post('/courseop')
         .send(JSON.parse(arg1))
