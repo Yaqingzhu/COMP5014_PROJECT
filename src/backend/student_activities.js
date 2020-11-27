@@ -4,7 +4,7 @@ const util = require('./general_APIs');
 function applyCreateStudent(req, res) {
    // Get form information
    const email = req.body.email;
-   const birthDate = req.body.birthDate;
+   const birthDate = new Date(req.body.birthDate);
    const name = req.body.name;
    const password = req.body.password;
    const admitted = false;

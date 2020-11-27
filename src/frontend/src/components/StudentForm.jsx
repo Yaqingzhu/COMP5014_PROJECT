@@ -12,7 +12,7 @@ export const StudentForm = ({ student, handleSave }) => {
 
   const handleChange = date => {
     setBirthDate(date);
-    setValue('birthDate', date);
+    setValue('birthDate', date.toISOString().slice(0, 10));
   };
 
   useEffect(() => {

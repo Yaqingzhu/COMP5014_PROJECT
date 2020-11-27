@@ -1,5 +1,22 @@
 const apiurl = process.env.API_URL;
 
+export const register = student => new Promise((resolve, reject) => {
+  window.fetch(`${apiurl}/applycreatestudent`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(student),
+  }).then(res => res.json()).then(res => {
+    if (res.responseCode === 0) {
+      resolve(res.success);
+    } else {
+      reject(new Error(res.errorMessage));
+    }
+  });
+});
+
 export const createStudent = student => new Promise((resolve, reject) => {
   window.fetch(`${apiurl}/createstudent`, {
     method: 'POST',
@@ -10,7 +27,7 @@ export const createStudent = student => new Promise((resolve, reject) => {
     body: JSON.stringify(student),
   }).then(res => res.json()).then(res => {
     if (res.responseCode === 0) {
-      resolve(JSON.parse(res.coursePayload));
+      resolve(res.studentId);
     } else {
       reject(new Error(res.errorMessage));
     }
@@ -30,7 +47,7 @@ export const editStudent = (id, student) => new Promise((resolve, reject) => {
     }),
   }).then(res => res.json()).then(res => {
     if (res.responseCode === 0) {
-      resolve(JSON.parse(res.coursePayload));
+      resolve(res.studentId);
     } else {
       reject(new Error(res.errorMessage));
     }

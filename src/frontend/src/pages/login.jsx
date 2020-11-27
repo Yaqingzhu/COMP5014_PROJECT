@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 import logo from 'url:../assets/carleton.png';
 import { useLogin } from '../api/useLogin';
@@ -62,6 +63,11 @@ export const Login = () => {
                 >
                   {loading ? 'Loading...' : 'Login'}
                 </button>
+                <p className="mt-3">
+                  <Link to="/register">
+                    Register to the university
+                  </Link>
+                </p>
               </form>
             </div>
           </div>
