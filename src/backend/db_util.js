@@ -199,7 +199,7 @@ function getAllCourse(resolve, reject) {
     ' WHERE c.course_status != \'deleted\'',
     (error, results) => {
     if (!error) {
-      const rest = results[0].result || -1;
+      const rest = results || -1;
       resolve(rest);
     }
   });
