@@ -74,6 +74,7 @@ export const Register = () => {
                   type="password"
                   className="form-control"
                   placeholder="Password"
+                  data-testid="password"
                   name="password"
                   style={{
                     borderTopLeftRadius: 0,
