@@ -26,4 +26,5 @@ Then return a payload with course name "test"
 
 Scenario: test get all courses
 Given a course id -1
-Then return a payload with list of courses 123 and 1234
+Then return a payload with list of courses "123" and "1234"
+
