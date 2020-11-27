@@ -477,6 +477,80 @@ function updateAcademicForTest(resolve, reject) {
         });
 }
 
+// Verify if courseId exists in course table
+const checkCourseIdInCourseTable = (resolve, reject, courseId) => {
+  const connection = getDBConnection();
+  connection.query(`
+    SELECT EXISTS(SELECT * FROM course WHERE course_id = ${courseId});
+  `, (error, result) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(result);
+    }
+  });
+};
+
+// Create new or replace existing course_slots row
+const createCourseIdInCourseSlotsTable = (resolve, reject, courseId, courseSlotDay, courseSlotTime) => {
+  const connection = getDBConnection();
+
+  // check if courseId exists in course_slots first
+  connection.query(`
+    SELECT EXISTS(SELECT * FROM course_slots WHERE course_id = ${courseId});
+  `, (error, result) => {
+    if (error) {
+      reject(error);
+    } else {
+      // hasCourseId
+      const hasCourseId = Object.values(result[0]);
+
+      const queryInsert = `
+        INSERT INTO course_slots (course_id, course_slots_day, course_slots_time)
+        VALUES (${courseId},${courseSlotDay},'${courseSlotTime}');
+      `;
+
+      const queryReplace = `
+        UPDATE course_slots SET course_slots_day = ${courseSlotDay}, course_slots_time = '${courseSlotTime}'
+        WHERE course_id = ${courseId};
+      `;
+
+      // If exists, then replace, otherwise insert new
+      if (hasCourseId) {
+        connection.query(queryReplace, (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(courseId);
+          }
+        });
+      } else {
+        connection.query(queryInsert, (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(courseId);
+          }
+        });
+      }
+    }
+  });
+};
+
+// Unschedule an existing course, if it is in course_slots table
+const deleteCourseIdInCourseSlotsTable = (resolve, reject, courseId) => {
+  const connection = getDBConnection();
+  connection.query(`
+    DELETE FROM course_slots WHERE course_id = ${courseId};
+  `, (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(courseId);
+    }
+  });
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -504,5 +578,12 @@ module.exports = {
   getRegisteredCourse,
   dropCourse,
   addTestDataForStudentTest,
-  updateAcademicForTest
+  updateAcademicForTest,
+
+  // verify if courseId exists in course table
+  checkCourseIdInCourseTable,
+  // create or update course_slots table
+  createCourseIdInCourseSlotsTable,
+  // delete from course_slots table
+  deleteCourseIdInCourseSlotsTable
 };
