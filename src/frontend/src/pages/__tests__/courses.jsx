@@ -81,7 +81,7 @@ describe('Courses component', () => {
 
     await waitFor(() => screen.getByText('Available courses'));
 
-    act(async () => {
+    act(() => {
       fireEvent.click(screen.getAllByText('Delete')[0]);
     });
 

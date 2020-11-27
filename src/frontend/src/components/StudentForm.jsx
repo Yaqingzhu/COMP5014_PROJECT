@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import DatePicker from 'react-datepicker';
 
 export const StudentForm = ({ student, handleSave }) => {
-  const [birthDate, setBirthDate] = useState(student.birthDate);
+  const [birthDate, setBirthDate] = useState(student ? student.birthDate : new Date());
   const { register, handleSubmit, setValue } = useForm({
     defaultValues: student,
   });
@@ -12,7 +12,7 @@ export const StudentForm = ({ student, handleSave }) => {
 
   const handleChange = date => {
     setBirthDate(date);
-    setValue('birthDate', date.toISOString().slice(0, 10));
+    setValue('birthDate', date.toISOString());
   };
 
   useEffect(() => {

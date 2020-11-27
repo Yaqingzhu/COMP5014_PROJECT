@@ -3,7 +3,7 @@ import { render, fireEvent, act } from '@testing-library/react';
 import { MemoryRouter as Router } from 'react-router-dom';
 import fetchMock from 'jest-fetch-mock';
 
-import { Register } from '../Register';
+import { Register } from '../register';
 
 describe('Register component', () => {
   afterEach(() => {

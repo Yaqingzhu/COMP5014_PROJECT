@@ -5,7 +5,7 @@ import { useStudents } from '../api/useStudents';
 import { deleteStudent } from '../api/studentAPI';
 import { Loader } from '../components/Loader';
 
-export const CoursesPage = () => {
+export const StudentsPage = () => {
   const { loading, students, reload } = useStudents();
   const history = useHistory();
 
@@ -80,4 +80,4 @@ export const CoursesPage = () => {
   );
 };
 
-export default CoursesPage;
+export default StudentsPage;

@@ -8,8 +8,8 @@ export const NewStudentPage = () => {
   const history = useHistory();
 
   const handleSave = data => {
-    createStudent(data).then(student => {
-      history.push(`/students/${student.studentId}`);
+    createStudent(data).then(studentId => {
+      history.push(`/students/${studentId}`);
     });
   };
 
