@@ -5,6 +5,9 @@ import HomePage from '../pages/home';
 import CoursesPage from '../pages/courses';
 import CoursePage from '../pages/course';
 import NewCoursePage from '../pages/newCourse';
+import StudentsPage from '../pages/students';
+import StudentPage from '../pages/student';
+import NewStudentPage from '../pages/newStudent';
 
 export const Dashboard = ({ user }) => {
   const location = useLocation();
@@ -42,17 +45,33 @@ export const Dashboard = ({ user }) => {
                   </Link>
                 </li>
                 {user.role === 'admin' && (
-                  <li className="nav-item">
-                    <Link className={`nav-link${getActive('/courses')}`} to="/courses">
-                      Courses
-                    </Link>
-                  </li>
+                  <>
+                    <li className="nav-item">
+                      <Link className={`nav-link${getActive('/courses')}`} to="/courses">
+                        Courses
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link className={`nav-link${getActive('/students')}`} to="/students">
+                        Students
+                      </Link>
+                    </li>
+                  </>
                 )}
               </ul>
             </div>
           </nav>
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <Switch>
+              <Route path="/students/new">
+                <NewStudentPage />
+              </Route>
+              <Route path="/students/:id">
+                <StudentPage />
+              </Route>
+              <Route path="/students">
+                <StudentsPage />
+              </Route>
               <Route path="/courses/new">
                 <NewCoursePage />
               </Route>
