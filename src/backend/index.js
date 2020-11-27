@@ -60,6 +60,8 @@ app.delete('/deletestudent', admin.DeleteStudent);
 app.post('/schedulecourse', admin.ScheduleCourse);
 app.post('/unschedulecourse', admin.UnscheduleCourse);
 
+app.post('/createdeliverable', prof.createCourseDeliverable);
+
 app.get('/course', general.getCourse);
 
 if (process.env.NODE_ENV !== 'test') {
