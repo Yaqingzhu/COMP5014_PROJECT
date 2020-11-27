@@ -71,7 +71,7 @@ Then('return a payload with course name {string}', function (arg1) {
 });
 
 Then('return a payload with list of courses {int} and {int}', function (arg1, arg2) {
-    const courseName = JSON.parse(res.body.coursePayload);
-    assert.equal(arg1, courseName[0].courseId);
-    assert.equal(arg2, courseName[1].courseId);
+    const courseName = res.body.coursePayload;
+    assert.equal(true, courseName.includes(arg1));
+    assert.equal(true, courseName.includes(arg1));
 });
