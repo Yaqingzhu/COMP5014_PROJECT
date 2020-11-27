@@ -445,6 +445,7 @@ function addTestDataForStudentTest() {
       // eslint-disable-next-line node/handle-callback-err
       ' VALUES (223,\'test\',0), ' +
       '  (2234,\'test\',0), ' +
+      '  (3234,\'test\',0), ' +
       '  (22345,\'test\',0) ', [], (error, results) => {
         if (error) {
           console.log(error);
@@ -453,6 +454,7 @@ function addTestDataForStudentTest() {
         const date = new Date();
         date.setDate(date.getDate() + 1);
         connection.query('INSERT IGNORE INTO comp4004.academic (registration_deadline, drop_deadline) VALUES(?,?)', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)]);
+        connection.query('INSERT IGNORE INTO comp4004.prof (prof_id, login_password, prof_name) VALUES(3234,\'test\', \'testname\')');
         connection.query('INSERT IGNORE INTO comp4004.student (student_id, student_name,student_email,admitted, birth_date)' +
         // eslint-disable-next-line node/handle-callback-err
         ' VALUES (223,\'test\',\'test@test.ca\',1,\'2020-10-10\'), ' +
@@ -542,11 +544,81 @@ const deleteCourseIdInCourseSlotsTable = (resolve, reject, courseId) => {
   const connection = getDBConnection();
   connection.query(`
     DELETE FROM course_slots WHERE course_id = ${courseId};
-  `, (error, results) => {
+  `, (error, result) => {
     if (error) {
       reject(error);
     } else {
       resolve(courseId);
+    }
+  });
+};
+function setProfForCourse(resolve, reject, courseId, ProfId) {
+  const connection = getDBConnection();
+  connection.query('UPDATE course SET course_assigned_prof_id = ? WHERE course_id = ?', [
+    ProfId, courseId
+    // eslint-disable-next-line node/handle-callback-err
+  ], (error, results) => {
+    if (error) {
+      reject(error);
+    }
+    resolve(courseId);
+  });
+}
+
+function updateAcademicDeadline(resolve, reject, regDeadline, dropDeadline) {
+  const connection = getDBConnection();
+
+  connection.query('DELETE FROM academic', [], (error, results) => {
+    if (error) {
+      reject(error);
+    }
+    connection.query('INSERT INTO academic(registration_deadline, drop_deadline) VALUES (?,?)', [
+      regDeadline, dropDeadline
+      // eslint-disable-next-line node/handle-callback-err
+    ], (error, results) => {
+      if (error) {
+        reject(error);
+      }
+      resolve();
+    });
+  });
+}
+
+function getAcademicDeadline(resolve, reject) {
+  const connection = getDBConnection();
+  connection.query('SELECT registration_deadline, drop_deadline FROM academic', [], (error, results) => {
+    if (error) {
+      reject(error);
+    }
+    const res = results[0] || -1;
+    resolve(res);
+  });
+}
+
+// Create new deliverable for a given courseId
+const createNewDeliverable = (resolve, reject, courseId, deliverableType, deliverableDeadline) => {
+  const connection = getDBConnection();
+
+  // Find current max deliverable_id to increment from
+  connection.query(`
+    SELECT MAX(deliverable_id) FROM deliverable;
+  `, (error, result) => {
+    if (error) {
+      reject(error);
+    } else {
+      const deliverableId = result[0]['MAX(deliverable_id)'] + 1;
+      // Create new deliverable
+      connection.query(`
+        INSERT INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) 
+        VALUES (${deliverableId},${courseId},'${deliverableType}','${deliverableDeadline}');
+      `, (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          // success
+          resolve(deliverableId);
+        }
+      });
     }
   });
 };
@@ -585,5 +657,11 @@ module.exports = {
   // create or update course_slots table
   createCourseIdInCourseSlotsTable,
   // delete from course_slots table
-  deleteCourseIdInCourseSlotsTable
+  deleteCourseIdInCourseSlotsTable,
+  setProfForCourse,
+  updateAcademicDeadline,
+  getAcademicDeadline,
+
+  createNewDeliverable
+
 };

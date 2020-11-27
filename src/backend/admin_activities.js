@@ -309,10 +309,17 @@ const ScheduleCourse = async (req, res) => {
         // ]
         // Get the value by using Object.values(verifyInCourse[0])
         verifyInCourse = Object.values(verifyInCourse[0]);
+
+        if (!verifyInCourse) {
+            return res.status(403).json({
+                responseCode: -1,
+                errorMessage: 'Could not find courseId. Create the course first.'
+            });
+        }
     } catch (error) {
         return res.status(403).json({
             responseCode: -1,
-            errorMessage: 'Could not find courseId. Create the course first.'
+            errorMessage: 'Error in searching for courseId in database.'
         });
     }
 
@@ -374,6 +381,102 @@ const UnscheduleCourse = async (req, res) => {
     }
 };
 
+function assignProf(req, res) {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    new Promise((resolve, reject) => {
+        mysql.setProfForCourse(resolve, reject, req.body.courseId, req.body.profId);
+    }).then(id => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            courseId: id
+        });
+    }).catch(err => {
+        res.status(400).json({
+            responseCode: -1,
+            errorMessage: err.message,
+        });
+    });
+}
+
+function updateAcademicDeadline(req, res) {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    if (!req.body.registrationDeadline || !req.body.dropDeadline) {
+        console.log('You must provide both deadlines.');
+        return res.status(200).json({
+            responseCode: -1,
+            errorMessage: 'You must provide both deadlines.',
+        });
+    }
+
+    new Promise((resolve, reject) => {
+        mysql.updateAcademicDeadline(resolve, reject, req.body.registrationDeadline, req.body.dropDeadline);
+    }).then(() => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+        });
+    }).catch(err => {
+        res.status(400).json({
+            responseCode: -1,
+            errorMessage: err.message,
+        });
+    });
+}
+
+function getAcademicDeadline(req, res) {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    }
+
+    new Promise((resolve, reject) => {
+        mysql.getAcademicDeadline(resolve, reject);
+    }).then(result => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            registrationDeadline: result.registration_deadline,
+            dropDeadline: result.drop_deadline
+        });
+    }).catch(err => {
+        res.status(400).json({
+            responseCode: -1,
+            errorMessage: err.message,
+        });
+    });
+}
+
 module.exports = {
     CourseProcess,
     CancelCourse,
@@ -381,5 +484,8 @@ module.exports = {
     DeleteStudent,
     ApproveStudentCreationApply,
     ScheduleCourse,
-    UnscheduleCourse
+    UnscheduleCourse,
+    getAcademicDeadline,
+    updateAcademicDeadline,
+    assignProf
 };

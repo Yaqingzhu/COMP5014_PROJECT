@@ -52,3 +52,7 @@ Then prerequisites table has a row with course id 12345 and prerequisites 1234
 Scenario: course update without login
 Given without login, course json file "{\"courseId\": 12345,\"courseName\": \"Java4\",\"courseStatus\": \"scheduled\",\"courseCapacity\": 30, \"prerequisites\":[1234]}"
 Then return a json with responseCode equals to -1
+
+Scenario: assign prof to a course
+Given course json file "{\"courseId\": 123,\"profId\": 3234}"
+Then return a json with responseCode equals to 0

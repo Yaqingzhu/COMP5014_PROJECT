@@ -56,9 +56,15 @@ app.post('/registercourse', student.registerCourse);
 app.post('/dropcourse', student.dropCourse);
 app.get('/listcourse', student.listCourse);
 app.delete('/deletestudent', admin.DeleteStudent);
+app.post('/assignprof', admin.assignProf);
+
+app.post('/updateacademicline', admin.updateAcademicDeadline);
+app.get('/academicline', admin.getAcademicDeadline);
 
 app.post('/schedulecourse', admin.ScheduleCourse);
 app.post('/unschedulecourse', admin.UnscheduleCourse);
+
+app.post('/createdeliverable', prof.createCourseDeliverable);
 
 app.get('/course', general.getCourse);
 
