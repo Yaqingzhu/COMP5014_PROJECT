@@ -15,7 +15,9 @@ describe('App component', () => {
 
   it('Renders a Hello world when logged in', () => {
     const user = {
-      username: 'test',
+      loginId: 1,
+      loginName: 'test',
+      role: 'admin',
     };
 
     customRender(<MemoryRouter><App /></MemoryRouter>, { providerProps: { value: { user } } });
@@ -24,7 +26,7 @@ describe('App component', () => {
   });
 
   it('Renders a Login page when not logged in', () => {
-    render(<App />);
+    render(<MemoryRouter><App /></MemoryRouter>);
 
     expect(screen.getByRole('form')).toBeDefined();
   });

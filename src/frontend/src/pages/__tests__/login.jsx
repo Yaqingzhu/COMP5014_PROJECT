@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
+import { MemoryRouter as Router } from 'react-router-dom';
 import fetchMock from 'jest-fetch-mock';
 
 import { UserProvider } from '../../context/userContext';
@@ -13,7 +14,7 @@ describe('Login component', () => {
   it('Saves the value entered in fields', () => {
     const username = 'test';
     const password = 'test';
-    const wrapper = render(<Login />);
+    const wrapper = render(<Router><Login /></Router>);
 
     const usernameInput = wrapper.getByPlaceholderText('Email');
     const passwordInput = wrapper.getByPlaceholderText('Password');
@@ -30,7 +31,9 @@ describe('Login component', () => {
     const password = 'test';
     const wrapper = render(
       <UserProvider>
-        <Login />
+        <Router>
+          <Login />
+        </Router>
       </UserProvider>
     );
 
