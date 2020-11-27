@@ -544,7 +544,7 @@ const deleteCourseIdInCourseSlotsTable = (resolve, reject, courseId) => {
   const connection = getDBConnection();
   connection.query(`
     DELETE FROM course_slots WHERE course_id = ${courseId};
-  `, (error, results) => {
+  `, (error, result) => {
     if (error) {
       reject(error);
     } else {
@@ -595,6 +595,34 @@ function getAcademicDeadline(resolve, reject) {
   });
 }
 
+// Create new deliverable for a given courseId
+const createNewDeliverable = (resolve, reject, courseId, deliverableType, deliverableDeadline) => {
+  const connection = getDBConnection();
+
+  // Find current max deliverable_id to increment from
+  connection.query(`
+    SELECT MAX(deliverable_id) FROM deliverable;
+  `, (error, result) => {
+    if (error) {
+      reject(error);
+    } else {
+      const deliverableId = result[0]['MAX(deliverable_id)'] + 1;
+      // Create new deliverable
+      connection.query(`
+        INSERT INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) 
+        VALUES (${deliverableId},${courseId},'${deliverableType}','${deliverableDeadline}');
+      `, (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          // success
+          resolve(deliverableId);
+        }
+      });
+    }
+  });
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -632,5 +660,8 @@ module.exports = {
   deleteCourseIdInCourseSlotsTable,
   setProfForCourse,
   updateAcademicDeadline,
-  getAcademicDeadline
+  getAcademicDeadline,
+
+  createNewDeliverable
+
 };

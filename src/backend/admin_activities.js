@@ -309,10 +309,17 @@ const ScheduleCourse = async (req, res) => {
         // ]
         // Get the value by using Object.values(verifyInCourse[0])
         verifyInCourse = Object.values(verifyInCourse[0]);
+
+        if (!verifyInCourse) {
+            return res.status(403).json({
+                responseCode: -1,
+                errorMessage: 'Could not find courseId. Create the course first.'
+            });
+        }
     } catch (error) {
         return res.status(403).json({
             responseCode: -1,
-            errorMessage: 'Could not find courseId. Create the course first.'
+            errorMessage: 'Error in searching for courseId in database.'
         });
     }
 
