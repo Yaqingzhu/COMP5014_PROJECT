@@ -419,6 +419,14 @@ function updateAcademicDeadline(req, res) {
         });
     }
 
+    if (!req.body.registrationDeadline || !req.body.dropDeadline) {
+        console.log('You must provide both deadlines.');
+        return res.status(200).json({
+            responseCode: -1,
+            errorMessage: 'You must provide both deadlines.',
+        });
+    }
+
     new Promise((resolve, reject) => {
         mysql.updateAcademicDeadline(resolve, reject, req.body.registrationDeadline, req.body.dropDeadline);
     }).then(() => {
