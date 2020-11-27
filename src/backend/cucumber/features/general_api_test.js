@@ -69,8 +69,8 @@ Then('return a payload with course name {string}', function (arg1) {
     assert.equal(arg1, courseName.courseName);
 });
 
-Then('return a payload with list of courses {int} and {int}', function (arg1, arg2) {
+Then('return a payload with list of courses {string} and {string}', function (arg1, arg2) {
     const courseName = res.body.coursePayload;
-    assert.equal(true, courseName.includes(arg1));
-    assert.equal(true, courseName.includes(arg1));
+    assert.equal(true, JSON.stringify(courseName).includes(arg1));
+    assert.equal(true, JSON.stringify(courseName).includes(arg2));
 });
