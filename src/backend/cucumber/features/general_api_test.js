@@ -47,7 +47,8 @@ Then('vaildation login is {int}', function (arg1) {
     assert.equal(Boolean(arg1), util.validateLogin(req));
 });
 
-Given('a course id {string}', function (arg1) {
+Given('a course id {int}', function (arg1) {
+  const query = arg1 === -1 ? '/course' : '/course?courseId=' + arg1
     testSession = session(app);
     return testSession
       .post('/login')
@@ -55,8 +56,8 @@ Given('a course id {string}', function (arg1) {
       .expect(200)
       .then(function () {
         return testSession
-          .get('/course')
-          .send(JSON.parse(arg1))
+          .get(query)
+          .send()
           .expect(200)
           .then(function (rr) {
             res = rr;
