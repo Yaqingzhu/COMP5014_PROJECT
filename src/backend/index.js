@@ -50,6 +50,7 @@ app.post('/courseop', admin.CourseProcess);
 app.post('/cancelcourse', admin.CancelCourse);
 
 app.get('/student', general.getStudent);
+app.get('/students', general.getStudents);
 app.post('/createstudent', admin.CreateStudent);
 app.post('/modifystudent', admin.ModifyStudent);
 app.post('/approvestudent', admin.ApproveStudentCreationApply);

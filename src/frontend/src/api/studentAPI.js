@@ -35,7 +35,7 @@ export const createStudent = student => new Promise((resolve, reject) => {
 });
 
 export const editStudent = (id, student) => new Promise((resolve, reject) => {
-  window.fetch(`${apiurl}/editstudent`, {
+  window.fetch(`${apiurl}/modifystudent`, {
     method: 'POST',
     credentials: 'include',
     headers: {

@@ -211,7 +211,6 @@ const DeleteStudent = async (req, res) => {
             studentId: id
         });
     }).catch(error => {
-        console.log(error);
         return res.status(403).json({
             responseCode: -1,
             errorMessage: error
@@ -224,24 +223,25 @@ const DeleteStudent = async (req, res) => {
 // Optional inputs: studentEmail, birthDate, studentName, password
 const ModifyStudent = async (req, res) => {
     // Validation
-    // if (!util.validateLogin(req)) {
-    //     return res.status(403).json({
-    //         responseCode: -1,
-    //         errorMessage: 'You need to login before doing this operation.',
-    //     });
-    // } else if (!util.validateStudent(req)) {
-    //     return res.status(403).json({
-    //         responseCode: -1,
-    //         errorMessage: 'You do not have permission to do this operation.',
-    //     });
-    // }
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+           errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
 
     // Get form information
     const studentId = req.body.studentId;
-    const email = req.body.studentEmail || '';
-    const birthDate = req.body.birthDate || '';
-    const name = req.body.studentName || '';
-    const password = req.body.password || '';
+    const email = req.body.studentEmail;
+    const birthDate = req.body.birthDate;
+    const admitted = req.body.admitted;
+    const name = req.body.studentName;
+    const password = req.body.password;
 
     // Validate email
     if (email !== '' && !util.validateEmail(email)) {
@@ -253,7 +253,7 @@ const ModifyStudent = async (req, res) => {
 
     // Perform operation in DB
     await new Promise((resolve, reject) => {
-        mysql.modifyStudentUser(resolve, reject, studentId, email, birthDate, name, password);
+        mysql.modifyStudentUser(resolve, reject, studentId, email, birthDate, name, admitted, password);
     }).then(studentId => {
         return res.status(200).json({
             responseCode: 0,
@@ -263,7 +263,7 @@ const ModifyStudent = async (req, res) => {
         });
     }).catch(error => {
         console.log(error);
-        return res.status(403).json({
+        return res.status(500).json({
             responseCode: -1,
             errorMessage: error
         });

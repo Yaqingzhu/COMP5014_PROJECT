@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { students as studentsMocks } from '../mocks/students';
 
 const apiurl = process.env.API_URL;
 
@@ -9,12 +8,7 @@ export const useStudents = () => {
   const [students, setStudents] = useState(null);
 
   const load = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setStudents(studentsMocks);
-    }, 500);
-    /* window.fetch(`${apiurl}/course`, {
+    window.fetch(`${apiurl}/students`, {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
@@ -22,13 +16,16 @@ export const useStudents = () => {
     }).then(body => body.json()).then(result => {
       setLoading(false);
       if (result.responseCode === 0) {
-        setCourses(result.coursePayload.map(result => JSON.parse(result.result)));
+        setStudents(result.students.map(student => ({
+          ...student,
+          birthDate: new Date(student.birthDate),
+        })));
       } else {
         setError(result.errorMessage);
       }
     }).catch(error => {
       setError(error);
-    }); */
+    });
   };
 
   useEffect(load, []);

@@ -28,7 +28,7 @@ function applyCreateStudent(req, res) {
            admitted: false
        });
    }).catch(error => {
-       return res.status(403).json({
+       return res.status(500).json({
            responseCode: -1,
            errorMessage: error
        });

@@ -112,10 +112,58 @@ const getStudent = async (req, res) => {
         const student = await new Promise((resolve, reject) => {
             mysql.getStudentUser(resolve, reject, studentId);
         });
+
+        if (!student.length) {
+            return res.status(404).json({
+                responseCode: -1,
+                errorMessage: 'No student user found for the specified id',
+            });
+        }
         return res.status(200).json({
             responseCode: 0,
             errorMessage: '',
-            student
+            student: {
+                studentId: student[0].student_id,
+                studentName: student[0].student_name,
+                studentEmail: student[0].student_email,
+                admitted: student[0].admitted,
+                birthDate: student[0].birth_date,
+            }
+        });
+    } catch (error) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'Error retrieving student from database',
+        });
+    }
+};
+
+// student is an empty array if no hits found
+const getStudents = async (req, res) => {
+    // Validate login
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before performing this operation.',
+        });
+    }
+
+    try {
+        const students = await new Promise((resolve, reject) => {
+            mysql.getAllStudents(resolve, reject);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            students: students.map(function (student) {
+                return {
+                    studentId: student.student_id,
+                    studentName: student.student_name,
+                    studentEmail: student.student_email,
+                    admitted: student.admitted,
+                    birthDate: student.birth_date,
+                };
+            }),
         });
     } catch (error) {
         return res.status(403).json({
@@ -232,5 +280,6 @@ module.exports = {
     // get a deliverable
     getDeliverable,
     // get all deliverables for a given course
-    getCourseDeliverables
+    getCourseDeliverables,
+    getStudents
 };
