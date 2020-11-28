@@ -49,7 +49,7 @@ app.post('/courseop', admin.CourseProcess);
 
 app.post('/cancelcourse', admin.CancelCourse);
 
-app.post('/student', general.getStudent);
+app.get('/student', general.getStudent);
 app.post('/createstudent', admin.CreateStudent);
 app.post('/modifystudent', admin.ModifyStudent);
 app.post('/approvestudent', admin.ApproveStudentCreationApply);
@@ -67,6 +67,7 @@ app.post('/schedulecourse', admin.ScheduleCourse);
 app.post('/unschedulecourse', admin.UnscheduleCourse);
 
 app.post('/createdeliverable', prof.createCourseDeliverable);
+app.get('/deliverable', general.getDeliverable)
 
 app.get('/course', general.getCourse);
 

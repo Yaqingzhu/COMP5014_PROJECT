@@ -35,7 +35,6 @@ function getCourseFromDB(res, body) {
 }
 
 // helper functions
-
 function validateLogin(req) {
     if (!req.session || !req.session.isLogin) {
         console.warn('User is not logged in');
@@ -100,14 +99,14 @@ function validateTime(time) {
 // student is an empty array if no hits found
 const getStudent = async (req, res) => {
     // Validate login
-    // if (!validateLogin(req)) {
-    //     return res.status(403).json({
-    //         responseCode: -1,
-    //         errorMessage: 'You need to login before performing this operation.',
-    //     });
-    // }
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before performing this operation.',
+        });
+    }
 
-    const studentId = req.body.studentId;
+    const studentId = req.query.studentId;
 
     try {
         const student = await new Promise((resolve, reject) => {
@@ -126,6 +125,48 @@ const getStudent = async (req, res) => {
     }
 };
 
+// Retrieve deliverable information
+// Given deliverableId
+// Sample Response: 
+// {
+//     "responseCode": 0,
+//     "errorMessage": "",
+//     "deliverable": {
+//         "deliverable_id": 1,
+//         "course_id": 123,
+//         "deliverable_type": "",
+//         "deliverable_deadline": "1970-01-01T00:00:00.000Z"
+//     }
+// }
+// Returns -1 if not found
+const getDeliverable = async (req, res) => {
+    // Validate login
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before performing this operation.',
+        });
+    }
+
+    const deliverableId = req.query.deliverableId;
+
+    try {
+        const deliverable = await new Promise((resolve, reject) => {
+            mysql.getDeliverable(resolve, reject, deliverableId);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            deliverable
+        })
+    } catch (error) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'Error retrieving deliverable from database',
+        });
+    }
+}
+
 module.exports = {
     getCourse,
     validateLogin,
@@ -135,5 +176,7 @@ module.exports = {
     validateEmail,
     validateTime,
     // get a student
-    getStudent
+    getStudent,
+    // get a deliverable
+    getDeliverable
 };
