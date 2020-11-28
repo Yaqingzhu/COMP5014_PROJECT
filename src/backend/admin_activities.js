@@ -219,6 +219,57 @@ const DeleteStudent = async (req, res) => {
     });
 };
 
+// Modify a Student
+// Must supply studentId,
+// Optional inputs: studentEmail, birthDate, studentName, password
+const ModifyStudent = async (req, res) => {
+    // Validation
+    // if (!util.validateLogin(req)) {
+    //     return res.status(403).json({
+    //         responseCode: -1,
+    //         errorMessage: 'You need to login before doing this operation.',
+    //     });
+    // } else if (!util.validateStudent(req)) {
+    //     return res.status(403).json({
+    //         responseCode: -1,
+    //         errorMessage: 'You do not have permission to do this operation.',
+    //     });
+    // }
+
+    // Get form information
+    const studentId = req.body.studentId;
+    const email = req.body.studentEmail || '';
+    const birthDate = req.body.birthDate || '';
+    const name = req.body.studentName || '';
+    const password = req.body.password || '';
+
+    // Validate email
+    if (email !== '' && !util.validateEmail(email)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'Invalid email format'
+        });
+    }
+
+    // Perform operation in DB
+    await new Promise((resolve, reject) => {
+        mysql.modifyStudentUser(resolve, reject, studentId, email, birthDate, name, password);
+    }).then(studentId => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            studentId
+        });
+    }).catch(error => {
+        console.log(error);
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: error
+        });
+    });
+};
+
 // Approve a student's creation apply, given a student_id
 const ApproveStudentCreationApply = async (req, res) => {
     // Validation
@@ -482,6 +533,7 @@ module.exports = {
     CancelCourse,
     CreateStudent,
     DeleteStudent,
+    ModifyStudent,
     ApproveStudentCreationApply,
     ScheduleCourse,
     UnscheduleCourse,

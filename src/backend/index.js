@@ -51,6 +51,7 @@ app.post('/cancelcourse', admin.CancelCourse);
 
 app.post('/student', general.getStudent);
 app.post('/createstudent', admin.CreateStudent);
+app.post('/modifystudent', admin.ModifyStudent);
 app.post('/approvestudent', admin.ApproveStudentCreationApply);
 app.post('/applycreatestudent', student.applyCreateStudent);
 app.post('/registercourse', student.registerCourse);

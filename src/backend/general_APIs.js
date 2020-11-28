@@ -1,5 +1,4 @@
 const mysql = require('./db_util');
-const util = require('./general_APIs');
 
 async function getCourse(req, res) {
     if (!req.session || !req.session.isLogin) {
@@ -119,14 +118,13 @@ const getStudent = async (req, res) => {
             errorMessage: '',
             student
         });
-    } catch {
+    } catch (error) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'Error retrieving student from database',
         });
     }
-    
-}
+};
 
 module.exports = {
     getCourse,
