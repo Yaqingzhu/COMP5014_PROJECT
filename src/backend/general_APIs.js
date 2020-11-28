@@ -127,7 +127,7 @@ const getStudent = async (req, res) => {
 
 // Retrieve deliverable information
 // Given deliverableId
-// Sample Response: 
+// Sample Response:
 // {
 //     "responseCode": 0,
 //     "errorMessage": "",
@@ -158,14 +158,14 @@ const getDeliverable = async (req, res) => {
             responseCode: 0,
             errorMessage: '',
             deliverable
-        })
+        });
     } catch (error) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'Error retrieving deliverable from database',
         });
     }
-}
+};
 
 // Return ALL deliverables
 // given a courseId
@@ -210,14 +210,14 @@ const getCourseDeliverables = async (req, res) => {
             responseCode: 0,
             errorMessage: '',
             deliverable
-        })
+        });
     } catch (error) {
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'Error retrieving deliverable from database',
         });
     }
-}
+};
 
 module.exports = {
     getCourse,
