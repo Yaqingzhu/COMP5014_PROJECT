@@ -68,6 +68,8 @@ app.post('/schedulecourse', admin.ScheduleCourse);
 app.post('/unschedulecourse', admin.UnscheduleCourse);
 
 app.post('/createdeliverable', prof.createCourseDeliverable);
+app.get('/deliverable', general.getDeliverable);
+app.get('/coursedeliverable', general.getCourseDeliverables);
 
 app.get('/course', general.getCourse);
 

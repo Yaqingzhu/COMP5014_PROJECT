@@ -698,6 +698,30 @@ const createNewDeliverable = (resolve, reject, courseId, deliverableType, delive
   });
 };
 
+// Retrieves deliverable from a given deliverableId
+const getDeliverable = (resolve, reject, deliverableId) => {
+  const connection = getDBConnection();
+  connection.query('SELECT * FROM deliverable WHERE deliverable_id = ?', [deliverableId], (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results[0] || -1);
+    }
+  });
+};
+
+// Retrieve all deliverables from a given courseId
+const getCourseDeliverable = (resolve, reject, courseId) => {
+  const connection = getDBConnection();
+  connection.query('SELECT * FROM deliverable WHERE course_id = ?', [courseId], (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results || -1);
+    }
+  });
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -744,6 +768,7 @@ module.exports = {
   updateAcademicDeadline,
   getAcademicDeadline,
 
-  createNewDeliverable
-
+  createNewDeliverable,
+  getDeliverable,
+  getCourseDeliverable
 };
