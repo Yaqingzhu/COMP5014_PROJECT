@@ -80,7 +80,6 @@ function createAdminUser() {
     adminUser.id, adminUser.password
     // eslint-disable-next-line node/handle-callback-err
   ], (error, results) => {
-    console.log(error, results);
     if (!results || !results.length) {
       // only insert if the user could not be found
       console.log('Inserting admin user');
@@ -227,32 +226,29 @@ function changeCourseStatusInCourseTable(resolve, reject, courseId, status) {
 function createStudentUser(resolve, reject, email, birthDate, name, password, admitted) {
   const connection = getDBConnection();
 
-  let id = -1;
+  // default value for birthDate
+  const defaultBirthDate = new Date();
+  // default value for password
+  const defaultPassword = 'password';
 
-  connection.query(`
-    SELECT MAX(id) FROM login;
-  `, (error, results) => {
+  // Create new student record in 'student' table
+  // Create new login in 'login' table
+  connection.query('INSERT INTO comp4004.login (password) VALUES (?)', [password || defaultPassword], (error, result) => {
     if (error) {
-      return reject(error);
+      reject(error);
     } else {
-      // id is incremented from previous max
-      id = results[0]['MAX(id)'] + 1;
-      // default value for birthDate
-      const defaultBirthDate = new Date().toISOString().slice(0, 10);
-      // default value for password
-      const defaultPassword = 'password';
-
-      // Create new student record in 'student' table
-      // Create new login in 'login' table
-      connection.query(`
-        INSERT INTO comp4004.login (id, password) VALUES (${id},'${password || defaultPassword}');
-        INSERT INTO comp4004.student (student_id, student_name, student_email, admitted, birth_date) VALUES (${id},'${name}','${email}',${admitted || 0},'${birthDate || defaultBirthDate}');
-      `, (error, result) => {
+      connection.query('INSERT INTO comp4004.student (student_id, student_name, student_email, admitted, birth_date) VALUES (?,?,?,?,?)', [
+        result.insertId,
+        name,
+        email,
+        admitted || false,
+        birthDate || defaultBirthDate,
+      ], (error, result) => {
         if (error) {
           reject(error);
         } else {
           // success
-          resolve(id);
+          resolve(result);
         }
       });
     }
@@ -609,7 +605,7 @@ const createNewDeliverable = (resolve, reject, courseId, deliverableType, delive
       const deliverableId = result[0]['MAX(deliverable_id)'] + 1;
       // Create new deliverable
       connection.query(`
-        INSERT INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) 
+        INSERT INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline)
         VALUES (${deliverableId},${courseId},'${deliverableType}','${deliverableDeadline}');
       `, (error, result) => {
         if (error) {

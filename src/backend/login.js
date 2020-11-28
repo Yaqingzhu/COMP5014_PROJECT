@@ -82,6 +82,7 @@ function setUserRole(session, id, res) {
       loginStatus: 0,
       message: 'none',
       loginRole: session.role || 'none',
+      loginId: id,
       loginName: result.name
     });
   });
