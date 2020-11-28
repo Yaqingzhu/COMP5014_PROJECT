@@ -82,6 +82,50 @@ function validateTime(time) {
     return /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]/.test(time);
 }
 
+// Get a student
+// Sample response
+// {
+//     "responseCode": 0,
+//     "errorMessage": "",
+//     "student": [
+//         {
+//             "student_id": 2,
+//             "student_name": "Flanders",
+//             "student_email": "nedflanders@gmail.com",
+//             "admitted": 1,
+//             "birth_date": "2020-11-22T00:00:00.000Z"
+//         }
+//     ]
+// }
+// student is an empty array if no hits found
+const getStudent = async (req, res) => {
+    // Validate login
+    // if (!validateLogin(req)) {
+    //     return res.status(403).json({
+    //         responseCode: -1,
+    //         errorMessage: 'You need to login before performing this operation.',
+    //     });
+    // }
+
+    const studentId = req.body.studentId;
+
+    try {
+        const student = await new Promise((resolve, reject) => {
+            mysql.getStudentUser(resolve, reject, studentId);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            student
+        });
+    } catch (error) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'Error retrieving student from database',
+        });
+    }
+};
+
 module.exports = {
     getCourse,
     validateLogin,
@@ -89,5 +133,7 @@ module.exports = {
     validateStudent,
     validateProf,
     validateEmail,
-    validateTime
+    validateTime,
+    // get a student
+    getStudent
 };

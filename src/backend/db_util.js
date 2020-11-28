@@ -221,6 +221,22 @@ function changeCourseStatusInCourseTable(resolve, reject, courseId, status) {
   });
 }
 
+// Retrieve a student
+// Affected tables: student
+const getStudentUser = (resolve, reject, studentId) => {
+  const connection = getDBConnection();
+
+  connection.query(`
+    SELECT * FROM student WHERE student_id = ?;
+  `, [studentId], (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results);
+    }
+  });
+};
+
 // Add a new student
 // Affected tables: student, login
 function createStudentUser(resolve, reject, email, birthDate, name, password, admitted) {
@@ -254,6 +270,44 @@ function createStudentUser(resolve, reject, email, birthDate, name, password, ad
     }
   });
 }
+
+// Modify an existing student user
+const modifyStudentUser = (resolve, reject, studentId, email, birthDate, name, password) => {
+  const connection = getDBConnection();
+
+  let updateQuery = 'SET ';
+
+  // update user info
+  if (email !== '') {
+    updateQuery += `student_email = '${email}', `;
+  }
+  if (birthDate !== '') {
+    updateQuery += `birth_date = ${new Date(birthDate).toISOString().slice(0, 10)}, `;
+  }
+  if (name !== '') {
+    updateQuery += `student_name = '${name}', `;
+  }
+  if (updateQuery.length > 4) {
+    updateQuery = updateQuery.substring(0, updateQuery.length - 2);
+    updateQuery = `UPDATE student ${updateQuery} WHERE student_id = ${studentId};`;
+  } else {
+    updateQuery = '';
+  }
+
+  // change password
+  // change both student AND login
+  const loginQuery = password !== '' ? `UPDATE login SET password = '${password}' WHERE id = ${studentId};` : '';
+
+  connection.query(`
+    ${updateQuery} ${loginQuery}
+  `, (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(studentId);
+    }
+  });
+};
 
 // Deletes a student from DB
 // Affected tables: student, login
@@ -635,8 +689,14 @@ module.exports = {
   removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots,
   changeCourseStatusInCourseTable,
 
+  // retrieve a student
+  getStudentUser,
+
   // create student
   createStudentUser,
+
+  // modify student
+  modifyStudentUser,
 
   // delete student
   deleteStudentUser,
