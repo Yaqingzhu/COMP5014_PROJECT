@@ -167,6 +167,58 @@ const getDeliverable = async (req, res) => {
     }
 }
 
+// Return ALL deliverables
+// given a courseId
+// Sample request:
+// GET localhost:8080/coursedeliverable?courseId=123
+// Sample response:
+// {
+//     "responseCode": 0,
+//     "errorMessage": "",
+//     "deliverable": [
+//         {
+//             "deliverable_id": 1,
+//             "course_id": 123,
+//             "deliverable_type": "",
+//             "deliverable_deadline": "1970-01-01T00:00:00.000Z"
+//         },
+//         {
+//             "deliverable_id": 2,
+//             "course_id": 123,
+//             "deliverable_type": "Assignment",
+//             "deliverable_deadline": "1970-01-01T00:00:00.000Z"
+//         }
+//     ]
+// }
+// deliverable is [] if no hits found
+const getCourseDeliverables = async (req, res) => {
+    // Validate login
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before performing this operation.',
+        });
+    }
+
+    const courseId = req.query.courseId;
+
+    try {
+        const deliverable = await new Promise((resolve, reject) => {
+            mysql.getCourseDeliverable(resolve, reject, courseId);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            deliverable
+        })
+    } catch (error) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'Error retrieving deliverable from database',
+        });
+    }
+}
+
 module.exports = {
     getCourse,
     validateLogin,
@@ -178,5 +230,7 @@ module.exports = {
     // get a student
     getStudent,
     // get a deliverable
-    getDeliverable
+    getDeliverable,
+    // get all deliverables for a given course
+    getCourseDeliverables
 };

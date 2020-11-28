@@ -39,7 +39,8 @@ const createCourseDeliverable = async (req, res) => {
         // Get the value by using Object.values(verifyInCourse[0])
         verifyInCourse = Object.values(verifyInCourse[0])[0];
 
-        if (verifyInCourse !== '1') {
+        if (verifyInCourse !== 1) {
+            console.log(verifyInCourse);
             return res.status(403).json({
                 responseCode: -1,
                 errorMessage: 'Could not find courseId. Create the course first.'
