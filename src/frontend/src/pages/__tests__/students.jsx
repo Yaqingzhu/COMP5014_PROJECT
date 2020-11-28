@@ -5,24 +5,17 @@ import fetchMock from 'jest-fetch-mock';
 
 import { StudentsPage } from '../students';
 import { students } from '../../mocks/students';
-import { useStudents } from '../../api/useStudents';
-jest.mock('../../api/useStudents');
 
 describe('Students component', () => {
   afterEach(() => {
     fetchMock.resetMocks();
-    useStudents.mockReset();
   });
 
   it('Shows the students once loaded', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
-      payload: students.map(student => ({ result: JSON.stringify(student) })),
-    }));
-    useStudents.mockReturnValue({
-      loading: false,
       students,
-    });
+    }));
 
     act(() => {
       render(
@@ -43,12 +36,8 @@ describe('Students component', () => {
   it('Shows a no students messages if there are no students loaded', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
-      payload: [],
-    }));
-    useStudents.mockReturnValue({
-      loading: false,
       students: [],
-    });
+    }));
 
     act(() => {
       render(
@@ -66,9 +55,6 @@ describe('Students component', () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
     }));
-    useStudents.mockReturnValue({
-      loading: true,
-    });
 
     render(
       <MemoryRouter>
@@ -82,13 +68,9 @@ describe('Students component', () => {
   it('Deletes a student when the button is clicked', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
-      payload: students.map(student => ({ result: JSON.stringify(student) })),
+      students,
     }));
     fetchMock.mockOnce(JSON.stringify({}));
-    useStudents.mockReturnValue({
-      loading: false,
-      students,
-    });
 
     act(() => {
       render(
@@ -106,8 +88,8 @@ describe('Students component', () => {
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(1);
-    expect(calls[0][0]).toContain('/deletestudent');
-    expect(calls[0][1].body).toContain(`"studentId":${students[0].studentId}`);
+    expect(calls).toHaveLength(2);
+    expect(calls[1][0]).toContain('/deletestudent');
+    expect(calls[1][1].body).toContain(`"studentId":${students[0].studentId}`);
   });
 });

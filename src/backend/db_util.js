@@ -237,6 +237,22 @@ const getStudentUser = (resolve, reject, studentId) => {
   });
 };
 
+// Retrieve all students
+// Affected tables: student
+const getAllStudents = (resolve, reject) => {
+  const connection = getDBConnection();
+
+  connection.query(`
+    SELECT * FROM student;
+  `, (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results);
+    }
+  });
+};
+
 // Add a new student
 // Affected tables: student, login
 function createStudentUser(resolve, reject, email, birthDate, name, password, admitted) {
@@ -272,41 +288,50 @@ function createStudentUser(resolve, reject, email, birthDate, name, password, ad
 }
 
 // Modify an existing student user
-const modifyStudentUser = (resolve, reject, studentId, email, birthDate, name, password) => {
+const modifyStudentUser = (resolve, reject, studentId, email, birthDate, name, admitted, password) => {
   const connection = getDBConnection();
 
-  let updateQuery = 'SET ';
+  const queryElement = [];
+  const parameters = [];
 
   // update user info
-  if (email !== '') {
-    updateQuery += `student_email = '${email}', `;
+  if (email) {
+    queryElement.push('student_email = ?');
+    parameters.push(email);
   }
-  if (birthDate !== '') {
-    updateQuery += `birth_date = ${new Date(birthDate).toISOString().slice(0, 10)}, `;
+  if (name) {
+    queryElement.push('student_name = ?');
+    parameters.push(name);
   }
-  if (name !== '') {
-    updateQuery += `student_name = '${name}', `;
+  if (admitted) {
+    queryElement.push('admitted = ?');
+    parameters.push(admitted);
   }
-  if (updateQuery.length > 4) {
-    updateQuery = updateQuery.substring(0, updateQuery.length - 2);
-    updateQuery = `UPDATE student ${updateQuery} WHERE student_id = ${studentId};`;
-  } else {
-    updateQuery = '';
+  if (birthDate) {
+    queryElement.push('birth_date = ?');
+    parameters.push(new Date(birthDate));
   }
 
-  // change password
-  // change both student AND login
-  const loginQuery = password !== '' ? `UPDATE login SET password = '${password}' WHERE id = ${studentId};` : '';
-
-  connection.query(`
-    ${updateQuery} ${loginQuery}
-  `, (error, results) => {
-    if (error) {
-      reject(error);
-    } else {
-      resolve(studentId);
-    }
-  });
+  if (queryElement.length > 0) {
+    connection.query(
+      `UPDATE comp4004.student SET ${queryElement.join(',')} WHERE student_id = ?;`,
+      parameters.concat(studentId),
+      error => {
+      if (error) {
+        reject(error);
+      } else if (password) {
+        connection.query('UPDATE login SET password = ? WHERE id = ?', [password, studentId], error => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(studentId);
+          }
+        });
+      } else {
+        resolve(studentId);
+      }
+    });
+  }
 };
 
 // Deletes a student from DB
@@ -691,6 +716,7 @@ module.exports = {
 
   // retrieve a student
   getStudentUser,
+  getAllStudents,
 
   // create student
   createStudentUser,
