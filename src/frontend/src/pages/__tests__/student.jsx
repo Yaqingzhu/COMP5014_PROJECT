@@ -5,25 +5,18 @@ import fetchMock from 'jest-fetch-mock';
 
 import { StudentPage } from '../student';
 import { students } from '../../mocks/students';
-import { useStudent } from '../../api/useStudent';
-jest.mock('../../api/useStudent');
 
 describe('Student component', () => {
   afterEach(() => {
     fetchMock.resetMocks();
-    useStudent.mockReset();
   });
 
   it('Shows the student once loaded', async () => {
     const student = students[0];
     fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
-      payload: JSON.stringify(student),
-    }));
-    useStudent.mockReturnValue({
-      loading: false,
       student,
-    });
+    }));
 
     act(() => {
       render(
@@ -44,11 +37,8 @@ describe('Student component', () => {
   it('Shows a loader while the student is loading', () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
-      coursePayload: null,
+      student: null,
     }));
-    useStudent.mockReturnValue({
-      loading: true,
-    });
 
     act(() => {
       render(
@@ -65,13 +55,12 @@ describe('Student component', () => {
     const student = students[0];
     fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
-      payload: JSON.stringify(student),
-    }));
-    useStudent.mockReturnValue({
-      loading: false,
       student,
-      reload: jest.fn(),
-    });
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      studentId: student.studentId,
+    }));
 
     const newName = 'test';
     const newEmail = 'test@test.test';
@@ -105,9 +94,9 @@ describe('Student component', () => {
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(1);
-    expect(calls[0][0]).toContain('/editstudent');
-    expect(calls[0][1].body).toContain(`"studentName":"${newName}"`);
-    expect(calls[0][1].body).toContain(`"studentEmail":"${newEmail}"`);
+    expect(calls).toHaveLength(3);
+    expect(calls[1][0]).toContain('/modifystudent');
+    expect(calls[1][1].body).toContain(`"studentName":"${newName}"`);
+    expect(calls[1][1].body).toContain(`"studentEmail":"${newEmail}"`);
   });
 });

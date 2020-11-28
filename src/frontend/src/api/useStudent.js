@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { students } from '../mocks/students';
 
 const apiurl = process.env.API_URL;
 
@@ -9,13 +8,7 @@ export const useStudent = studentId => {
   const [student, setStudent] = useState(null);
 
   const load = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setStudent(students[0]);
-    }, 500);
-
-    /* window.fetch(`${apiurl}/course?courseId=${studentId}`, {
+    window.fetch(`${apiurl}/student?studentId=${studentId}`, {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
@@ -23,13 +16,16 @@ export const useStudent = studentId => {
     }).then(body => body.json()).then(result => {
       setLoading(false);
       if (result.responseCode === 0) {
-        setCourse(JSON.parse(result.coursePayload));
+        setStudent({
+          ...result.student,
+          birthDate: new Date(result.student.birthDate),
+        });
       } else {
         setError(result.errorMessage);
       }
     }).catch(error => {
       setError(error);
-    }); */
+    });
   };
 
   useEffect(load, [studentId]);

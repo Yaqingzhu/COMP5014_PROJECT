@@ -48,7 +48,7 @@ Then('vaildation login is {int}', function (arg1) {
 });
 
 Given('a course id {int}', function (arg1) {
-  const query = arg1 === -1 ? '/course' : '/course?courseId=' + arg1
+  const query = arg1 === -1 ? '/course' : '/course?courseId=' + arg1;
     testSession = session(app);
     return testSession
       .post('/login')
