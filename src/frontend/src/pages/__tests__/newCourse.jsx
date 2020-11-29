@@ -23,13 +23,13 @@ describe('Course component', () => {
     expect(screen.getByText('New course')).toBeDefined();
 
     expect(screen.getByTestId('name').value).toBe('');
-    expect(screen.getByTestId('status').value).toBe('open');
+    expect(screen.getByTestId('status').value).toBe('scheduled');
     expect(screen.getByTestId('capacity').value).toBe('');
   });
 
   it('Created a course when saving', async () => {
     const newName = 'test';
-    const newStatus = 'closed';
+    const newStatus = 'unscheduled';
     const newCapacity = 10;
 
     fetchMock.mockResponse(JSON.stringify({

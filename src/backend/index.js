@@ -57,7 +57,7 @@ app.post('/approvestudent', admin.ApproveStudentCreationApply);
 app.post('/applycreatestudent', student.applyCreateStudent);
 app.post('/registercourse', student.registerCourse);
 app.post('/dropcourse', student.dropCourse);
-app.get('/listcourse', student.listCourse);
+app.get('/listcourses', student.listCourse);
 app.delete('/deletestudent', admin.DeleteStudent);
 app.post('/assignprof', admin.assignProf);
 

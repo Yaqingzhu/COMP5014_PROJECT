@@ -42,8 +42,8 @@ export const CourseForm = ({ course, handleSave }) => {
             ref={register()}
             defaultValue={course && course.courseStatus}
           >
-            <option value="open">Open</option>
-            <option value="closed">Closed</option>
+            <option value="scheduled">Open</option>
+            <option value="unscheduled">Closed</option>
           </select>
         </div>
         <div className="mb-3">

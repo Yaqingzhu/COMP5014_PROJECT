@@ -4,6 +4,8 @@ import { Switch, Route, Link, useLocation, matchPath } from 'react-router-dom';
 import { useStudent } from '../api/useStudent';
 import Loader from './Loader';
 import HomePage from '../pages/home';
+import RegisteredCoursesPage from '../pages/registeredCourses';
+import RegisterCoursesPage from '../pages/registerCourses';
 
 export const StudentDashboard = ({ user }) => {
   const location = useLocation();
@@ -65,7 +67,7 @@ export const StudentDashboard = ({ user }) => {
                 </li>
                 <li className="nav-item">
                   <Link className={`nav-link${getActive('/courses')}`} to="/courses">
-                    Courses
+                    My courses
                   </Link>
                 </li>
               </ul>
@@ -73,6 +75,12 @@ export const StudentDashboard = ({ user }) => {
           </nav>
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <Switch>
+              <Route path="/courses/register">
+                <RegisterCoursesPage user={user} />
+              </Route>
+              <Route path="/courses">
+                <RegisteredCoursesPage user={user} />
+              </Route>
               <Route path="/">
                 <HomePage />
               </Route>
