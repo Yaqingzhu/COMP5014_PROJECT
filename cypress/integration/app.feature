@@ -41,3 +41,9 @@ Feature: Placeholder Test
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
     And I see the courses in a table
     Then I want to delete the last course created
+
+  Scenario: I create a student
+    Given I am a student without account
+    When I see the registration page
+    Then I fill in the form with "Student1" as name, "student1@carleton.ca" as email, "11/29/1999" as birth date, and "student1" as password
+    And The admin can see the application of student "student1@carleton.ca"
