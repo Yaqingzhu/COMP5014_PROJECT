@@ -59,7 +59,7 @@ function registerCourse(req, res) {
            CourseId: req.body.courseId
        });
    }).catch(error => {
-       return res.status(403).json({
+       return res.status(500).json({
            responseCode: -1,
            errorMessage: error
        });
@@ -90,7 +90,7 @@ function dropCourse(req, res) {
            CourseId: req.body.courseId
        });
    }).catch(error => {
-       return res.status(403).json({
+       return res.status(500).json({
            responseCode: -1,
            errorMessage: error
        });
@@ -105,14 +105,14 @@ function listCourse(req, res) {
            errorMessage: 'You need to login before doing this operation.',
        });
    } else if (!util.validateStudent(req)) {
-    return res.status(403).json({
-        responseCode: -1,
-        errorMessage: 'You do not have permission to do this operation.',
-    });
-}
+      return res.status(403).json({
+          responseCode: -1,
+          errorMessage: 'You do not have permission to do this operation.',
+      });
+  }
    // Perform operation in DB
    new Promise((resolve, reject) => {
-       mysql.getRegisteredCourse(resolve, reject, req.body.studentId);
+       mysql.getRegisteredCourse(resolve, reject, req.query.studentId);
    }).then(result => {
        return res.status(200).json({
            responseCode: 0,
@@ -121,7 +121,7 @@ function listCourse(req, res) {
            courses: result
        });
    }).catch(error => {
-       return res.status(403).json({
+       return res.status(500).json({
            responseCode: -1,
            errorMessage: error
        });

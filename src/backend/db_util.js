@@ -491,9 +491,12 @@ function getRegisteredCourse(resolve, reject, studentId) {
       if (admitted <= 0) {
         return reject('You are not admitted to be a student yet');
       }
-      connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'courseId\', course_id, \'studentId\', student_id, \'registrationDate\', ' +
-      ' registration_date, \'dropDate\', drop_date, \'lateRegistration\', late_registration, \'lateRegistrationApproval\', late_registration_approval, ' +
-      ' \'lateDrop\', late_drop, \'lateDropApproval\', late_drop_approval, \'finalGrade\', final_grade)) AS result FROM registration WHERE student_id =?;', [studentId], (error, results) => {
+      connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'courseId\', r.course_id, \'courseName\', c.course_name, \'studentId\', r.student_id, \'registrationDate\', ' +
+      ' r.registration_date, \'dropDate\', r.drop_date, \'lateRegistration\', r.late_registration, \'lateRegistrationApproval\', r.late_registration_approval, ' +
+      ' \'lateDrop\', r.late_drop, \'lateDropApproval\', r.late_drop_approval, \'finalGrade\', r.final_grade, \'courseSlots\', COALESCE(s.slots, JSON_ARRAY()))) AS result FROM registration as r ' +
+      ' LEFT JOIN course as c ON r.course_id = c.course_id LEFT JOIN (SELECT JSON_ARRAYAGG(JSON_OBJECT(\'day\', course_slots_day, \'time\', course_slots_time)) ' +
+      ' AS slots, course_id FROM course_slots group by course_id) s ON s.course_id = c.course_id ' +
+      ' WHERE student_id = ?;', [studentId], (error, results) => {
         if (error) {
           console.log(error);
           return reject(error);

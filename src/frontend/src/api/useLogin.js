@@ -33,6 +33,8 @@ export const useLogin = () => {
           setUser({
             username,
             role: result.loginRole,
+            loginId: result.loginId,
+            name: result.loginName,
           });
         } else {
           setError(result.message);

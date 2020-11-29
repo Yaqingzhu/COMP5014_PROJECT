@@ -16,9 +16,7 @@ BeforeAll(() => {
   });
 
   AfterAll(() => {
-    server.close(function (e) {
-      console.error(e);
-    });
+    server.close();
     mysql.getDBConnection().destroy();
   });
 
@@ -65,7 +63,7 @@ Given('a pending student want to register course {string}', function (arg1) {
       return testSession
         .post('/registercourse')
         .send(JSON.parse(arg1))
-        .expect(403)
+        .expect(500)
         .then(function (rr) {
           res = rr;
         });
@@ -139,22 +137,20 @@ Given('a student {int} want to list courses {string}', function (arg1, arg2) {
     return new Promise((resolve, reject) => {
         mysql.updateAcademicForTest(resolve, reject);
     }).then(function () {
-        {
-            testSession = session(app);
+        testSession = session(app);
         return testSession
             .post('/login')
             .send({ id: arg1, password: 'test' })
             .expect(200)
             .then(function () {
             return testSession
-                .get('/listcourse')
-                .send(JSON.parse(arg2))
+                .get('/listcourses')
+                .query(JSON.parse(arg2))
                 .expect(200)
                 .then(function (rr) {
-                res = rr;
+                  res = rr;
                 });
             });
-        }
     });
 });
 

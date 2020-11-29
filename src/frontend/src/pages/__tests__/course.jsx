@@ -53,7 +53,7 @@ describe('Course component', () => {
   it('Update a course when saving', async () => {
     const course = courses[0];
     const newName = 'test';
-    const newStatus = 'closed';
+    const newStatus = 'unscheduled';
     const newCapacity = 10;
 
     fetchMock.mockResponse(JSON.stringify({

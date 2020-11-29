@@ -19,9 +19,7 @@ BeforeAll(() => {
 });
 
 AfterAll(() => {
-  server.close(function (e) {
-    console.error(e);
-  });
+  server.close();
   mysql.getDBConnection().destroy();
 });
 
