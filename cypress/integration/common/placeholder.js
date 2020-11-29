@@ -8,6 +8,11 @@ Given('I use {int} as username and {string} as password', (username, password) =
     cy.log_in(username, password);
 })
 
+Given('I am a student without account', () => {
+    cy.visit(`http://localhost:8081/`);
+    cy.click_button('Register to the university', 'a');
+})
+
 When('I see a page', () => {
     cy.get('body').should('be.visible');
 });
@@ -47,6 +52,15 @@ Then('I fill in the fields with {int} as username and {string} as password', (us
     cy.get('input[type=password]').type(password).invoke('val').should((text) => {
         expect(text).to.eq(password);
     });
+});
+
+When('I see the registration page', () => {
+    cy.get('body').should('be.visible');
+    cy.get('.img-fluid').should('be.visible');
+    cy.get('[data-testid=name]').should('have.attr', 'placeholder', 'Name').and('not.be.disabled');
+    cy.get('[data-testid=email]').should('have.attr', 'placeholder', 'Email').and('not.be.disabled');
+    cy.get('.react-datepicker__input-container > .form-control').should('not.be.disabled');
+    cy.get('[data-testid=password]').should('have.attr', 'placeholder', 'Password').and('not.be.disabled');
 });
 
 Then('I click on {string} button with tag {string}', (name, tag) => {
@@ -119,4 +133,19 @@ Then('I want to delete the last course created', () => {
         cy.click_button('Delete', `:nth-child(${rows}) > :nth-child(5) > .ml-2`);
         cy.get('tbody > :nth-child(' + rows + ')').should('not.exist');
     })
+})
+
+Then('I fill in the form with {string} as name, {string} as email, {string} as birth date, and {string} as password', (name, email, birth, password) => {
+    cy.get('[data-testid=name]').type(name);
+    cy.get('[data-testid=email]').type(email);
+    cy.get('input[name="birthDate"]').type('{selectall}'+birth);
+    cy.get('[data-testid=password]').type(password);
+    cy.click_button('Register', '.mt-4')
+});
+
+Then('The admin can see the application of student {string}', (email) => {
+    cy.log_in(1, "admin");
+    cy.click_button('Students', ":nth-child(3) > .nav-link");
+    cy.get('.h2').should('be.visible').and('have.text', "Available students");
+    cy.get('td').contains(email);
 })
