@@ -211,8 +211,8 @@ function changeCourseStatusInCourseTable(resolve, reject, courseId, status) {
   const connection = getDBConnection();
 
   connection.query(`
-    UPDATE course SET course_status = ${status} WHERE course_id = ${courseId};
-  `, (error, results) => {
+    UPDATE course SET course_status = ? WHERE course_id = ?;
+  `, [status, courseId], (error, results) => {
     if (error) {
       reject(error);
     } else {
