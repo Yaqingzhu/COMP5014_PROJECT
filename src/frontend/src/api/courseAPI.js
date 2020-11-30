@@ -59,3 +59,22 @@ export const deleteCourse = course => new Promise((resolve, reject) => {
     }
   });
 });
+
+export const cancelCourse = course => new Promise((resolve, reject) => {
+  window.fetch(`${apiurl}/cancelcourse`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      courseId: course.courseId,
+    }),
+  }).then(res => res.json()).then(res => {
+    if (res.responseCode === 0) {
+      resolve();
+    } else {
+      reject(new Error(res.errorMessage));
+    }
+  });
+});

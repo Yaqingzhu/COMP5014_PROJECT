@@ -64,12 +64,44 @@ describe('Courses component', () => {
     expect(screen.getByText('Loading...')).toBeDefined();
   });
 
+  it('Cancels a course when the button is clicked', async () => {
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+    }));
+
+    act(() => {
+      render(
+        <MemoryRouter>
+          <CoursesPage />
+        </MemoryRouter>
+      );
+    });
+
+    await waitFor(() => screen.getByText('Available courses'));
+
+    act(() => {
+      fireEvent.click(screen.getAllByText('Cancel')[0]);
+    });
+
+    const calls = fetchMock.mock.calls;
+
+    expect(calls).toHaveLength(2);
+    expect(calls[1][0]).toContain('/cancelcourse');
+    expect(calls[1][1].body).toContain(`"courseId":${courses[0].courseId}`);
+  });
+
   it('Deletes a course when the button is clicked', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
       coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
     }));
-    fetchMock.mockOnce(JSON.stringify({}));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+    }));
 
     act(() => {
       render(

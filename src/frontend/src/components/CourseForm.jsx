@@ -44,6 +44,7 @@ export const CourseForm = ({ course, handleSave }) => {
           >
             <option value="scheduled">Open</option>
             <option value="unscheduled">Closed</option>
+            <option value="cancelled">Cancelled</option>
           </select>
         </div>
         <div className="mb-3">

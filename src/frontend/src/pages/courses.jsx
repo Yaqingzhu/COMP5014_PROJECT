@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
 import { useCourses } from '../api/useCourses';
-import { deleteCourse } from '../api/courseAPI';
+import { deleteCourse, cancelCourse } from '../api/courseAPI';
 import { Loader } from '../components/Loader';
 
 export const CoursesPage = () => {
@@ -11,6 +11,13 @@ export const CoursesPage = () => {
 
   const handleDeleteCourse = (event, course) => {
     deleteCourse(course).then(() => {
+      reload();
+    });
+    event.preventDefault();
+  };
+
+  const handleCancelCourse = (event, course) => {
+    cancelCourse(course).then(() => {
       reload();
     });
     event.preventDefault();
@@ -59,7 +66,22 @@ export const CoursesPage = () => {
               <td>{course.courseCapacity}</td>
               <td>
                 <Link to={`/courses/${course.courseId}`}>Edit</Link>
-                <a href="#" onClick={event => handleDeleteCourse(event, course)} className="ml-2">Delete</a>
+                <a
+                  href="#"
+                  onClick={event => handleCancelCourse(event, course)}
+                  className="ml-2"
+                  data-testid="cancel-course"
+                >
+                  Cancel
+                </a>
+                <a
+                  href="#"
+                  onClick={event => handleDeleteCourse(event, course)}
+                  className="ml-2"
+                  data-testid="delete-course"
+                >
+                  Delete
+                </a>
               </td>
             </tr>
           ))}

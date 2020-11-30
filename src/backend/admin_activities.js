@@ -112,16 +112,16 @@ const CancelCourse = async (req, res) => {
     await new Promise((resolve, reject) => {
         mysql.removeAllRecordsWithCourseIdInRegistrationDeliverableCourseSlots(resolve, reject, courseId);
     }).catch(err => {
-        return res.status(403).json({
+        return res.status(500).json({
             responseCode: -1,
             errorMessage: err.message
         });
     });
 
     await new Promise((resolve, reject) => {
-        mysql.changeCourseStatusInCourseTable(resolve, reject, courseId, 'Cancelled');
+        mysql.changeCourseStatusInCourseTable(resolve, reject, courseId, 'cancelled');
     }).catch(err => {
-        return res.status(403).json({
+        return res.status(500).json({
             responseCode: -1,
             errorMessage: err.message
         });
