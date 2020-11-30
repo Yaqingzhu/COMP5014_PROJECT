@@ -66,8 +66,22 @@ export const CoursesPage = () => {
               <td>{course.courseCapacity}</td>
               <td>
                 <Link to={`/courses/${course.courseId}`}>Edit</Link>
-                <a href="#" onClick={event => handleCancelCourse(event, course)} className="ml-2">Cancel</a>
-                <a href="#" onClick={event => handleDeleteCourse(event, course)} className="ml-2">Delete</a>
+                <a
+                  href="#"
+                  onClick={event => handleCancelCourse(event, course)}
+                  className="ml-2"
+                  data-testid="cancel-course"
+                >
+                  Cancel
+                </a>
+                <a
+                  href="#"
+                  onClick={event => handleDeleteCourse(event, course)}
+                  className="ml-2"
+                  data-testid="delete-course"
+                >
+                  Delete
+                </a>
               </td>
             </tr>
           ))}
