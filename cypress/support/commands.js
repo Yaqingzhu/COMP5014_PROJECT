@@ -39,14 +39,30 @@ Cypress.Commands.add('log_in', (username, password) => {
         expect(text).to.eq(password);
     });
     cy.get('.mt-4').click();
-})
+});
 
 Cypress.Commands.add('log_out', () => {
     cy.get('.navbar-nav').should('be.visible').and('have.text', 'Sign out').and('not.be.disabled').click();
-    cy.url().should('eq', 'http://localhost:8081/login#')
-})
+    cy.url().should('eq', 'http://localhost:8081/login#');
+});
 
 Cypress.Commands.add('click_button', (name, tag) => {
     cy.get(tag).should('have.text', name).and('not.be.disabled').click();
     cy.wait(200);
-})
+});
+
+Cypress.Commands.add('create_course', (name, capacity) => {
+    cy.get(".btn").should('have.text', 'New course').and('not.be.disabled').click();
+    cy.get(':nth-child(1) > label').should('have.text', 'Course name');
+    cy.get('[data-testid=name]').should('have.attr', 'placeholder', 'Some name').and('not.be.disabled');
+    cy.get(':nth-child(2) > label').should('have.text', 'Course status');
+    cy.get('[data-testid=status]').find('option').should('contain', 'Open').and('contain', 'Closed').and('contain', 'Cancelled');
+    cy.get(':nth-child(3) > label').should('have.text', 'Course capacity');
+    cy.get('[data-testid=capacity]').should('have.attr', 'placeholder', '200').and('not.be.disabled');
+    cy.get('[data-testid=name]').type(name);
+    cy.get('[data-testid=capacity]').type(capacity);
+    cy.click_button('Save changes', '.btn-primary');
+    cy.click_button('Courses', ':nth-child(2) > .nav-link');
+    cy.location('pathname').should('contain', 'courses');
+    cy.contains('.h2', 'Available courses').should('be.visible');
+});
