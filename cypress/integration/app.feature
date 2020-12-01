@@ -35,6 +35,12 @@ Feature: Placeholder Test
     And I see the "CompGeom" course in the course dashboard
     Then I want to change capacity of the last course created to 20
 
+Scenario: I cancel a course
+    Given I log in with valid credentials
+    When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
+    And I see the "CompGeom" course in the course dashboard
+    Then I want to cancel the last course created
+    
   Scenario: I delete a course
     Given I log in with valid credentials
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
