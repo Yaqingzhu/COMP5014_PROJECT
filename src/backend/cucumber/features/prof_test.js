@@ -44,7 +44,7 @@ Given('{string} a prof with this payload {string}', function (arg1, arg2) {
     testSession = session(app);
   return testSession
     .post('/login')
-    .send({ id: 1, password: 'admin12' })
+    .send({ id: 1, password: 'admin' })
     .expect(200)
     .then(function () {
       return testSession

@@ -531,9 +531,9 @@ function addTestDataForStudentTest() {
         console.log('student insert done');
         const date = new Date();
         date.setDate(date.getDate() + 1);
-        connection.query('INSERT IGNORE INTO comp4004.academic (registration_deadline, drop_deadline) VALUES(?,?)', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)]);
-        connection.query('INSERT IGNORE INTO comp4004.prof (prof_id, prof_name) VALUES(3234, \'testname\')');
-        connection.query('INSERT IGNORE INTO comp4004.student (student_id, student_name,student_email,admitted, birth_date)' +
+        connection.query('INSERT IGNORE INTO academic (registration_deadline, drop_deadline) VALUES(?,?)', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)]);
+        connection.query('INSERT IGNORE INTO prof (prof_id, prof_name) VALUES(3234, \'testname\')');
+        connection.query('INSERT IGNORE INTO student (student_id, student_name,student_email,admitted, birth_date)' +
         // eslint-disable-next-line node/handle-callback-err
         ' VALUES (223,\'test\',\'test@test.ca\',1,\'2020-10-10\'), ' +
         '  (2234,\'test2\',\'test2@test.ca\',0,\'2020-10-10\'), ' +
@@ -648,6 +648,7 @@ function updateAcademicDeadline(resolve, reject, regDeadline, dropDeadline) {
 
   connection.query('DELETE FROM academic', [], (error, results) => {
     if (error) {
+      console.log(error);
       reject(error);
     }
     connection.query('INSERT INTO academic(registration_deadline, drop_deadline) VALUES (?,?)', [
@@ -655,6 +656,7 @@ function updateAcademicDeadline(resolve, reject, regDeadline, dropDeadline) {
       // eslint-disable-next-line node/handle-callback-err
     ], (error, results) => {
       if (error) {
+        console.log(error);
         reject(error);
       }
       resolve();
