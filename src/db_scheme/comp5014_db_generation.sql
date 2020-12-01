@@ -159,7 +159,6 @@ DROP TABLE IF EXISTS `comp4004`.`prof` ;
 CREATE TABLE IF NOT EXISTS `comp4004`.`prof` (
   `prof_id` INT NOT NULL AUTO_INCREMENT,
   `prof_name` VARCHAR(45) NOT NULL,
-  `login_password` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`prof_id`),
   CONSTRAINT `fk_prof_login`
     FOREIGN KEY (`prof_id`)
