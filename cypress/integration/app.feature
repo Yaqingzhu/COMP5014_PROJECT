@@ -26,24 +26,38 @@ Feature: Placeholder Test
     And I see "Available courses" in a ".h2" tag
     And I click on "New course" button with tag ".btn"
     And I see "New course" in a "h1.mb-3" tag
-    Then I fill in with the information of the course to be created
-    And I can add a schedule for the course
-    And I see the course in the course dashboard
+    Then I fill in the information of the "CompGeom" course to be created with 30 capacity
+    And I see the "CompGeom" course in the course dashboard
 
   Scenario: I update a course information
     Given I log in with valid credentials
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
-    And I see the courses in a table
+    And I see the "CompGeom" course in the course dashboard
     Then I want to change capacity of the last course created to 20
 
   Scenario: I delete a course
     Given I log in with valid credentials
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
-    And I see the courses in a table
-    Then I want to delete the last course created
+    And I see the "CompGeom" course in the course dashboard
+    Then I want to delete the last element created
 
-  Scenario: I create a student
+  Scenario: Student apply for registration
     Given I am a student without account
     When I see the registration page
     Then I fill in the form with "Student1" as name, "student1@carleton.ca" as email, "11/29/1999" as birth date, and "student1" as password
     And The admin can see the application of student "student1@carleton.ca"
+    
+  Scenario: I schedule a course
+    Given I log in with valid credentials
+    When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
+    And I create the course "Course1" with capacity 20
+    And I see the "Course1" course in the course dashboard
+    Then I schedule the last course created
+
+  Scenario: I unschedule a course
+    Given I log in with valid credentials
+    When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
+    And I create the course "Course2" with capacity 20
+    And I see the "Course2" course in the course dashboard
+    Then I unschedule the last course created
+
