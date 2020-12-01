@@ -155,6 +155,14 @@ Then('I want to change capacity of the last course created to {int}', capacity =
     });
 });
 
+Then('I want to cancel the last course created', () => {
+    cy.get('tr').its('length').then($length => {
+        const rows = $length - 1;
+        cy.click_button('Cancel', `:nth-child(${rows}) > :nth-child(5) > [data-testid="cancel-course"]`);
+        cy.contains(`tbody > :nth-child(${rows}) > :nth-child(3)`, 'cancelled').should('be.visible');
+    });
+});
+
 Then('I want to delete the last element created', () => {
     cy.get('tr').its('length').then($length => {
         const rows = $length - 1;
