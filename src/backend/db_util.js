@@ -9,7 +9,7 @@ function getDBConnection() {
   if (!connection) {
     connection = mysql.createConnection({
       port: DB_PORT || 3306,
-      host: DB_HOST || '35.222.224.200',
+      host: DB_HOST || '127.0.0.1',
       user: DB_USERNAME || 'root',
       password: DB_PASSWORD || 'comp4004',
       database: DB_DATABASE || 'comp4004',
@@ -532,7 +532,7 @@ function addTestDataForStudentTest() {
         const date = new Date();
         date.setDate(date.getDate() + 1);
         connection.query('INSERT IGNORE INTO comp4004.academic (registration_deadline, drop_deadline) VALUES(?,?)', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)]);
-        connection.query('INSERT IGNORE INTO comp4004.prof (prof_id, login_password, prof_name) VALUES(3234,\'test\', \'testname\')');
+        connection.query('INSERT IGNORE INTO comp4004.prof (prof_id, prof_name) VALUES(3234, \'testname\')');
         connection.query('INSERT IGNORE INTO comp4004.student (student_id, student_name,student_email,admitted, birth_date)' +
         // eslint-disable-next-line node/handle-callback-err
         ' VALUES (223,\'test\',\'test@test.ca\',1,\'2020-10-10\'), ' +
@@ -725,6 +725,88 @@ const getCourseDeliverable = (resolve, reject, courseId) => {
   });
 };
 
+// Add a new prof
+// Affected tables: prof, login
+function createProfUser(resolve, reject, name, password) {
+  const connection = getDBConnection();
+
+  // default value for password
+  const defaultPassword = 'password';
+
+  // Create new student prof in 'prof' table
+  // Create new login in 'login' table
+  connection.query('INSERT INTO comp4004.login (password) VALUES (?)', [password || defaultPassword], (error, result) => {
+    if (error) {
+      reject(error);
+    } else {
+      connection.query('INSERT INTO comp4004.prof (prof_id, prof_name) VALUES (?,?)', [
+        result.insertId,
+        name
+      ], (error, result) => {
+        if (error) {
+          console.log(error);
+          reject(error);
+        } else {
+          // success
+          resolve(result.insertId);
+        }
+      });
+    }
+  });
+}
+
+// Deletes a prof from DB
+// Affected tables: student, login
+const deleteProfUser = (resolve, reject, profId) => {
+  const connection = getDBConnection();
+  connection.query(`
+    DELETE FROM login WHERE id = ${profId};
+    DELETE FROM student WHERE student_id = ${profId};
+  `, (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      resolve(profId);
+    }
+  });
+};
+
+// Modify an existing prof user
+const modifyProfUser = (resolve, reject, profId, name, password) => {
+  const connection = getDBConnection();
+
+  // update user info
+  if (name) {
+    connection.query(
+      'UPDATE comp4004.prof SET prof_name = ? WHERE prof_id = ?;',
+      [name, profId],
+      error => {
+      if (error) {
+        reject(error);
+      } else if (password) {
+        connection.query('UPDATE login SET password = ? WHERE id = ?', [password, profId], error => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(profId);
+          }
+        });
+      } else {
+        resolve(profId);
+      }
+    });
+  } else if (password) {
+    connection.query('UPDATE login SET password = ? WHERE id = ?', [password, profId], error => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(profId);
+      }
+    });
+  }
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -773,5 +855,8 @@ module.exports = {
 
   createNewDeliverable,
   getDeliverable,
-  getCourseDeliverable
+  getCourseDeliverable,
+  createProfUser,
+  deleteProfUser,
+  modifyProfUser
 };

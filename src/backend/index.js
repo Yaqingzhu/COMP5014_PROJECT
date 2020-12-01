@@ -73,6 +73,10 @@ app.get('/coursedeliverable', general.getCourseDeliverables);
 
 app.get('/course', general.getCourse);
 
+app.post('/createprof', admin.CreateProf);
+app.post('/modifyprof', admin.ModifyProf);
+app.post('/deleteprof', admin.DeleteProf);
+
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`);

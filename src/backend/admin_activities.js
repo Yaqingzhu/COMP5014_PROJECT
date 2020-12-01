@@ -528,6 +528,120 @@ function getAcademicDeadline(req, res) {
     });
 }
 
+// Create Prof
+const CreateProf = async (req, res) => {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    // Get form information
+    const name = req.body.name;
+    const password = req.body.password;
+
+    // Perform operation in DB
+    await new Promise((resolve, reject) => {
+        mysql.createProfUser(resolve, reject, name, password);
+    }).then(id => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            profId: id
+        });
+    }).catch(error => {
+        return res.status(500).json({
+            responseCode: -1,
+            errorMessage: error
+        });
+    });
+};
+
+// Delete Prof, given a Prof_id
+const DeleteProf = async (req, res) => {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    // Get form information
+    const profId = req.body.profId;
+
+    // Perform operation in DB
+    await new Promise((resolve, reject) => {
+        mysql.deleteProfUser(resolve, reject, profId);
+    }).then(id => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            profId: id
+        });
+    }).catch(error => {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: error
+        });
+    });
+};
+
+// Modify a Prof
+// Must supply ProfId,
+// Optional inputs: ProfName, password
+const ModifyProf = async (req, res) => {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+           errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    // Get form information
+    const profId = req.body.profId;
+    const name = req.body.profName;
+    const password = req.body.password;
+
+    // Perform operation in DB
+    await new Promise((resolve, reject) => {
+        mysql.modifyProfUser(resolve, reject, profId, name, password);
+    }).then(profId => {
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            success: true,
+            profId
+        });
+    }).catch(error => {
+        console.log(error);
+        return res.status(500).json({
+            responseCode: -1,
+            errorMessage: error
+        });
+    });
+};
+
 module.exports = {
     CourseProcess,
     CancelCourse,
@@ -539,5 +653,8 @@ module.exports = {
     UnscheduleCourse,
     getAcademicDeadline,
     updateAcademicDeadline,
-    assignProf
+    assignProf,
+    CreateProf,
+    DeleteProf,
+    ModifyProf
 };
