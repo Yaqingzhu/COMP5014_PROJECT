@@ -198,7 +198,6 @@ Then('The admin can see the application of student {string}', email => {
 });
 
 Then('The registration operation is successful', () => {
-
     cy.click_button('Register to a new course', '.btn');
     cy.get('.h2').should('be.visible').and('have.text', 'Available courses');
     cy.get('.thead-dark > tr').should('be.visible');
@@ -208,17 +207,14 @@ Then('The registration operation is successful', () => {
 
     cy.get('tr').its('length').then(($length) => {
         const rows = $length - 1;
-        cy.get(`tbody > tr > :nth-child(${rows})`).each($elem => {
+        cy.get(`tbody > :nth-child(${rows}) > :nth-child(1)`).each($elem => {
             const course = $elem.text();
             cy.get(`[data-testid=check-${course}]`).not('[disabled]').check();
-            cy.get(`tbody > :nth-child(${rows}) > :nth-child(2)`).each($elem => {
-                const course_name = $elem.text();
-                cy.click_button('Register', '.btn');
-                cy.click_button('My courses', ':nth-child(2) > .nav-link');
-                cy.get(':nth-child(2) > > tr').its('length').then(($length2) => {
-                    const rows2 = $length2 - 1;
-                    cy.get(`tbody > :nth-child(${rows2}) > :nth-child(2)`).should('be.visible').and('have.text', course_name);
-                });
+            cy.click_button('Register', '.btn');
+            cy.click_button('My courses', ':nth-child(2) > .nav-link');
+            cy.get(':nth-child(2) > > tr').its('length').then(($length2) => {
+                const rows2 = $length2 - 1;
+                cy.get(`tbody > :nth-child(${rows2}) > :nth-child(1)`).should('be.visible').and('have.text', course);
             });
         });
     });
