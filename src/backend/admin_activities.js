@@ -150,9 +150,9 @@ const CreateStudent = async (req, res) => {
     }
 
     // Get form information
-    const email = req.body.email;
+    const email = req.body.studentEmail;
     const birthDate = new Date(req.body.birthDate);
-    const name = req.body.name;
+    const name = req.body.studentName;
     const password = req.body.password;
     const admitted = req.body.admitted;
 

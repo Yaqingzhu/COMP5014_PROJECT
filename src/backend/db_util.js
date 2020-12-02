@@ -280,7 +280,7 @@ function createStudentUser(resolve, reject, email, birthDate, name, password, ad
           reject(error);
         } else {
           // success
-          resolve(result);
+          resolve(result.insertId);
         }
       });
     }
