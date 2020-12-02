@@ -13,6 +13,10 @@ Given('I am a student without account', () => {
     cy.click_button('Register to the university', 'a');
 });
 
+Then('I log in with valid student credentials', () => {
+    cy.log_in(223, 'test');
+});
+
 When('I see a page', () => {
     cy.get('body').should('be.visible');
 });
@@ -36,6 +40,13 @@ When('I see the registration page', () => {
     cy.get('[data-testid=email]').should('have.attr', 'placeholder', 'Email').and('not.be.disabled');
     cy.get('.react-datepicker__input-container > .form-control').should('not.be.disabled');
     cy.get('[data-testid=password]').should('have.attr', 'placeholder', 'Password').and('not.be.disabled');
+});
+
+When('I see the courses page', () => {
+    cy.get('body').should('be.visible');
+    cy.get('.col-md-9 > :nth-child(1) > :nth-child(3)').should('be.visible').and('have.text', 'Dropped courses');
+    cy.get('.d-flex > .h2').should('be.visible').and('have.text', 'My courses');
+    cy.get('.btn').should('not.be.disabled').and('have.text', 'Register to a new course');
 });
 
 When('I create the course {string} with capacity {int}', (course, capacity) => {
@@ -124,8 +135,8 @@ Then('I unschedule the last course created', () => {
             cy.click_button('Save changes', '.btn-primary');
             cy.click_button('Courses', ':nth-child(2) > .nav-link');
             cy.contains(`tbody > :nth-child(${rows}) > :nth-child(3)`, 'unscheduled').should('be.visible');
-        })
-    })
+        });
+    });
 });
 
 Then('I see the {string} course in the course dashboard', (course) => {
@@ -186,3 +197,43 @@ Then('The admin can see the application of student {string}', email => {
     cy.get('td').contains(email);
 });
 
+Then('The registration operation is successful', () => {
+
+    cy.click_button('Register to a new course', '.btn');
+    cy.get('.h2').should('be.visible').and('have.text', 'Available courses');
+    cy.get('.thead-dark > tr').should('be.visible');
+    cy.get('.thead-dark > tr > :nth-child(1)').should('be.visible').and('have.text', '#');
+    cy.get('.thead-dark > tr > :nth-child(2)').should('be.visible').and('have.text', 'Name');
+    cy.get('.thead-dark > tr > :nth-child(3)').should('be.visible').and('have.text', 'Select');
+
+    cy.get('tr').its('length').then(($length) => {
+        const rows = $length - 1;
+        cy.get(`tbody > tr > :nth-child(${rows})`).each($elem => {
+            const course = $elem.text();
+            cy.get(`[data-testid=check-${course}]`).not('[disabled]').check();
+            cy.get(`tbody > :nth-child(${rows}) > :nth-child(2)`).each($elem => {
+                const course_name = $elem.text();
+                cy.click_button('Register', '.btn');
+                cy.click_button('My courses', ':nth-child(2) > .nav-link');
+                cy.get(':nth-child(2) > > tr').its('length').then(($length2) => {
+                    const rows2 = $length2 - 1;
+                    cy.get(`tbody > :nth-child(${rows2}) > :nth-child(2)`).should('be.visible').and('have.text', course_name);
+                });
+            });
+        });
+    });
+});
+
+Then('The drop operation is successful', () => {
+    cy.get(':nth-child(2) > > tr').its('length').then(($length) => {
+        const rows = $length - 1;
+        cy.get(`tbody > :nth-child(${rows}) > :nth-child(2)`).each($elem => {
+            const course = $elem.text();
+            cy.click_button('Drop', `tbody > :nth-child(${rows}) > :nth-child(5) > a`);
+            cy.get('[data-testid=dropped-courses] > > tr').its('length').then(($length2) => {
+                const rows2 = $length2 - 1;
+                cy.get(`[data-testid=dropped-courses] > tbody > :nth-child(${rows2}) > :nth-child(2)`).should('be.visible').and('have.text', course);
+            });
+        });
+    });
+});
