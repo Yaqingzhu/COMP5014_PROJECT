@@ -28,6 +28,18 @@ Feature: Placeholder Test
     And I see "New course" in a "h1.mb-3" tag
     Then I fill in the information of the "CompGeom" course to be created with 30 capacity
     And I see the "CompGeom" course in the course dashboard
+    
+  Scenario: I register on a course
+    Given I log in with valid student credentials
+    And I click on "My courses" button with tag ":nth-child(2) > .nav-link"
+    When I see the courses page
+    Then The registration operation is successful
+
+  Scenario: I drop a course
+    Given I log in with valid student credentials
+    And I click on "My courses" button with tag ":nth-child(2) > .nav-link"
+    When I see the courses page
+    Then The drop operation is successful
 
   Scenario: I update a course information
     Given I log in with valid credentials
@@ -35,7 +47,7 @@ Feature: Placeholder Test
     And I see the "CompGeom" course in the course dashboard
     Then I want to change capacity of the last course created to 20
 
-Scenario: I cancel a course
+  Scenario: I cancel a course
     Given I log in with valid credentials
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
     And I see the "CompGeom" course in the course dashboard
