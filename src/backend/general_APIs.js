@@ -191,7 +191,10 @@ const getProfs = async (req, res) => {
             return res.status(200).json({
                 responseCode: 0,
                 errorMessage: '',
-                prof,
+                prof: {
+                    profId: prof[0].prof_id,
+                    profName: prof[0].prof_name,
+                },
             });
         }
         const profs = await new Promise((resolve, reject) => {
@@ -200,7 +203,7 @@ const getProfs = async (req, res) => {
         return res.status(200).json({
             responseCode: 0,
             errorMessage: '',
-            students: profs.map(function (prof) {
+            profs: profs.map(function (prof) {
                 return {
                     profId: prof.prof_id,
                     profName: prof.prof_name,

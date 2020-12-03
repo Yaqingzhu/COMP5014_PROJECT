@@ -8,6 +8,9 @@ import NewCoursePage from '../pages/newCourse';
 import StudentsPage from '../pages/students';
 import StudentPage from '../pages/student';
 import NewStudentPage from '../pages/newStudent';
+import ProfsPage from '../pages/profs';
+import ProfPage from '../pages/prof';
+import NewProfPage from '../pages/newProf';
 
 export const AdminDashboard = () => {
   const location = useLocation();
@@ -54,11 +57,25 @@ export const AdminDashboard = () => {
                     Students
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className={`nav-link${getActive('/profs')}`} to="/profs">
+                    Profs
+                  </Link>
+                </li>
               </ul>
             </div>
           </nav>
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <Switch>
+              <Route path="/profs/new">
+                <NewProfPage />
+              </Route>
+              <Route path="/profs/:id">
+                <ProfPage />
+              </Route>
+              <Route path="/profs">
+                <ProfsPage />
+              </Route>
               <Route path="/students/new">
                 <NewStudentPage />
               </Route>
