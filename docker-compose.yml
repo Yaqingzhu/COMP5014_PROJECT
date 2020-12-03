@@ -23,7 +23,7 @@ services:
 
   web:
     build: .
-    command: npx parcel src/frontend/src/index.html -p 8080
+    command: npx parcel src/frontend/src/index.html -p 8080 --hmr-port 8081
     volumes:
       - ./src/frontend:/usr/app/src/frontend:cached
       - ./node_modules:/usr/app/node_modules:cached
