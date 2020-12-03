@@ -73,6 +73,7 @@ app.get('/coursedeliverable', general.getCourseDeliverables);
 
 app.get('/course', general.getCourse);
 
+app.get('/profs', general.getProfs);
 app.post('/createprof', admin.CreateProf);
 app.post('/modifyprof', admin.ModifyProf);
 app.post('/deleteprof', admin.DeleteProf);

@@ -62,6 +62,40 @@ Given('{string} a prof with this payload {string}', function (arg1, arg2) {
     });
 });
 
+Given('a request to fetch prof with this payload {string}', function (arg1) {
+  testSession = session(app);
+  return testSession
+    .post('/login')
+    .send({ id: 1, password: 'admin' })
+    .expect(200)
+    .then(function () {
+      return testSession
+        .get('/profs')
+        .query(JSON.parse(arg1))
+        .expect(200)
+        .then(function (rr) {
+          res = rr;
+        });
+    });
+});
+
+Given('a request to fetch all profs', function () {
+  testSession = session(app);
+  return testSession
+    .post('/login')
+    .send({ id: 1, password: 'admin' })
+    .expect(200)
+    .then(function () {
+      return testSession
+        .get('/profs')
+        .query({})
+        .expect(200)
+        .then(function (rr) {
+          res = rr;
+        });
+    });
+});
+
 Then('return a json with response equals to {int}', function (arg1) {
     const jres = res.body;
     assert.equal(arg1, jres.responseCode);

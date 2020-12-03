@@ -1,5 +1,13 @@
 Feature: testing for prof related operations
 
+  Scenario: get a single prof
+    Given a request to fetch prof with this payload "{\"profId\":\"3234\"}"
+    Then return a json with response equals to 0
+
+  Scenario: get all profs
+    Given a request to fetch all profs
+    Then return a json with response equals to 0
+
 Scenario: create prof
 Given "create" a prof with this payload "{\"name\": \"Yaqing\",\"password\": \"1234\"}"
 Then return a json with response equals to 0

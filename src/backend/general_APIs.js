@@ -173,6 +173,48 @@ const getStudents = async (req, res) => {
     }
 };
 
+const getProfs = async (req, res) => {
+    // Validate login
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before performing this operation.',
+        });
+    }
+
+    const profId = req.query.profId;
+    try {
+        if (profId) {
+            const prof = await new Promise((resolve, reject) => {
+                mysql.getProf(resolve, reject, profId);
+            });
+            return res.status(200).json({
+                responseCode: 0,
+                errorMessage: '',
+                prof,
+            });
+        }
+        const profs = await new Promise((resolve, reject) => {
+            mysql.getAllProfs(resolve, reject);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            students: profs.map(function (prof) {
+                return {
+                    profId: prof.prof_id,
+                    profName: prof.prof_name,
+                };
+            }),
+        });
+    } catch (error) {
+        return res.status(500).json({
+            responseCode: -1,
+            errorMessage: 'Error retrieving prof from database',
+        });
+    }
+};
+
 // Retrieve deliverable information
 // Given deliverableId
 // Sample Response:
@@ -281,5 +323,6 @@ module.exports = {
     getDeliverable,
     // get all deliverables for a given course
     getCourseDeliverables,
-    getStudents
+    getStudents,
+    getProfs,
 };

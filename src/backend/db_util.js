@@ -727,6 +727,38 @@ const getCourseDeliverable = (resolve, reject, courseId) => {
   });
 };
 
+// Retrieve a prof
+// Affected tables: prof
+const getProf = (resolve, reject, profId) => {
+  const connection = getDBConnection();
+
+  connection.query(`
+    SELECT * FROM prof WHERE prof_id = ?;
+  `, [profId], (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results);
+    }
+  });
+};
+
+// Retrieve all profs
+// Affected tables: prof
+const getAllProfs = (resolve, reject) => {
+  const connection = getDBConnection();
+
+  connection.query(`
+    SELECT * FROM prof;
+  `, (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results);
+    }
+  });
+};
+
 // Add a new prof
 // Affected tables: prof, login
 function createProfUser(resolve, reject, name, password) {
@@ -860,5 +892,7 @@ module.exports = {
   getCourseDeliverable,
   createProfUser,
   deleteProfUser,
-  modifyProfUser
+  modifyProfUser,
+  getProf,
+  getAllProfs
 };
