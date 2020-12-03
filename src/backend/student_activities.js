@@ -128,9 +128,42 @@ function listCourse(req, res) {
    });
 }
 
+function submitDeliverable(req, res) {
+    // Validation
+    if (!util.validateLogin(req)) {
+       return res.status(403).json({
+           responseCode: -1,
+           errorMessage: 'You need to login before doing this operation.',
+       });
+   } else if (!util.validateStudent(req)) {
+      return res.status(403).json({
+          responseCode: -1,
+          errorMessage: 'You do not have permission to do this operation.',
+      });
+  }
+   // Perform operation in DB
+   new Promise((resolve, reject) => {
+       console.log('iam here')
+       mysql.createSubmitation(resolve, reject, req);
+   }).then(result => {
+       return res.status(200).json({
+           responseCode: 0,
+           errorMessage: '',
+           success: true,
+           courses: result
+       });
+   }).catch(error => {
+       return res.status(500).json({
+           responseCode: -1,
+           errorMessage: error
+       });
+   });
+}
+
 module.exports = {
     applyCreateStudent,
     registerCourse,
     dropCourse,
-    listCourse
+    listCourse,
+    submitDeliverable
 };

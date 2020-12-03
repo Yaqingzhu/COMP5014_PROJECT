@@ -9,6 +9,7 @@ const admin = require('./admin_activities');
 const student = require('./student_activities');
 const prof = require('./prof_activities');
 const general = require('./general_APIs');
+const fileUpload = require('express-fileupload');
 
 const app = express();
 const port = process.env.API_PORT || 11234; // Port for the API
@@ -35,6 +36,8 @@ app.use(cors({
   credentials: true,
   exposedHeaders: ['set-cookie'],
 }));
+
+app.use(fileUpload());
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -77,6 +80,9 @@ app.get('/profs', general.getProfs);
 app.post('/createprof', admin.CreateProf);
 app.post('/modifyprof', admin.ModifyProf);
 app.post('/deleteprof', admin.DeleteProf);
+
+app.post('/upload', student.submitDeliverable);
+
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {

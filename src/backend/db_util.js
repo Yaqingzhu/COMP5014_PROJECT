@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const fs = require('fs');
 
 // Environment variables for the database
 const { DB_PORT, DB_HOST, DB_USERNAME, DB_PASSWORD, DB_DATABASE } = process.env;
@@ -841,6 +842,30 @@ const modifyProfUser = (resolve, reject, profId, name, password) => {
   }
 };
 
+// Create new submitation for a deliverable for a given courseId
+const createSubmitation = (resolve, reject, req) => {
+  const connection = getDBConnection();
+  const deliverableId = req.body.deliverableId;
+  const registrationId = req.body.registrationId;
+  const fileType = req.files.submitation.mimetype;
+  const filePath = '/temp/upload/' + req.files.submitation.name;
+  const file = req.files.submitation;
+
+  fs.mkdirSync('/temp/upload/', { recursive: true });
+
+  file.mv(filePath, function (err) {
+    if (err) { return reject(err); }
+    connection.query('INSERT INTO submitation(registration_id, deliverable_id, submitation_date, submitation_file, file_type) VALUES(?,?,?, ?, ?)',
+    [registrationId, deliverableId, new Date(), file.data.toString('hex'), fileType], error => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve({ deliverableId: deliverableId, registrationId: registrationId });
+      }
+    });
+  });
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -894,5 +919,6 @@ module.exports = {
   deleteProfUser,
   modifyProfUser,
   getProf,
-  getAllProfs
+  getAllProfs,
+  createSubmitation
 };
