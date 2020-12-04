@@ -3,18 +3,19 @@ import { useState, useEffect } from 'react';
 const apiurl = process.env.API_URL;
 
 export const useStudent = studentId => {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [student, setStudent] = useState(null);
 
   const load = () => {
+    setError(null);
+
     window.fetch(`${apiurl}/student?studentId=${studentId}`, {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
     }).then(body => body.json()).then(result => {
-      setLoading(false);
       if (result.responseCode === 0) {
         setStudent({
           ...result.student,
@@ -23,6 +24,7 @@ export const useStudent = studentId => {
       } else {
         setError(result.errorMessage);
       }
+      setLoading(false);
     }).catch(error => {
       setError(error);
     });

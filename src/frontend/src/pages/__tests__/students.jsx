@@ -17,7 +17,7 @@ describe('Students component', () => {
       students,
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <StudentsPage />
@@ -39,7 +39,7 @@ describe('Students component', () => {
       students: [],
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <StudentsPage />
@@ -51,16 +51,18 @@ describe('Students component', () => {
     expect(screen.getByRole('alert')).toBeDefined();
   });
 
-  it('Shows a loader while the students are loading', () => {
+  it('Shows a loader while the students are loading', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
     }));
 
-    render(
-      <MemoryRouter>
-        <StudentsPage />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <StudentsPage />
+        </MemoryRouter>
+      );
+    });
 
     expect(screen.getByText('Loading...')).toBeDefined();
   });
@@ -70,9 +72,15 @@ describe('Students component', () => {
       responseCode: 0,
       students,
     }));
-    fetchMock.mockOnce(JSON.stringify({}));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      students,
+    }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <StudentsPage />
@@ -82,13 +90,13 @@ describe('Students component', () => {
 
     await waitFor(() => screen.getByText('Available students'));
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getAllByText('Delete')[0]);
     });
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(2);
+    expect(calls).toHaveLength(3);
     expect(calls[1][0]).toContain('/deletestudent');
     expect(calls[1][1].body).toContain(`"studentId":${students[0].studentId}`);
   });

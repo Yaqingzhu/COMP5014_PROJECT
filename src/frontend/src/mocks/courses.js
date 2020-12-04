@@ -5,6 +5,7 @@ export const courses = [
     courseStatus: 'unscheduled',
     courseCapacity: 200,
     courseSlots: [],
+    assignedProf: null,
   },
   {
     courseId: 2,
@@ -12,5 +13,6 @@ export const courses = [
     courseStatus: 'scheduled',
     courseCapacity: 40,
     courseSlots: [],
+    assignedProf: 1,
   },
 ];

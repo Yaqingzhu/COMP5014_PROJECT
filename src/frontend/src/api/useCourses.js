@@ -8,6 +8,8 @@ export const useCourses = () => {
   const [courses, setCourses] = useState(null);
 
   const load = () => {
+    setError(null);
+
     window.fetch(`${apiurl}/course`, {
       credentials: 'include',
       headers: {

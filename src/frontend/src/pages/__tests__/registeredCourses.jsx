@@ -21,7 +21,7 @@ describe('RegisteredCoursesPage component', () => {
       courses: JSON.stringify(studentRegisteredCourses),
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <RegisteredCoursesPage user={user} />
@@ -44,7 +44,7 @@ describe('RegisteredCoursesPage component', () => {
       courses: JSON.stringify(studentRegisteredCourses.filter(course => course.dropDate !== null)),
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <RegisteredCoursesPage user={user} />
@@ -62,7 +62,7 @@ describe('RegisteredCoursesPage component', () => {
       courses: JSON.stringify(studentRegisteredCourses.filter(course => course.dropDate === null)),
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <RegisteredCoursesPage user={user} />
@@ -74,15 +74,17 @@ describe('RegisteredCoursesPage component', () => {
     expect(screen.queryByTestId('dropped-courses')).toBe(null);
   });
 
-  it('Shows a loader while the courses are loading', () => {
+  it('Shows a loader while the courses are loading', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
     }));
-    render(
-      <MemoryRouter>
-        <RegisteredCoursesPage user={user} />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <RegisteredCoursesPage user={user} />
+        </MemoryRouter>
+      );
+    });
 
     expect(screen.getByText('Loading...')).toBeDefined();
   });
@@ -92,9 +94,15 @@ describe('RegisteredCoursesPage component', () => {
       responseCode: 0,
       courses: JSON.stringify(studentRegisteredCourses),
     }));
-    fetchMock.mockOnce(JSON.stringify({}));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      courses: JSON.stringify(studentRegisteredCourses),
+    }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <RegisteredCoursesPage user={user} />
@@ -104,13 +112,13 @@ describe('RegisteredCoursesPage component', () => {
 
     await waitFor(() => screen.getByText('My courses'));
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getAllByText('Drop')[0]);
     });
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(2);
+    expect(calls).toHaveLength(3);
     expect(calls[1][0]).toContain('/dropcourse');
     expect(calls[1][1].body).toContain(`"courseId":${studentRegisteredCourses[0].courseId}`);
   });

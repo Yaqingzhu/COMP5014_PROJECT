@@ -18,7 +18,7 @@ describe('Student component', () => {
       student,
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <StudentPage />
@@ -34,13 +34,13 @@ describe('Student component', () => {
     expect(screen.getByTestId('admitted')).toBeDefined();
   });
 
-  it('Shows a loader while the student is loading', () => {
+  it('Shows a loader while the student is loading', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
       student: null,
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <StudentPage />
@@ -65,7 +65,7 @@ describe('Student component', () => {
     const newName = 'test';
     const newEmail = 'test@test.test';
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <StudentPage />
@@ -79,7 +79,7 @@ describe('Student component', () => {
     const nameInput = screen.getByTestId('name');
     const emailInput = screen.getByTestId('email');
 
-    act(() => {
+    await act(async () => {
       fireEvent.change(nameInput, { target: { value: newName } });
       fireEvent.change(emailInput, { target: { value: newEmail } });
     });

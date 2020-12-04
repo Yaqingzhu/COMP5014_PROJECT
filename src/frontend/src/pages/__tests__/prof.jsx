@@ -18,7 +18,7 @@ describe('Prof component', () => {
       prof,
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <ProfPage />
@@ -32,13 +32,13 @@ describe('Prof component', () => {
     expect(screen.getByDisplayValue(prof.profName)).toBeDefined();
   });
 
-  it('Shows a loader while the prof is loading', () => {
+  it('Shows a loader while the prof is loading', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
       student: null,
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <ProfPage />
@@ -62,7 +62,7 @@ describe('Prof component', () => {
 
     const newName = 'test';
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <ProfPage />
@@ -75,7 +75,7 @@ describe('Prof component', () => {
 
     const nameInput = screen.getByTestId('name');
 
-    act(() => {
+    await act(async () => {
       fireEvent.change(nameInput, { target: { value: newName } });
     });
 

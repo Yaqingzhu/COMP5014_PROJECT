@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 
-export const CourseForm = ({ course, handleSave }) => {
+export const CourseForm = ({ course, profs, handleSave }) => {
   const { control, register, handleSubmit } = useForm({
     defaultValues: course,
   });
@@ -57,6 +57,23 @@ export const CourseForm = ({ course, handleSave }) => {
             name="courseCapacity"
             ref={register()}
           />
+        </div>
+        <div className="mb-3">
+          <label htmlFor="capacity">Assigned prof</label>
+          <select
+            className="form-control"
+            name="assignedProf"
+            data-testid="assignedProf"
+            defaultValue={course ? course.assignedProf : null}
+            ref={register()}
+          >
+            <option key="null" value={null}>No prof</option>
+            {profs.map(prof => (
+              <option key={prof.profId} value={prof.profId}>
+                {prof.profName}
+              </option>
+            ))}
+          </select>
         </div>
         <hr className="mb-4" />
         {fields.map((item, index) => (
