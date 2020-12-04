@@ -33,6 +33,15 @@ When('I see {string} to fill in {string} tag', (gap, tag) => {
     cy.get(tag).should('have.attr', 'placeholder', gap).and('not.be.disabled');
 });
 
+When('I see the students in a table', () => {
+    cy.get('.thead-dark > tr').should('be.visible');
+    cy.get('.thead-dark > tr > :nth-child(1)').should('be.visible').and('have.text', '#');
+    cy.get('.thead-dark > tr > :nth-child(2)').should('be.visible').and('have.text', 'Name');
+    cy.get('.thead-dark > tr > :nth-child(3)').should('be.visible').and('have.text', 'Email');
+    cy.get('.thead-dark > tr > :nth-child(4)').should('be.visible').and('have.text', 'Admitted');
+    cy.get('.thead-dark > tr > :nth-child(5)').should('be.visible').and('have.text', 'Commands');
+});
+
 When('I see the registration page', () => {
     cy.get('body').should('be.visible');
     cy.get('.img-fluid').should('be.visible');
@@ -98,6 +107,21 @@ Then('I fill in the information of the {string} course to be created with {int} 
     cy.click_button('Save changes', '.btn-primary');
 });
 
+Then('I fill in the name as {string}, the email as {string} and the birth date as {string} of the student to be created', (name, email, date) => {
+    cy.get('[for="name"]').should('have.text', 'Student name');
+    cy.get('[data-testid=name]').should('have.attr', 'placeholder', 'Some name').and('not.be.disabled');
+    cy.get('[data-testid=name]').type(name);
+    cy.get('[for="email"]').should('have.text', 'Student email');
+    cy.get('[data-testid=email]').should('have.attr', 'placeholder', 'email@some.domain').and('not.be.disabled');
+    cy.get('[data-testid=email]').type(email);
+    cy.get('[for="admitted"]').should('have.text', 'Admitted');
+    cy.get('[data-testid=admitted]').not('[disabled]').check();
+    cy.get('[for="birthDate"]').should('have.text', 'Birth date');
+    cy.get('.react-datepicker__input-container > .form-control').should('not.be.disabled');
+    cy.get('input[name="birthDate"]').type('{selectall}'+date);
+    cy.click_button('Save changes', '.btn-primary');
+});
+
 Then('I schedule the last course created', () => {
     cy.get('tr').its('length').then(($length) => {
         const rows = $length - 1;
@@ -152,6 +176,13 @@ Then('I see the {string} course in the course dashboard', (course) => {
     cy.get('td').contains(course);
 });
 
+Then('I see the student {string} in the student dashboard', (name) => {
+    cy.click_button('Students', ':nth-child(3) > .nav-link');
+    cy.location('pathname').should('contain', 'students');
+    cy.contains('.h2', 'Available students').should('be.visible');
+    cy.get('td').contains(name);
+});
+
 Then('I want to change capacity of the last course created to {int}', capacity => {
     cy.get('tr').its('length').then($length => {
         const rows = $length - 1;
@@ -174,10 +205,18 @@ Then('I want to cancel the last course created', () => {
     });
 });
 
-Then('I want to delete the last element created', () => {
+Then('I want to delete the last course created', () => {
     cy.get('tr').its('length').then($length => {
         const rows = $length - 1;
         cy.click_button('Delete', `:nth-child(${rows}) > :nth-child(5) > [data-testid="delete-course"]`);
+        cy.get('tbody > :nth-child(' + rows + ')').should('not.exist');
+    });
+});
+
+Then('I want to delete the last student created', () => {
+    cy.get('tr').its('length').then($length => {
+        const rows = $length - 1;
+        cy.click_button('Delete', `:nth-child(${rows}) > :nth-child(5) > .ml-2`);
         cy.get('tbody > :nth-child(' + rows + ')').should('not.exist');
     });
 });

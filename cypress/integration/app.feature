@@ -28,7 +28,7 @@ Feature: Placeholder Test
     And I see "New course" in a "h1.mb-3" tag
     Then I fill in the information of the "CompGeom" course to be created with 30 capacity
     And I see the "CompGeom" course in the course dashboard
-    
+
   Scenario: I register on a course
     Given I log in with valid student credentials
     And I click on "My courses" button with tag ":nth-child(2) > .nav-link"
@@ -52,19 +52,34 @@ Feature: Placeholder Test
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
     And I see the "CompGeom" course in the course dashboard
     Then I want to cancel the last course created
-    
+
   Scenario: I delete a course
     Given I log in with valid credentials
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
     And I see the "CompGeom" course in the course dashboard
-    Then I want to delete the last element created
+    Then I want to delete the last course created
 
   Scenario: Student apply for registration
     Given I am a student without account
     When I see the registration page
     Then I fill in the form with "Student1" as name, "student1@carleton.ca" as email, "11/29/1999" as birth date, and "student1" as password
     And The admin can see the application of student "student1@carleton.ca"
-    
+
+  Scenario: I create a student
+    Given I log in with valid credentials
+    When I click on "Students" button with tag ":nth-child(3)>.nav-link"
+    And I see "Available students" in a ".h2" tag
+    And I click on "New student" button with tag ".btn"
+    And I see "New student" in a "h1.mb-3" tag
+    Then I fill in the name as "Student2", the email as "student2@test.ca" and the birth date as "11/20/1990" of the student to be created
+    And I see the student "Student2" in the student dashboard
+
+  Scenario: I delete a student
+    Given I log in with valid credentials
+    When I click on "Students" button with tag ":nth-child(3)>.nav-link"
+    And I see the students in a table
+    Then I want to delete the last student created
+
   Scenario: I schedule a course
     Given I log in with valid credentials
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
@@ -78,4 +93,3 @@ Feature: Placeholder Test
     And I create the course "Course2" with capacity 20
     And I see the "Course2" course in the course dashboard
     Then I unschedule the last course created
-
