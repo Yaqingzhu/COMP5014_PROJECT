@@ -253,6 +253,22 @@ const getAllStudents = (resolve, reject) => {
   });
 };
 
+// Retrieve all students registered in a course
+// Affected tables: student
+const getCourseStudents = (resolve, reject, courseId) => {
+  const connection = getDBConnection();
+
+  connection.query(`
+    SELECT s.* FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
+  `, [courseId], (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results);
+    }
+  });
+};
+
 // Add a new student
 // Affected tables: student, login
 function createStudentUser(resolve, reject, email, birthDate, name, password, admitted) {
@@ -511,9 +527,11 @@ function getRegisteredCourse(resolve, reject, studentId) {
 
 function addTestDataForStudentTest() {
   const connection = getDBConnection();
-  connection.query('INSERT IGNORE INTO comp4004.course (course_id, course_name,course_status,course_assigned_prof_id, course_capacity)' +
+  console.log('Course and prof insert');
+  connection.query('INSERT IGNORE INTO prof (prof_id, prof_name) VALUES(3234, \'testname\'); ' +
+    'INSERT IGNORE INTO comp4004.course (course_id, course_name,course_status,course_assigned_prof_id, course_capacity)' +
     // eslint-disable-next-line node/handle-callback-err
-    ' VALUES (123,\'test\',\'scheduled\',null,30), ' +
+    ' VALUES (123,\'test\',\'scheduled\',3234,30), ' +
     '  (1234,\'test2\',\'cancel\',null,30) ', [], (error, results) => {
       if (error) {
         console.log(error);
@@ -532,7 +550,6 @@ function addTestDataForStudentTest() {
         const date = new Date();
         date.setDate(date.getDate() + 1);
         connection.query('INSERT IGNORE INTO academic (registration_deadline, drop_deadline) VALUES(?,?)', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)]);
-        connection.query('INSERT IGNORE INTO prof (prof_id, prof_name) VALUES(3234, \'testname\')');
         connection.query('INSERT IGNORE INTO student (student_id, student_name,student_email,admitted, birth_date)' +
         // eslint-disable-next-line node/handle-callback-err
         ' VALUES (223,\'test\',\'test@test.ca\',1,\'2020-10-10\'), ' +
@@ -542,6 +559,9 @@ function addTestDataForStudentTest() {
             console.log(error);
           }
         });
+
+        console.log('Inserting deliverables');
+        connection.query('INSERT IGNORE INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) VALUES(?, ?, ?,?)', ['1', '123', 'assignment', date.toISOString().substring(0, 10)]);
     });
   });
 }
@@ -679,29 +699,68 @@ function getAcademicDeadline(resolve, reject) {
 const createNewDeliverable = (resolve, reject, courseId, deliverableType, deliverableDeadline) => {
   const connection = getDBConnection();
 
-  // Find current max deliverable_id to increment from
+  // Create new deliverable
   connection.query(`
-    SELECT MAX(deliverable_id) FROM deliverable;
-  `, (error, result) => {
+    INSERT INTO deliverable (course_id, deliverable_type, deliverable_deadline)
+    VALUES (?, ?, ?);
+  `, [courseId, deliverableType, deliverableDeadline], (error, result) => {
     if (error) {
       reject(error);
     } else {
-      const deliverableId = result[0]['MAX(deliverable_id)'] + 1;
-      // Create new deliverable
-      connection.query(`
-        INSERT INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline)
-        VALUES (${deliverableId},${courseId},'${deliverableType}','${deliverableDeadline}');
-      `, (error, result) => {
-        if (error) {
-          reject(error);
-        } else {
-          // success
-          resolve(deliverableId);
-        }
-      });
+      // success
+      resolve(result.insertId);
     }
   });
 };
+
+// Modify a deliverable for a given deliverableId
+const modifyDeliverable = (resolve, reject, deliverableId, deliverableType, deliverableDeadline) => {
+  const connection = getDBConnection();
+
+  // Update a deliverable deliverable
+  connection.query(`
+    UPDATE deliverable SET deliverable_type = ?, deliverable_deadline = ?
+    WHERE deliverable_id = ?;
+  `, [deliverableType, deliverableDeadline, deliverableId], (error, result) => {
+    if (error) {
+      reject(error);
+    } else {
+      // success
+      resolve(deliverableId);
+    }
+  });
+};
+
+// Delete a deliverable for a given deliverableId
+const deleteDeliverable = (resolve, reject, deliverableId) => {
+  const connection = getDBConnection();
+
+  // Update a deliverable deliverable
+  connection.query(`
+    DELETE FROM deliverable WHERE deliverable_id = ?;
+  `, [deliverableId], (error, result) => {
+    if (error) {
+      reject(error);
+    } else {
+      // success
+      resolve();
+    }
+  });
+};
+
+// Lists the courses for a prof
+function getCoursesForProf(resolve, reject, profId) {
+  const connection = getDBConnection();
+  connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'courseId\', c.course_id, \'courseName\', c.course_name)) AS result FROM course as c ' +
+    ' WHERE course_assigned_prof_id = ?;', [profId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      return resolve(results[0].result);
+    }
+  });
+}
 
 // Retrieves deliverable from a given deliverableId
 const getDeliverable = (resolve, reject, deliverableId) => {
@@ -710,7 +769,7 @@ const getDeliverable = (resolve, reject, deliverableId) => {
     if (error) {
       reject(error);
     } else {
-      resolve(results[0] || -1);
+      resolve(results);
     }
   });
 };
@@ -860,6 +919,7 @@ module.exports = {
   // retrieve a student
   getStudentUser,
   getAllStudents,
+  getCourseStudents,
 
   // create student
   createStudentUser,
@@ -887,7 +947,10 @@ module.exports = {
   updateAcademicDeadline,
   getAcademicDeadline,
 
+  getCoursesForProf,
   createNewDeliverable,
+  modifyDeliverable,
+  deleteDeliverable,
   getDeliverable,
   getCourseDeliverable,
   createProfUser,

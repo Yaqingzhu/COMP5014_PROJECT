@@ -4,6 +4,10 @@ Feature: testing for prof related operations
     Given a request to fetch prof with this payload "{\"profId\":\"3234\"}"
     Then return a json with response equals to 0
 
+  Scenario: get the courses for a prof
+    Given a request to fetch the courses for prof with this payload "{\"profId\":\"3234\"}"
+    Then return a json with response equals to 0
+
   Scenario: get all profs
     Given a request to fetch all profs
     Then return a json with response equals to 0
