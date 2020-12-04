@@ -466,13 +466,11 @@ function assignProf(req, res) {
 function updateAcademicDeadline(req, res) {
     // Validation
     if (!util.validateLogin(req)) {
-        console.log('not logged in');
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You need to login before doing this operation.',
         });
     } else if (!util.validateAdmin(req)) {
-        console.log('not an admin');
         return res.status(403).json({
             responseCode: -1,
             errorMessage: 'You do not have permission to do this operation.',

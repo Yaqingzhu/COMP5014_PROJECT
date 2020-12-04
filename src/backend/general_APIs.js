@@ -246,6 +246,7 @@ const getProfs = async (req, res) => {
             }),
         });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({
             responseCode: -1,
             errorMessage: 'Error retrieving prof from database',
@@ -293,6 +294,7 @@ const getDeliverable = async (req, res) => {
             },
         });
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             responseCode: -1,
             errorMessage: 'Error retrieving deliverable from database',

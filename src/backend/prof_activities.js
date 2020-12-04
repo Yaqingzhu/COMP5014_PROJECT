@@ -74,13 +74,14 @@ const createCourseDeliverable = async (req, res) => {
         verifyInCourse = Object.values(verifyInCourse[0])[0];
 
         if (verifyInCourse !== 1) {
-            console.log(verifyInCourse);
+            console.error('Could not find courseId. Create the course first.', verifyInCourse);
             return res.status(404).json({
                 responseCode: -1,
                 errorMessage: 'Could not find courseId. Create the course first.'
             });
         }
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             responseCode: -1,
             errorMessage: 'Error in searching for courseId in database.'
