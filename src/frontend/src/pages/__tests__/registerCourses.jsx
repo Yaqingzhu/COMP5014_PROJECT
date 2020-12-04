@@ -25,7 +25,7 @@ describe('RegisterCoursesPage component', () => {
       coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <RegisterCoursesPage user={user} />
@@ -51,7 +51,7 @@ describe('RegisterCoursesPage component', () => {
       coursePayload: [],
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <RegisterCoursesPage user={user} />
@@ -73,7 +73,7 @@ describe('RegisterCoursesPage component', () => {
       coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <RegisterCoursesPage user={user} />
@@ -85,15 +85,17 @@ describe('RegisterCoursesPage component', () => {
     expect(screen.getByRole('alert')).toBeDefined();
   });
 
-  it('Shows a loader while the courses are loading', () => {
+  it('Shows a loader while the courses are loading', async () => {
     fetchMock.mockResponse(JSON.stringify({
       responseCode: -1,
     }));
-    render(
-      <MemoryRouter>
-        <RegisterCoursesPage user={user} />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <RegisterCoursesPage user={user} />
+        </MemoryRouter>
+      );
+    });
 
     expect(screen.getByText('Loading...')).toBeDefined();
   });
@@ -108,9 +110,11 @@ describe('RegisterCoursesPage component', () => {
       responseCode: 0,
       coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
     }));
-    fetchMock.mockOnce(JSON.stringify({}));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+    }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <RegisterCoursesPage user={user} />
@@ -120,11 +124,11 @@ describe('RegisterCoursesPage component', () => {
 
     await waitFor(() => screen.getByText('Available courses'));
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByTestId(`check-${course.courseId}`));
     });
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getByText('Register'));
     });
 

@@ -8,6 +8,8 @@ export const useStudentCourses = user => {
   const [courses, setCourses] = useState(null);
 
   const load = () => {
+    setError(null);
+
     window.fetch(`${apiurl}/listcourses?studentId=${user.loginId}`, {
       credentials: 'include',
       headers: {

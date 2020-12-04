@@ -26,7 +26,7 @@ export const RegisterCoursesPage = ({ user }) => {
     }
   };
 
-  if (studentLoading || availableLoading) {
+  if (studentLoading || availableLoading || !courses) {
     return (
       <div className="text-center">
         <Loader />

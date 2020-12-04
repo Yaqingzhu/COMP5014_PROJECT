@@ -4,6 +4,7 @@ import { render, act, screen, fireEvent } from '@testing-library/react';
 import fetchMock from 'jest-fetch-mock';
 
 import { courses } from '../../mocks/courses';
+import { profs } from '../../mocks/profs';
 import { NewCoursePage } from '../newCourse';
 
 describe('Course component', () => {
@@ -11,8 +12,12 @@ describe('Course component', () => {
     fetchMock.resetMocks();
   });
 
-  it('Shows an empty course', () => {
-    act(() => {
+  it('Shows an empty course', async () => {
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      profs,
+    }));
+    await act(async () => {
       render(
         <MemoryRouter>
           <NewCoursePage />
@@ -32,11 +37,15 @@ describe('Course component', () => {
     const newStatus = 'unscheduled';
     const newCapacity = 10;
 
-    fetchMock.mockResponse(JSON.stringify({
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      profs,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
       coursePayload: JSON.stringify(courses[0]),
     }));
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <NewCoursePage />
@@ -48,7 +57,7 @@ describe('Course component', () => {
     const statusInput = screen.getByTestId('status');
     const capacityInput = screen.getByTestId('capacity');
 
-    act(() => {
+    await act(async () => {
       fireEvent.change(nameInput, { target: { value: newName } });
       fireEvent.change(statusInput, { target: { value: newStatus } });
       fireEvent.change(capacityInput, { target: { value: newCapacity } });
@@ -65,10 +74,10 @@ describe('Course component', () => {
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(1);
-    expect(calls[0][0]).toContain('/courseop');
-    expect(calls[0][1].body).toContain(`"courseName":"${newName}"`);
-    expect(calls[0][1].body).toContain(`"courseStatus":"${newStatus}"`);
-    expect(calls[0][1].body).toContain(`"courseCapacity":"${newCapacity}"`);
+    expect(calls).toHaveLength(2);
+    expect(calls[1][0]).toContain('/courseop');
+    expect(calls[1][1].body).toContain(`"courseName":"${newName}"`);
+    expect(calls[1][1].body).toContain(`"courseStatus":"${newStatus}"`);
+    expect(calls[1][1].body).toContain(`"courseCapacity":"${newCapacity}"`);
   });
 });

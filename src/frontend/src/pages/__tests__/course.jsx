@@ -5,6 +5,7 @@ import fetchMock from 'jest-fetch-mock';
 
 import { CoursePage } from '../course';
 import { courses } from '../../mocks/courses';
+import { profs } from '../../mocks/profs';
 
 describe('Course component', () => {
   afterEach(() => {
@@ -17,8 +18,12 @@ describe('Course component', () => {
       responseCode: 0,
       coursePayload: JSON.stringify(course),
     }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      profs,
+    }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <CoursePage />
@@ -34,12 +39,12 @@ describe('Course component', () => {
     expect(screen.getByTestId('capacity')).toBeDefined();
   });
 
-  it('Shows a loader while the courses are loading', () => {
+  it('Shows a loader while the courses are loading', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
       coursePayload: null,
     }));
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <CoursePage />
@@ -56,11 +61,19 @@ describe('Course component', () => {
     const newStatus = 'unscheduled';
     const newCapacity = 10;
 
-    fetchMock.mockResponse(JSON.stringify({
+    fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
       coursePayload: JSON.stringify(course),
     }));
-    act(() => {
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      profs,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: JSON.stringify(course),
+    }));
+    await act(async () => {
       render(
         <MemoryRouter>
           <CoursePage />
@@ -75,7 +88,7 @@ describe('Course component', () => {
     const statusInput = screen.getByTestId('status');
     const capacityInput = screen.getByTestId('capacity');
 
-    act(() => {
+    await act(async () => {
       fireEvent.change(nameInput, { target: { value: newName } });
       fireEvent.change(statusInput, { target: { value: newStatus } });
       fireEvent.change(capacityInput, { target: { value: newCapacity } });
@@ -92,10 +105,10 @@ describe('Course component', () => {
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(3);
-    expect(calls[1][0]).toContain('/courseop');
-    expect(calls[1][1].body).toContain(`"courseName":"${newName}"`);
-    expect(calls[1][1].body).toContain(`"courseStatus":"${newStatus}"`);
-    expect(calls[1][1].body).toContain(`"courseCapacity":"${newCapacity}"`);
+    expect(calls).toHaveLength(4);
+    expect(calls[2][0]).toContain('/courseop');
+    expect(calls[2][1].body).toContain(`"courseName":"${newName}"`);
+    expect(calls[2][1].body).toContain(`"courseStatus":"${newStatus}"`);
+    expect(calls[2][1].body).toContain(`"courseCapacity":"${newCapacity}"`);
   });
 });
