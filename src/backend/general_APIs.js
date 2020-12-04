@@ -282,19 +282,18 @@ const getDeliverable = async (req, res) => {
         const deliverable = await new Promise((resolve, reject) => {
             mysql.getDeliverable(resolve, reject, deliverableId);
         });
-        console.log(deliverable);
         return res.status(200).json({
             responseCode: 0,
             errorMessage: '',
             deliverable: {
-                deliverableId: deliverable[0].deliverableId,
+                deliverableId: deliverable[0].deliverable_id,
                 courseId: deliverable[0].course_id,
-                deliverableType: deliverable[0].deliverableType,
-                deliverableDeadline: deliverable[0].deliverableDeadline,
+                deliverableType: deliverable[0].deliverable_type,
+                deliverableDeadline: deliverable[0].deliverable_deadline,
             },
         });
     } catch (error) {
-        return res.status(403).json({
+        return res.status(500).json({
             responseCode: -1,
             errorMessage: 'Error retrieving deliverable from database',
         });

@@ -769,7 +769,7 @@ const getDeliverable = (resolve, reject, deliverableId) => {
     if (error) {
       reject(error);
     } else {
-      resolve(results[0] || -1);
+      resolve(results);
     }
   });
 };
