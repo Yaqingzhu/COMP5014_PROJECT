@@ -253,6 +253,22 @@ const getAllStudents = (resolve, reject) => {
   });
 };
 
+// Retrieve all students registered in a course
+// Affected tables: student
+const getCourseStudents = (resolve, reject, courseId) => {
+  const connection = getDBConnection();
+
+  connection.query(`
+    SELECT s.* FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
+  `, [courseId], (error, results) => {
+    if (error) {
+      reject(error);
+    } else {
+      resolve(results);
+    }
+  });
+};
+
 // Add a new student
 // Affected tables: student, login
 function createStudentUser(resolve, reject, email, birthDate, name, password, admitted) {
@@ -545,7 +561,7 @@ function addTestDataForStudentTest() {
         });
 
         console.log('Inserting deliverables');
-        connection.query('INSERT IGNORE INTO deliverable (course_id, deliverable_type, deliverable_deadline) VALUES(?, ?,?)', ['123', 'assignment', date.toISOString().substring(0, 10)]);
+        connection.query('INSERT IGNORE INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) VALUES(?, ?, ?,?)', ['1', '123', 'assignment', date.toISOString().substring(0, 10)]);
     });
   });
 }
@@ -903,6 +919,7 @@ module.exports = {
   // retrieve a student
   getStudentUser,
   getAllStudents,
+  getCourseStudents,
 
   // create student
   createStudentUser,

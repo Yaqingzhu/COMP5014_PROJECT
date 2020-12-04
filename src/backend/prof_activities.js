@@ -54,7 +54,7 @@ const createCourseDeliverable = async (req, res) => {
     // Get form information
     const courseId = req.body.courseId;
     let deliverableType = req.body.deliverableType;
-    let deliverableDeadline = req.body.deliverableDeadline;
+    let deliverableDeadline = new Date(req.body.deliverableDeadline);
 
     // Verify courseId exists in course table
     let verifyInCourse = false;
@@ -91,7 +91,6 @@ const createCourseDeliverable = async (req, res) => {
     try {
         // Parse input
         deliverableDeadline = deliverableDeadline || null;
-        deliverableDeadline = new Date(deliverableDeadline).toISOString().slice(0, 19).replace('T', ' ');
         deliverableType = deliverableType || '';
 
         const deliverableId = await new Promise((resolve, reject) => {
@@ -131,7 +130,7 @@ const modifyCourseDeliverable = async (req, res) => {
     // Get form information
     const deliverableId = req.body.deliverableId;
     const deliverableType = req.body.deliverableType;
-    const deliverableDeadline = req.body.deliverableDeadline;
+    const deliverableDeadline = new Date(req.body.deliverableDeadline);
 
     try {
         await new Promise((resolve, reject) => {
