@@ -106,7 +106,7 @@ function setCourse(resolve, reject, course) {
     ' course_status = VALUES(course_status), ' +
     ' course_assigned_prof_id = VALUES(course_assigned_prof_id), ' +
     ' course_capacity = VALUES(course_capacity) ', [
-    course.courseId, course.courseName, course.courseStatus, course.assignedProf, course.courseCapacity
+    course.courseId, course.courseName, course.courseStatus, course.assignedProf || null, course.courseCapacity
     // eslint-disable-next-line node/handle-callback-err
   ], (error, results) => {
     resolve(results.insertId || course.courseId);

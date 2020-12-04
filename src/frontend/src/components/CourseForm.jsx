@@ -64,10 +64,10 @@ export const CourseForm = ({ course, profs, handleSave }) => {
             className="form-control"
             name="assignedProf"
             data-testid="assignedProf"
-            defaultValue={course ? course.assignedProf : null}
+            defaultValue={course.assignedProf}
             ref={register()}
           >
-            <option key="null" value={null}>No prof</option>
+            <option key="null" value="null">No prof</option>
             {profs.map(prof => (
               <option key={prof.profId} value={prof.profId}>
                 {prof.profName}
