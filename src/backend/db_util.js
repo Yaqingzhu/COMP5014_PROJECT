@@ -528,7 +528,7 @@ function getRegisteredCourse(resolve, reject, studentId) {
 function addTestDataForStudentTest() {
   const connection = getDBConnection();
   console.log('Course and prof insert');
-  connection.query('INSERT IGNORE INTO prof (prof_id, prof_name) VALUES(3234, \'testname\'); ' +
+  connection.query('DELETE FROM academic; INSERT IGNORE INTO prof (prof_id, prof_name) VALUES(3234, \'testname\'); ' +
     'INSERT IGNORE INTO comp4004.course (course_id, course_name,course_status,course_assigned_prof_id, course_capacity)' +
     // eslint-disable-next-line node/handle-callback-err
     ' VALUES (123,\'test\',\'scheduled\',3234,30), ' +
