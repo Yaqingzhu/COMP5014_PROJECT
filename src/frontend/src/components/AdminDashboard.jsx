@@ -49,11 +49,6 @@ export const AdminDashboard = () => {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className={`nav-link${getActive('/deadlines')}`} to="/deadlines">
-                    Academic deadlines
-                  </Link>
-                </li>
-                <li className="nav-item">
                   <Link className={`nav-link${getActive('/courses')}`} to="/courses">
                     Courses
                   </Link>
@@ -66,6 +61,11 @@ export const AdminDashboard = () => {
                 <li className="nav-item">
                   <Link className={`nav-link${getActive('/profs')}`} to="/profs">
                     Profs
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className={`nav-link${getActive('/deadlines')}`} to="/deadlines">
+                    Academic deadlines
                   </Link>
                 </li>
               </ul>
