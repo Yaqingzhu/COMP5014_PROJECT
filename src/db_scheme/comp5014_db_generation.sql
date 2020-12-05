@@ -232,6 +232,7 @@ CREATE TABLE IF NOT EXISTS `comp4004`.`submitation` (
   `deliverable_id` INT NOT NULL,
   `submitation_date` DATETIME NOT NULL,
   `submitation_file` BLOB NULL,
+  `file_type` VARCHAR(45) NOT NULL,
   `submitation_grade` INT NULL,
   PRIMARY KEY (`submitation_id`),
   INDEX `fk_submitation_registration_idx` (`registration_id` ASC) VISIBLE,

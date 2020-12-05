@@ -112,6 +112,37 @@ const createCourseDeliverable = async (req, res) => {
     }
 };
 
+function markDeliverable(req, res) {
+    // Validation
+    if (!util.validateLogin(req)) {
+       return res.status(403).json({
+           responseCode: -1,
+           errorMessage: 'You need to login before doing this operation.',
+       });
+   } else if (!util.validateprof(req)) {
+      return res.status(403).json({
+          responseCode: -1,
+          errorMessage: 'You do not have permission to do this operation.',
+      });
+  }
+   // Perform operation in DB
+   new Promise((resolve, reject) => {
+       mysql.submitDeliverable(resolve, reject, req.body);
+   }).then(result => {
+       return res.status(200).json({
+           responseCode: 0,
+           errorMessage: '',
+           success: true,
+           courses: result
+       });
+   }).catch(error => {
+       return res.status(500).json({
+           responseCode: -1,
+           errorMessage: error
+       });
+   });
+}
+
 // Modify a course deliverable
 // Given the deliverableId, deliverableType (string), deliverableDeadline (datetime)
 const modifyCourseDeliverable = async (req, res) => {
@@ -190,10 +221,12 @@ const deleteCourseDeliverable = async (req, res) => {
     }
 };
 
+
 module.exports = {
     listCourses,
     // Create a course deliverable
     createCourseDeliverable,
+    markDeliverable,
     modifyCourseDeliverable,
     deleteCourseDeliverable,
 };
