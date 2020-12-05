@@ -193,6 +193,7 @@ const getCourseStudents = async (req, res) => {
             students: students.map(function (student) {
                 return {
                     studentId: student.student_id,
+                    registrationId: student.registration_id,
                     studentName: student.student_name,
                     studentEmail: student.student_email,
                     admitted: student.admitted,
@@ -361,6 +362,58 @@ const getCourseDeliverables = async (req, res) => {
     }
 };
 
+// Retrieve all deliverable submissions information for a single deliverable
+// Given deliverableId
+// Sample Response:
+// {
+//     "responseCode": 0,
+//     "errorMessage": "",
+//     "submission": {
+//         "deliverable_id": 1,
+//         "course_id": 123,
+//         "submission_date": "1970-01-01T00:00:00.000Z",
+//         "submission_file": ""
+//     }
+// }
+// Returns -1 if not found
+const getSubmissions = async (req, res) => {
+    // Validate login
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before performing this operation.',
+        });
+    }
+
+    const deliverableId = req.query.deliverableId;
+
+    try {
+        const submissions = await new Promise((resolve, reject) => {
+            mysql.getSubmissions(resolve, reject, deliverableId);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            submissions: submissions.map(submission => ({
+                submissionId: submission.submission_id,
+                registrationId: submission.registration_id,
+                deliverableId: submission.deliverable_id,
+                submissionDate: submission.submission_date,
+                submissionFile: submission.submission_file,
+                fileType: submission.file_type,
+                fileName: submission.file_name,
+                submissionGrade: submission.submission_grade,
+            })),
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            responseCode: -1,
+            errorMessage: 'Error retrieving submission from database',
+        });
+    }
+};
+
 // Retrieve deliverable submission information
 // Given deliverableId
 // Sample Response:
@@ -384,19 +437,20 @@ const getSubmission = async (req, res) => {
         });
     }
 
+    const registrationId = req.query.registrationId;
     const deliverableId = req.query.deliverableId;
 
     try {
         const submission = await new Promise((resolve, reject) => {
-            mysql.getSubmission(resolve, reject, deliverableId);
+            mysql.getSubmission(resolve, reject, registrationId, deliverableId);
         });
         return res.status(200).json({
             responseCode: 0,
             errorMessage: '',
             submission: submission.length ? {
                 submissionId: submission[0].submission_id,
+                registrationId: submission.registration_id,
                 deliverableId: submission[0].deliverable_id,
-                courseId: submission[0].course_id,
                 submissionDate: submission[0].submission_date,
                 submissionFile: submission[0].submission_file,
                 fileType: submission[0].file_type,
@@ -427,6 +481,7 @@ module.exports = {
     getDeliverable,
     // get all deliverables for a given course
     getCourseDeliverables,
+    getSubmissions,
     getSubmission,
     getStudents,
     getCourseStudents,

@@ -123,7 +123,7 @@ function setTimeSlot(resolve, reject, slots, courseId) {
       element.id = courseId;
     });
     connection.query('INSERT INTO course_slots(course_slots_day, course_slots_time, course_id) values ?;', [
-      slots.map(element => [element.day, element.time, element.id])], function (error, result) {
+        slots.map(element => [element.day, element.time, element.id])], function (error, result) {
         if (error) { reject(error); }
         resolve(courseId);
       }
@@ -198,11 +198,11 @@ function getAllCourse(resolve, reject) {
     ' LEFT JOIN (SELECT JSON_ARRAYAGG(prerequisites_course_id) prerequisites, course_id FROM prerequisites group by course_id) p2 ON p2.course_id = c.course_id' +
     ' WHERE c.course_status != \'deleted\'',
     (error, results) => {
-    if (!error) {
-      const rest = results || -1;
-      resolve(rest);
-    }
-  });
+      if (!error) {
+        const rest = results || -1;
+        resolve(rest);
+      }
+    });
 }
 
 // Change a course's status
@@ -260,7 +260,7 @@ const getCourseStudents = (resolve, reject, courseId) => {
   const connection = getDBConnection();
 
   connection.query(`
-    SELECT s.* FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
+    SELECT s.*, r.registration_id FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
   `, [courseId], (error, results) => {
     if (error) {
       reject(error);
@@ -334,20 +334,20 @@ const modifyStudentUser = (resolve, reject, studentId, email, birthDate, name, a
       `UPDATE comp4004.student SET ${queryElement.join(',')} WHERE student_id = ?;`,
       parameters.concat(studentId),
       error => {
-      if (error) {
-        reject(error);
-      } else if (password) {
-        connection.query('UPDATE login SET password = ? WHERE id = ?', [password, studentId], error => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(studentId);
-          }
-        });
-      } else {
-        resolve(studentId);
-      }
-    });
+        if (error) {
+          reject(error);
+        } else if (password) {
+          connection.query('UPDATE login SET password = ? WHERE id = ?', [password, studentId], error => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(studentId);
+            }
+          });
+        } else {
+          resolve(studentId);
+        }
+      });
   }
 };
 
@@ -411,13 +411,13 @@ function registerCourse(resolve, reject, studentId, courseId) {
               const today = new Date();
               if (Date.parse(deadline) > today) {
                 connection.query('INSERT INTO registration(registration_id, course_id, student_id, registration_date, drop_date, late_registration, late_registration_approval, late_drop, late_drop_approval) ' +
-                ' VALUES(null,?,?,?,null,0,null,0,null)' +
-                ' ON DUPLICATE KEY UPDATE ' +
-                ' registration_date = VALUES(registration_date), ' +
-                ' drop_date = null, ' +
-                ' late_registration_approval = VALUES(late_registration_approval), ' +
-                ' late_drop = VALUES(late_drop), ' +
-                ' late_registration = VALUES(late_registration)', [courseId, studentId, today], (error, results) => {
+                  ' VALUES(null,?,?,?,null,0,null,0,null)' +
+                  ' ON DUPLICATE KEY UPDATE ' +
+                  ' registration_date = VALUES(registration_date), ' +
+                  ' drop_date = null, ' +
+                  ' late_registration_approval = VALUES(late_registration_approval), ' +
+                  ' late_drop = VALUES(late_drop), ' +
+                  ' late_registration = VALUES(late_registration)', [courseId, studentId, today], (error, results) => {
                   if (error) {
                     console.log(error);
                     return reject(error);
@@ -427,13 +427,13 @@ function registerCourse(resolve, reject, studentId, courseId) {
                 });
               } else {
                 connection.query('INSERT INTO registration(registration_id, course_id, student_id, registration_date, drop_date, late_registration, late_registration_approval, late_drop, late_drop_approval) ' +
-                ' VALUES(null,?,?,?,null,1,0,0,null) ' +
-                ' ON DUPLICATE KEY UPDATE ' +
-                ' registration_date = VALUES(registration_date), ' +
-                ' drop_date = null, ' +
-                ' late_registration_approval = VALUES(late_registration_approval), ' +
-                ' late_drop = VALUES(late_drop), ' +
-                ' late_registration = VALUES(late_registration)', [courseId, studentId, today], (error, results) => {
+                  ' VALUES(null,?,?,?,null,1,0,0,null) ' +
+                  ' ON DUPLICATE KEY UPDATE ' +
+                  ' registration_date = VALUES(registration_date), ' +
+                  ' drop_date = null, ' +
+                  ' late_registration_approval = VALUES(late_registration_approval), ' +
+                  ' late_drop = VALUES(late_drop), ' +
+                  ' late_registration = VALUES(late_registration)', [courseId, studentId, today], (error, results) => {
                   if (error) {
                     console.log(error);
                     return reject(error);
@@ -472,7 +472,7 @@ function dropCourse(resolve, reject, studentId, courseId) {
           const today = new Date();
           if (Date.parse(deadline) > today) {
             connection.query('UPDATE registration SET drop_date = ?, late_drop = 0, late_drop_approval = NULL ' +
-            ' WHERE course_id = ? AND student_id = ?', [today, courseId, studentId], (error, results) => {
+              ' WHERE course_id = ? AND student_id = ?', [today, courseId, studentId], (error, results) => {
               if (error) {
                 console.log(error);
                 return reject(error);
@@ -482,7 +482,7 @@ function dropCourse(resolve, reject, studentId, courseId) {
             });
           } else {
             connection.query('UPDATE registration SET drop_date = ?, late_drop = 1, late_drop_approval = 0 ' +
-            ' WHERE course_id = ? AND student_id = ?', [today, courseId, studentId], (error, results) => {
+              ' WHERE course_id = ? AND student_id = ?', [today, courseId, studentId], (error, results) => {
               if (error) {
                 console.log(error);
                 return reject(error);
@@ -538,11 +538,11 @@ function getRegisteredCourse(resolve, reject, courseId, studentId) {
         return reject('You are not admitted to be a student yet');
       }
       connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'registrationId\', r.registration_id, \'courseId\', r.course_id, \'courseName\', c.course_name, \'studentId\', r.student_id, \'registrationDate\', ' +
-      ' r.registration_date, \'dropDate\', r.drop_date, \'lateRegistration\', r.late_registration, \'lateRegistrationApproval\', r.late_registration_approval, ' +
-      ' \'lateDrop\', r.late_drop, \'lateDropApproval\', r.late_drop_approval, \'finalGrade\', r.final_grade, \'courseSlots\', COALESCE(s.slots, JSON_ARRAY()))) AS result FROM registration as r ' +
-      ' LEFT JOIN course as c ON r.course_id = c.course_id LEFT JOIN (SELECT JSON_ARRAYAGG(JSON_OBJECT(\'day\', course_slots_day, \'time\', course_slots_time)) ' +
-      ' AS slots, course_id FROM course_slots group by course_id) s ON s.course_id = c.course_id ' +
-      ' WHERE student_id = ? AND r.course_id = ?;', [studentId, courseId], (error, results) => {
+        ' r.registration_date, \'dropDate\', r.drop_date, \'lateRegistration\', r.late_registration, \'lateRegistrationApproval\', r.late_registration_approval, ' +
+        ' \'lateDrop\', r.late_drop, \'lateDropApproval\', r.late_drop_approval, \'finalGrade\', r.final_grade, \'courseSlots\', COALESCE(s.slots, JSON_ARRAY()))) AS result FROM registration as r ' +
+        ' LEFT JOIN course as c ON r.course_id = c.course_id LEFT JOIN (SELECT JSON_ARRAYAGG(JSON_OBJECT(\'day\', course_slots_day, \'time\', course_slots_time)) ' +
+        ' AS slots, course_id FROM course_slots group by course_id) s ON s.course_id = c.course_id ' +
+        ' WHERE student_id = ? AND r.course_id = ?;', [studentId, courseId], (error, results) => {
         if (error) {
           console.log(error);
           return reject(error);
@@ -563,35 +563,35 @@ function addTestDataForStudentTest() {
     // eslint-disable-next-line node/handle-callback-err
     ' VALUES (123,\'test\',\'scheduled\',3234,30), ' +
     '  (1234,\'test2\',\'cancel\',null,30) ', [], (error, results) => {
-      if (error) {
-        console.log(error);
-      }
-      console.log('student insert');
-      connection.query('INSERT IGNORE INTO comp4004.login (id, password,failed_time)' +
+    if (error) {
+      console.log(error);
+    }
+    console.log('student insert');
+    connection.query('INSERT IGNORE INTO comp4004.login (id, password,failed_time)' +
       // eslint-disable-next-line node/handle-callback-err
       ' VALUES (223,\'test\',0), ' +
       '  (2234,\'test\',0), ' +
       '  (3234,\'test\',0), ' +
       '  (22345,\'test\',0) ', [], (error, results) => {
-        if (error) {
-          console.log(error);
-        }
-        console.log('student insert done');
-        const date = new Date();
-        date.setDate(date.getDate() + 1);
-        connection.query('INSERT IGNORE INTO academic (registration_deadline, drop_deadline) VALUES(?,?)', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)]);
-        connection.query('INSERT IGNORE INTO student (student_id, student_name,student_email,admitted, birth_date)' +
+      if (error) {
+        console.log(error);
+      }
+      console.log('student insert done');
+      const date = new Date();
+      date.setDate(date.getDate() + 1);
+      connection.query('INSERT IGNORE INTO academic (registration_deadline, drop_deadline) VALUES(?,?)', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)]);
+      connection.query('INSERT IGNORE INTO student (student_id, student_name,student_email,admitted, birth_date)' +
         // eslint-disable-next-line node/handle-callback-err
         ' VALUES (223,\'test\',\'test@test.ca\',1,\'2020-10-10\'), ' +
         '  (2234,\'test2\',\'test2@test.ca\',0,\'2020-10-10\'), ' +
         '  (22345,\'test3\',\'test3@test.ca\',1,\'2020-10-10\') ', [], (error, results) => {
-          if (error) {
-            console.log(error);
-          }
-        });
+        if (error) {
+          console.log(error);
+        }
+      });
 
-        console.log('Inserting deliverables');
-        connection.query('INSERT IGNORE INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) VALUES(?, ?, ?,?)', ['1', '123', 'assignment', date.toISOString().substring(0, 10)]);
+      console.log('Inserting deliverables');
+      connection.query('INSERT IGNORE INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) VALUES(?, ?, ?,?)', ['1', '123', 'assignment', date.toISOString().substring(0, 10)]);
     });
   });
 }
@@ -600,11 +600,11 @@ function updateAcademicForTest(resolve, reject) {
   const date = new Date();
   date.setDate(date.getDate() - 1);
   connection.query('UPDATE academic SET  registration_deadline = ?, drop_deadline = ?', [date.toISOString().substring(0, 10), date.toISOString().substring(0, 10)], (error, results) => {
-          if (error) {
-            return reject(error);
-          }
-          resolve(results);
-        });
+    if (error) {
+      return reject(error);
+    }
+    resolve(results);
+  });
 }
 
 // Verify if courseId exists in course table
@@ -905,20 +905,20 @@ const modifyProfUser = (resolve, reject, profId, name, password) => {
       'UPDATE comp4004.prof SET prof_name = ? WHERE prof_id = ?;',
       [name, profId],
       error => {
-      if (error) {
-        reject(error);
-      } else if (password) {
-        connection.query('UPDATE login SET password = ? WHERE id = ?', [password, profId], error => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(profId);
-          }
-        });
-      } else {
-        resolve(profId);
-      }
-    });
+        if (error) {
+          reject(error);
+        } else if (password) {
+          connection.query('UPDATE login SET password = ? WHERE id = ?', [password, profId], error => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(profId);
+            }
+          });
+        } else {
+          resolve(profId);
+        }
+      });
   } else if (password) {
     connection.query('UPDATE login SET password = ? WHERE id = ?', [password, profId], error => {
       if (error) {
@@ -944,18 +944,32 @@ const createSubmission = (resolve, reject, req) => {
   file.mv(filePath, function (err) {
     if (err) { return reject(err); }
     connection.query('INSERT INTO submission(registration_id, deliverable_id, submission_date, submission_file, file_type, file_name) VALUES(?,?,?, ?, ?, ?)',
-    [registrationId, deliverableId, new Date(), file.data, fileType, file.name], error => {
-      if (error) {
-        reject(error);
-      } else {
-        resolve({ deliverableId: deliverableId, registrationId: registrationId });
-      }
-    });
+      [registrationId, deliverableId, new Date(), file.data, fileType, file.name], error => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({ deliverableId: deliverableId, registrationId: registrationId });
+        }
+      });
   });
 };
 
+// Get a submission submission for a deliverable for a given deliverableId
+const getSubmission = (resolve, reject, registrationId, deliverableId) => {
+  const connection = getDBConnection();
+
+  connection.query('SELECT * FROM submission WHERE registration_id = ? AND deliverable_id = ?',
+    [registrationId, deliverableId], (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+};
+
 // Create new submission for a deliverable for a given deliverableId
-const getSubmission = (resolve, reject, deliverableId) => {
+const getSubmissions = (resolve, reject, deliverableId) => {
   const connection = getDBConnection();
 
   connection.query('SELECT * FROM submission WHERE deliverable_id = ?',
@@ -1029,4 +1043,5 @@ module.exports = {
   getAllProfs,
   createSubmission,
   getSubmission,
+  getSubmissions,
 };
