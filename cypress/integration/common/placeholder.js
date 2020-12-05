@@ -264,7 +264,7 @@ Then('The drop operation is successful', () => {
         const rows = $length - 1;
         cy.get(`tbody > :nth-child(${rows}) > :nth-child(2)`).each($elem => {
             const course = $elem.text();
-            cy.click_button('Drop', `tbody > :nth-child(${rows}) > :nth-child(5) > a`);
+            cy.click_button('Drop', `tbody > :nth-child(${rows}) > :nth-child(5) > a:nth-child(2)`);
             cy.get('[data-testid=dropped-courses] > > tr').its('length').then(($length2) => {
                 const rows2 = $length2 - 1;
                 cy.get(`[data-testid=dropped-courses] > tbody > :nth-child(${rows2}) > :nth-child(2)`).should('be.visible').and('have.text', course);
