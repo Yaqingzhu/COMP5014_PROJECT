@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const apiurl = process.env.API_URL;
 
-export const useCourses = () => {
+export const useProfCourses = user => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [courses, setCourses] = useState(null);
@@ -10,14 +10,14 @@ export const useCourses = () => {
   const load = () => {
     setError(null);
 
-    window.fetch(`${apiurl}/course`, {
+    window.fetch(`${apiurl}/profcourses?profId=${user.loginId}`, {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
     }).then(body => body.json()).then(result => {
       if (result.responseCode === 0) {
-        setCourses(result.coursePayload.map(result => JSON.parse(result.result)));
+        setCourses(result.courses ? JSON.parse(result.courses) : []);
       } else {
         setError(result.errorMessage);
       }

@@ -11,8 +11,8 @@ describe('Prof component', () => {
     fetchMock.resetMocks();
   });
 
-  it('Shows an empty prof', () => {
-    act(() => {
+  it('Shows an empty prof', async () => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <NewProfPage />
@@ -33,7 +33,7 @@ describe('Prof component', () => {
       profId: profs[0].profId,
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <NewProfPage />
@@ -43,7 +43,7 @@ describe('Prof component', () => {
 
     const nameInput = screen.getByTestId('name');
 
-    act(() => {
+    await act(async () => {
       fireEvent.change(nameInput, { target: { value: newName } });
     });
 

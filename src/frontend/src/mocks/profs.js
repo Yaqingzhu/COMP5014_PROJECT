@@ -4,7 +4,7 @@ export const profs = [
     profName: 'test1',
   },
   {
-    studentId: 2,
+    profId: 2,
     profName: 'test2',
   },
 ];

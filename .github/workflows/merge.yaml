@@ -27,8 +27,9 @@ jobs:
         run: npm run lint
       - name: Run unit tests
         run: |
-          docker-compose up -d db
+          docker-compose up -d db api
           sleep 30
+          docker-compose stop api
           npm run test:coverage
           docker-compose down -v
         env:

@@ -2,22 +2,25 @@ import { useState, useEffect } from 'react';
 
 const apiurl = process.env.API_URL;
 
-export const useCourses = () => {
+export const useCourseStudents = courseId => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [courses, setCourses] = useState(null);
+  const [students, setStudents] = useState(null);
 
   const load = () => {
     setError(null);
 
-    window.fetch(`${apiurl}/course`, {
+    window.fetch(`${apiurl}/coursestudents?courseId=${courseId}`, {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
       },
     }).then(body => body.json()).then(result => {
       if (result.responseCode === 0) {
-        setCourses(result.coursePayload.map(result => JSON.parse(result.result)));
+        setStudents(result.students.map(student => ({
+          ...student,
+          birthDate: new Date(student.birthDate),
+        })));
       } else {
         setError(result.errorMessage);
       }
@@ -27,12 +30,12 @@ export const useCourses = () => {
     });
   };
 
-  useEffect(load, []);
+  useEffect(load, [courseId]);
 
   return {
     loading,
     error,
-    courses,
+    students,
     reload: load,
   };
 };

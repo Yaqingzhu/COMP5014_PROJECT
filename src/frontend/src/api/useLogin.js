@@ -28,7 +28,6 @@ export const useLogin = () => {
           password,
         }),
       }).then(body => body.json()).then(result => {
-        setLoading(false);
         if (result.loginStatus === 0) {
           setUser({
             username,
@@ -39,6 +38,7 @@ export const useLogin = () => {
         } else {
           setError(result.message);
         }
+        setLoading(false);
       }).catch(error => {
         setError(error);
       });

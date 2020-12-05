@@ -59,10 +59,11 @@ function registerCourse(req, res) {
            CourseId: req.body.courseId
        });
    }).catch(error => {
-       return res.status(500).json({
-           responseCode: -1,
-           errorMessage: error
-       });
+     console.error(error);
+     return res.status(500).json({
+         responseCode: -1,
+         errorMessage: error
+     });
    });
 }
 
@@ -121,6 +122,7 @@ function listCourse(req, res) {
            courses: result
        });
    }).catch(error => {
+     console.error(error);
        return res.status(500).json({
            responseCode: -1,
            errorMessage: error

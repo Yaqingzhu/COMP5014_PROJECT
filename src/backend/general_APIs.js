@@ -173,6 +173,41 @@ const getStudents = async (req, res) => {
     }
 };
 
+// student is an empty array if no hits found
+const getCourseStudents = async (req, res) => {
+    // Validate login
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before performing this operation.',
+        });
+    }
+
+    try {
+        const students = await new Promise((resolve, reject) => {
+            mysql.getCourseStudents(resolve, reject, req.query.courseId);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            students: students.map(function (student) {
+                return {
+                    studentId: student.student_id,
+                    studentName: student.student_name,
+                    studentEmail: student.student_email,
+                    admitted: student.admitted,
+                    birthDate: student.birth_date,
+                };
+            }),
+        });
+    } catch (error) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'Error retrieving student from database',
+        });
+    }
+};
+
 const getProfs = async (req, res) => {
     // Validate login
     if (!validateLogin(req)) {
@@ -211,6 +246,7 @@ const getProfs = async (req, res) => {
             }),
         });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({
             responseCode: -1,
             errorMessage: 'Error retrieving prof from database',
@@ -250,10 +286,16 @@ const getDeliverable = async (req, res) => {
         return res.status(200).json({
             responseCode: 0,
             errorMessage: '',
-            deliverable
+            deliverable: {
+                deliverableId: deliverable[0].deliverable_id,
+                courseId: deliverable[0].course_id,
+                deliverableType: deliverable[0].deliverable_type,
+                deliverableDeadline: deliverable[0].deliverable_deadline,
+            },
         });
     } catch (error) {
-        return res.status(403).json({
+        console.log(error);
+        return res.status(500).json({
             responseCode: -1,
             errorMessage: 'Error retrieving deliverable from database',
         });
@@ -296,13 +338,20 @@ const getCourseDeliverables = async (req, res) => {
     const courseId = req.query.courseId;
 
     try {
-        const deliverable = await new Promise((resolve, reject) => {
+        const result = await new Promise((resolve, reject) => {
             mysql.getCourseDeliverable(resolve, reject, courseId);
         });
         return res.status(200).json({
             responseCode: 0,
             errorMessage: '',
-            deliverable
+            deliverables: result.map(function (deliverable) {
+                return {
+                    deliverableId: deliverable.deliverable_id,
+                    courseId: deliverable.course_id,
+                    deliverableType: deliverable.deliverable_type,
+                    deliverableDeadline: deliverable.deliverable_deadline,
+                };
+            }),
         });
     } catch (error) {
         return res.status(403).json({
@@ -327,5 +376,6 @@ module.exports = {
     // get all deliverables for a given course
     getCourseDeliverables,
     getStudents,
+    getCourseStudents,
     getProfs,
 };

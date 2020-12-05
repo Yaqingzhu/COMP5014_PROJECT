@@ -11,6 +11,7 @@ import NewStudentPage from '../pages/newStudent';
 import ProfsPage from '../pages/profs';
 import ProfPage from '../pages/prof';
 import NewProfPage from '../pages/newProf';
+import DeadlinesPage from '../pages/deadlines';
 
 export const AdminDashboard = () => {
   const location = useLocation();
@@ -62,11 +63,19 @@ export const AdminDashboard = () => {
                     Profs
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className={`nav-link${getActive('/deadlines')}`} to="/deadlines">
+                    Academic deadlines
+                  </Link>
+                </li>
               </ul>
             </div>
           </nav>
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <Switch>
+              <Route path="/deadlines">
+                <DeadlinesPage />
+              </Route>
               <Route path="/profs/new">
                 <NewProfPage />
               </Route>

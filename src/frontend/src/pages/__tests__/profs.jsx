@@ -17,7 +17,7 @@ describe('Profs component', () => {
       profs,
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <ProfsPage />
@@ -39,7 +39,7 @@ describe('Profs component', () => {
       profs: [],
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <ProfsPage />
@@ -51,16 +51,18 @@ describe('Profs component', () => {
     expect(screen.getByRole('alert')).toBeDefined();
   });
 
-  it('Shows a loader while the profs are loading', () => {
+  it('Shows a loader while the profs are loading', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
     }));
 
-    render(
-      <MemoryRouter>
-        <ProfsPage />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ProfsPage />
+        </MemoryRouter>
+      );
+    });
 
     expect(screen.getByText('Loading...')).toBeDefined();
   });
@@ -70,9 +72,15 @@ describe('Profs component', () => {
       responseCode: 0,
       profs,
     }));
-    fetchMock.mockOnce(JSON.stringify({}));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      profs,
+    }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <ProfsPage />
@@ -82,13 +90,13 @@ describe('Profs component', () => {
 
     await waitFor(() => screen.getByText('Available profs'));
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getAllByText('Delete')[0]);
     });
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(2);
+    expect(calls).toHaveLength(3);
     expect(calls[1][0]).toContain('/deleteprof');
     expect(calls[1][1].body).toContain(`"profId":${profs[0].profId}`);
   });

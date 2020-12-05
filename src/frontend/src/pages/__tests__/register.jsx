@@ -50,7 +50,7 @@ describe('Register component', () => {
 
     const submitButton = wrapper.getByText('Register');
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(submitButton);
     });
     await new Promise(resolve => setTimeout(resolve, 10));

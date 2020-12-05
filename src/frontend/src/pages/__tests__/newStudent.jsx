@@ -11,8 +11,8 @@ describe('Student component', () => {
     fetchMock.resetMocks();
   });
 
-  it('Shows an empty course', () => {
-    act(() => {
+  it('Shows an empty course', async () => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <NewStudentPage />
@@ -35,7 +35,7 @@ describe('Student component', () => {
       studentId: students[0].studentId,
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <NewStudentPage />
@@ -46,7 +46,7 @@ describe('Student component', () => {
     const nameInput = screen.getByTestId('name');
     const emailInput = screen.getByTestId('email');
 
-    act(() => {
+    await act(async () => {
       fireEvent.change(nameInput, { target: { value: newName } });
       fireEvent.change(emailInput, { target: { value: newEmail } });
     });

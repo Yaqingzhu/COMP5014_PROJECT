@@ -17,7 +17,7 @@ describe('Courses component', () => {
       coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <CoursesPage />
@@ -39,7 +39,7 @@ describe('Courses component', () => {
       coursePayload: [],
     }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <CoursesPage />
@@ -51,15 +51,17 @@ describe('Courses component', () => {
     expect(screen.getByRole('alert')).toBeDefined();
   });
 
-  it('Shows a loader while the courses are loading', () => {
+  it('Shows a loader while the courses are loading', async () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: -1,
     }));
-    render(
-      <MemoryRouter>
-        <CoursesPage />
-      </MemoryRouter>
-    );
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <CoursesPage />
+        </MemoryRouter>
+      );
+    });
 
     expect(screen.getByText('Loading...')).toBeDefined();
   });
@@ -72,8 +74,12 @@ describe('Courses component', () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
     }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
+    }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <CoursesPage />
@@ -83,13 +89,13 @@ describe('Courses component', () => {
 
     await waitFor(() => screen.getByText('Available courses'));
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getAllByText('Cancel')[0]);
     });
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(2);
+    expect(calls).toHaveLength(3);
     expect(calls[1][0]).toContain('/cancelcourse');
     expect(calls[1][1].body).toContain(`"courseId":${courses[0].courseId}`);
   });
@@ -102,8 +108,12 @@ describe('Courses component', () => {
     fetchMock.mockOnce(JSON.stringify({
       responseCode: 0,
     }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: courses.map(course => ({ result: JSON.stringify(course) })),
+    }));
 
-    act(() => {
+    await act(async () => {
       render(
         <MemoryRouter>
           <CoursesPage />
@@ -113,13 +123,13 @@ describe('Courses component', () => {
 
     await waitFor(() => screen.getByText('Available courses'));
 
-    act(() => {
+    await act(async () => {
       fireEvent.click(screen.getAllByText('Delete')[0]);
     });
 
     const calls = fetchMock.mock.calls;
 
-    expect(calls).toHaveLength(2);
+    expect(calls).toHaveLength(3);
     expect(calls[1][0]).toContain('/courseop');
     expect(calls[1][1].body).toContain('"courseStatus":"deleted"');
   });

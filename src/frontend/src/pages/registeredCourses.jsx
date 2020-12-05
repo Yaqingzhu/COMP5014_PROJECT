@@ -16,7 +16,7 @@ export const RegisteredCoursesPage = ({ user }) => {
     event.preventDefault();
   };
 
-  if (loading) {
+  if (loading || !courses) {
     return (
       <div className="text-center">
         <Loader />

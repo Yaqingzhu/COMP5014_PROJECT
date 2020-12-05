@@ -7,7 +7,6 @@ const app = require('../../index');
 const session = require('supertest-session');
 
 let res;
-let cookie;
 let testSession;
 let server;
 let profId;
@@ -55,8 +54,6 @@ Given('{string} a prof with this payload {string}', function (arg1, arg2) {
           res = rr;
           if (arg1 === 'create') {
             profId = rr.body.profId;
-            console.log('prof id')
-            console.log(profId)
           }
         });
     });
@@ -71,6 +68,23 @@ Given('a request to fetch prof with this payload {string}', function (arg1) {
     .then(function () {
       return testSession
         .get('/profs')
+        .query(JSON.parse(arg1))
+        .expect(200)
+        .then(function (rr) {
+          res = rr;
+        });
+    });
+});
+
+Given('a request to fetch the courses for prof with this payload {string}', function (arg1) {
+  testSession = session(app);
+  return testSession
+    .post('/login')
+    .send({ id: 1, password: 'admin' })
+    .expect(200)
+    .then(function () {
+      return testSession
+        .get('/profcourses')
         .query(JSON.parse(arg1))
         .expect(200)
         .then(function (rr) {

@@ -486,7 +486,7 @@ function updateAcademicDeadline(req, res) {
     }
 
     new Promise((resolve, reject) => {
-        mysql.updateAcademicDeadline(resolve, reject, req.body.registrationDeadline, req.body.dropDeadline);
+        mysql.updateAcademicDeadline(resolve, reject, new Date(req.body.registrationDeadline), new Date(req.body.dropDeadline));
     }).then(() => {
         return res.status(200).json({
             responseCode: 0,
@@ -494,7 +494,7 @@ function updateAcademicDeadline(req, res) {
             success: true,
         });
     }).catch(err => {
-        res.status(400).json({
+        res.status(500).json({
             responseCode: -1,
             errorMessage: err.message,
         });
@@ -521,7 +521,7 @@ function getAcademicDeadline(req, res) {
             dropDeadline: result.drop_deadline
         });
     }).catch(err => {
-        res.status(400).json({
+        res.status(500).json({
             responseCode: -1,
             errorMessage: err.message,
         });
