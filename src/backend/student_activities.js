@@ -145,7 +145,7 @@ function submitDeliverable(req, res) {
   }
    // Perform operation in DB
    new Promise((resolve, reject) => {
-       mysql.createSubmitation(resolve, reject, req);
+       mysql.createSubmission(resolve, reject, req);
    }).then(result => {
        return res.status(200).json({
            responseCode: 0,

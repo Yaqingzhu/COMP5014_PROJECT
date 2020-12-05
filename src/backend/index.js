@@ -85,8 +85,7 @@ app.post('/createprof', admin.CreateProf);
 app.post('/modifyprof', admin.ModifyProf);
 app.post('/deleteprof', admin.DeleteProf);
 
-app.post('/upload', student.submitDeliverable);
-
+app.post('/submitdeliverable', student.submitDeliverable);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {

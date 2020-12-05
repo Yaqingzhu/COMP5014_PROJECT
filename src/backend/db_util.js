@@ -901,20 +901,20 @@ const modifyProfUser = (resolve, reject, profId, name, password) => {
   }
 };
 
-// Create new submitation for a deliverable for a given courseId
-const createSubmitation = (resolve, reject, req) => {
+// Create new submission for a deliverable for a given courseId
+const createSubmission = (resolve, reject, req) => {
   const connection = getDBConnection();
   const deliverableId = req.body.deliverableId;
   const registrationId = req.body.registrationId;
-  const fileType = req.files.submitation.mimetype;
-  const filePath = '/temp/upload/' + req.files.submitation.name;
-  const file = req.files.submitation;
+  const fileType = req.files.submission.mimetype;
+  const filePath = '/temp/upload/' + req.files.submission.name;
+  const file = req.files.submission;
 
   fs.mkdirSync('/temp/upload/', { recursive: true });
 
   file.mv(filePath, function (err) {
     if (err) { return reject(err); }
-    connection.query('INSERT INTO submitation(registration_id, deliverable_id, submitation_date, submitation_file, file_type) VALUES(?,?,?, ?, ?)',
+    connection.query('INSERT INTO submission(registration_id, deliverable_id, submission_date, submission_file, file_type) VALUES(?,?,?, ?, ?)',
     [registrationId, deliverableId, new Date(), file.data.toString('hex'), fileType], error => {
       if (error) {
         reject(error);
@@ -983,5 +983,5 @@ module.exports = {
   modifyProfUser,
   getProf,
   getAllProfs,
-  createSubmitation
+  createSubmission
 };
