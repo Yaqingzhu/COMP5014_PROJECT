@@ -13,7 +13,7 @@ export const StudentDeliverablePage = ({ user }) => {
   const { courseId, deliverableId } = useParams();
   const { loading, course } = useStudentCourse(user.loginId, courseId);
   const { loading: deliverableLoading, deliverable } = useDeliverable(deliverableId);
-  const { loading: submissionLoading, submission, reload } = useDeliverableSubmission(deliverableId);
+  const { loading: submissionLoading, submission, reload } = useDeliverableSubmission(course && course.registrationId, deliverableId);
 
   const uploadSubmission = () => {
     submitDeliverable(deliverableId, course.registrationId, file).then(() => {
@@ -56,6 +56,9 @@ export const StudentDeliverablePage = ({ user }) => {
             moment(submission.submissionDate).format('MMMM Do YYYY, h:mm:ss a')
           }
           </strong>
+          <div>
+            <strong>Grade: </strong> {submission.submissionGrade || 'Not yet graded'}
+          </div>
           <hr />
         </div>
       ) : null}

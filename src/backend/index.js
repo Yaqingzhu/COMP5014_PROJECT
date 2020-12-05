@@ -87,6 +87,7 @@ app.post('/modifyprof', admin.ModifyProf);
 app.post('/deleteprof', admin.DeleteProf);
 
 app.post('/submitdeliverable', student.submitDeliverable);
+app.get('/submissions', general.getSubmissions);
 app.get('/submission', general.getSubmission);
 
 if (process.env.NODE_ENV !== 'test') {

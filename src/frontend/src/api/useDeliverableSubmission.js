@@ -2,15 +2,18 @@ import { useState, useEffect } from 'react';
 
 const apiurl = process.env.API_URL;
 
-export const useDeliverableSubmission = deliverableId => {
+export const useDeliverableSubmission = (registrationId, deliverableId) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [submission, setSubmission] = useState(null);
 
   const load = () => {
     setError(null);
+    if (!registrationId) {
+      return;
+    }
 
-    window.fetch(`${apiurl}/submission?deliverableId=${deliverableId}`, {
+    window.fetch(`${apiurl}/submission?registrationId=${registrationId}&deliverableId=${deliverableId}`, {
       credentials: 'include',
       headers: {
         'Content-Type': 'application/json'
@@ -37,7 +40,7 @@ export const useDeliverableSubmission = deliverableId => {
     });
   };
 
-  useEffect(load, [deliverableId]);
+  useEffect(load, [registrationId, deliverableId]);
 
   return {
     loading,
