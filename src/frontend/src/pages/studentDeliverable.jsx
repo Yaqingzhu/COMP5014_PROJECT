@@ -51,7 +51,10 @@ export const StudentDeliverablePage = ({ user }) => {
             {submission.fileName}
           </a>
           <br />
-          <strong className="text-success" data-testid="submission-date">
+          <strong
+            className={submission.submissionDate <= deliverable.deliverableDeadline ? 'text-success' : 'text-danger'}
+            data-testid="submission-date"
+          >
             Was submitted on {
             moment(submission.submissionDate).format('MMMM Do YYYY, h:mm:ss a')
           }

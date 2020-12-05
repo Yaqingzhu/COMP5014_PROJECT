@@ -4,6 +4,7 @@ import { Switch, Route, Link, useLocation, matchPath } from 'react-router-dom';
 import HomePage from '../pages/home';
 import ProfCoursesPage from '../pages/profCourses';
 import ProfCoursePage from '../pages/profCourse';
+import ProfDeliverablePage from '../pages/profDeliverable';
 
 export const ProfDashboard = ({ user }) => {
   const location = useLocation();
@@ -50,6 +51,9 @@ export const ProfDashboard = ({ user }) => {
           </nav>
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <Switch>
+              <Route path="/courses/:courseId/deliverables/:deliverableId">
+                <ProfDeliverablePage user={user} />
+              </Route>
               <Route path="/courses/:id">
                 <ProfCoursePage user={user} />
               </Route>

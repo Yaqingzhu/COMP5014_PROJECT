@@ -396,8 +396,8 @@ const getSubmissions = async (req, res) => {
             errorMessage: '',
             submissions: submissions.map(submission => ({
                 submissionId: submission.submission_id,
+                registrationId: submission.registration_id,
                 deliverableId: submission.deliverable_id,
-                courseId: submission.course_id,
                 submissionDate: submission.submission_date,
                 submissionFile: submission.submission_file,
                 fileType: submission.file_type,
@@ -449,8 +449,8 @@ const getSubmission = async (req, res) => {
             errorMessage: '',
             submission: submission.length ? {
                 submissionId: submission[0].submission_id,
+                registrationId: submission.registration_id,
                 deliverableId: submission[0].deliverable_id,
-                courseId: submission[0].course_id,
                 submissionDate: submission[0].submission_date,
                 submissionFile: submission[0].submission_file,
                 fileType: submission[0].file_type,

@@ -260,7 +260,7 @@ const getCourseStudents = (resolve, reject, courseId) => {
   const connection = getDBConnection();
 
   connection.query(`
-    SELECT s.* FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
+    SELECT s.*, r.registration_id FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
   `, [courseId], (error, results) => {
     if (error) {
       reject(error);

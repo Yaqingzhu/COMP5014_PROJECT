@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { useCourse } from '../api/useCourse';
 import { useCourseDeliverables } from '../api/useCourseDeliverables';
@@ -49,8 +49,18 @@ export const ProfCoursePage = () => {
           <div className="col mb-4" key={deliverable.deliverableId}>
             <div className="card m-2">
               <div className="card-body">
-                <h5 className="card-title">Deliverable #{deliverable.deliverableId}</h5>
+                <h5 className="card-title">
+                  <Link to={`/courses/${id}/deliverables/${deliverable.deliverableId}`}>
+                    Deliverable #{deliverable.deliverableId}
+                  </Link>
+                </h5>
                 <DeliverableForm deliverable={deliverable} handleSave={handleEditDeliverable} />
+                <Link
+                  to={`/courses/${id}/deliverables/${deliverable.deliverableId}`}
+                  className="card-link"
+                >
+                  View submissions
+                </Link>
                 <a
                   href="#"
                   className="card-link"
