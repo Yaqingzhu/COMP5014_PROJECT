@@ -361,6 +361,58 @@ const getCourseDeliverables = async (req, res) => {
     }
 };
 
+// Retrieve deliverable submission information
+// Given deliverableId
+// Sample Response:
+// {
+//     "responseCode": 0,
+//     "errorMessage": "",
+//     "submission": {
+//         "deliverable_id": 1,
+//         "course_id": 123,
+//         "submission_date": "1970-01-01T00:00:00.000Z",
+//         "submission_file": ""
+//     }
+// }
+// Returns -1 if not found
+const getSubmission = async (req, res) => {
+    // Validate login
+    if (!validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before performing this operation.',
+        });
+    }
+
+    const deliverableId = req.query.deliverableId;
+
+    try {
+        const submission = await new Promise((resolve, reject) => {
+            mysql.getSubmission(resolve, reject, deliverableId);
+        });
+        return res.status(200).json({
+            responseCode: 0,
+            errorMessage: '',
+            submission: submission.length ? {
+                submissionId: submission[0].submission_id,
+                deliverableId: submission[0].deliverable_id,
+                courseId: submission[0].course_id,
+                submissionDate: submission[0].submission_date,
+                submissionFile: submission[0].submission_file,
+                fileType: submission[0].file_type,
+                fileName: submission[0].file_name,
+                submissionGrade: submission[0].submission_grade,
+            } : null,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            responseCode: -1,
+            errorMessage: 'Error retrieving submission from database',
+        });
+    }
+};
+
 module.exports = {
     getCourse,
     validateLogin,
@@ -375,6 +427,7 @@ module.exports = {
     getDeliverable,
     // get all deliverables for a given course
     getCourseDeliverables,
+    getSubmission,
     getStudents,
     getCourseStudents,
     getProfs,

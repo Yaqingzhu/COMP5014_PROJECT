@@ -30,7 +30,7 @@ export const ProfsPage = () => {
             <button
               type="button"
               className="btn btn-sm btn-outline-secondary"
-              onClick={() => history.push('/students/new')}
+              onClick={() => history.push('/profs/new')}
             >
               New prof
             </button>

@@ -544,7 +544,7 @@ const CreateProf = async (req, res) => {
     }
 
     // Get form information
-    const name = req.body.name;
+    const name = req.body.profName;
     const password = req.body.password;
 
     // Perform operation in DB

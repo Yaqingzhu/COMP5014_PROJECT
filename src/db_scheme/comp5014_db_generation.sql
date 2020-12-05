@@ -222,27 +222,28 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `comp4004`.`submitation`
+-- Table `comp4004`.`submission`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `comp4004`.`submitation` ;
+DROP TABLE IF EXISTS `comp4004`.`submission` ;
 
-CREATE TABLE IF NOT EXISTS `comp4004`.`submitation` (
-  `submitation_id` INT NOT NULL AUTO_INCREMENT,
+CREATE TABLE IF NOT EXISTS `comp4004`.`submission` (
+  `submission_id` INT NOT NULL AUTO_INCREMENT,
   `registration_id` INT NOT NULL,
   `deliverable_id` INT NOT NULL,
-  `submitation_date` DATETIME NOT NULL,
-  `submitation_file` BLOB NULL,
+  `submission_date` DATETIME NOT NULL,
+  `submission_file` BLOB NULL,
   `file_type` VARCHAR(45) NOT NULL,
-  `submitation_grade` INT NULL,
-  PRIMARY KEY (`submitation_id`),
-  INDEX `fk_submitation_registration_idx` (`registration_id` ASC) VISIBLE,
-  INDEX `fk_submitation_deliverable_idx` (`deliverable_id` ASC) VISIBLE,
-  CONSTRAINT `fk_submitation_registration`
+  `file_name` VARCHAR(255) NOT NULL,
+  `submission_grade` INT NULL,
+  PRIMARY KEY (`submission_id`),
+  INDEX `fk_submission_registration_idx` (`registration_id` ASC) VISIBLE,
+  INDEX `fk_submission_deliverable_idx` (`deliverable_id` ASC) VISIBLE,
+  CONSTRAINT `fk_submission_registration`
     FOREIGN KEY (`registration_id`)
     REFERENCES `comp4004`.`registration` (`registration_id`)
     ON DELETE CASCADE
     ON UPDATE NO ACTION,
-  CONSTRAINT `fk_submitation_deliverable`
+  CONSTRAINT `fk_submission_deliverable`
     FOREIGN KEY (`deliverable_id`)
     REFERENCES `comp4004`.`deliverable` (`deliverable_id`)
     ON DELETE CASCADE

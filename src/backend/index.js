@@ -62,6 +62,7 @@ app.post('/applycreatestudent', student.applyCreateStudent);
 app.post('/registercourse', student.registerCourse);
 app.post('/dropcourse', student.dropCourse);
 app.get('/listcourses', student.listCourse);
+app.get('/registeredcourse', student.getCourse);
 app.delete('/deletestudent', admin.DeleteStudent);
 app.post('/assignprof', admin.assignProf);
 
@@ -85,8 +86,8 @@ app.post('/createprof', admin.CreateProf);
 app.post('/modifyprof', admin.ModifyProf);
 app.post('/deleteprof', admin.DeleteProf);
 
-app.post('/upload', student.submitDeliverable);
-
+app.post('/submitdeliverable', student.submitDeliverable);
+app.get('/submission', general.getSubmission);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {

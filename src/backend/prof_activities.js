@@ -221,7 +221,6 @@ const deleteCourseDeliverable = async (req, res) => {
     }
 };
 
-
 module.exports = {
     listCourses,
     // Create a course deliverable
