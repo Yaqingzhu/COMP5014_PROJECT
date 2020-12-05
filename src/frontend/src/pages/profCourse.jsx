@@ -38,21 +38,27 @@ export const ProfCoursePage = () => {
     </div>
   ) : (
     <div>
-      <h1 className="h2">{course.courseName}</h1>
+      <div
+        className="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+      >
+        <h1 className="h2">{course.courseName}</h1>
+      </div>
       <h2 className="h3">Deliverables</h2>
-      <div className="d-flex flex-wrap">
+      <div className="row row-cols-1 row-cols-md-4">
         {deliverables.map(deliverable => (
-          <div className="card m-2" key={deliverable.deliverableId} style={{ width: '20%' }}>
-            <div className="card-body">
-              <h5 className="card-title">Deliverable #{deliverable.deliverableId}</h5>
-              <DeliverableForm deliverable={deliverable} handleSave={handleEditDeliverable} />
-              <a
-                href="#"
-                className="card-link"
-                onClick={() => handleDeleteDeliverable(deliverable)}
-              >
-                Delete
-              </a>
+          <div className="col mb-4" key={deliverable.deliverableId}>
+            <div className="card m-2">
+              <div className="card-body">
+                <h5 className="card-title">Deliverable #{deliverable.deliverableId}</h5>
+                <DeliverableForm deliverable={deliverable} handleSave={handleEditDeliverable} />
+                <a
+                  href="#"
+                  className="card-link"
+                  onClick={() => handleDeleteDeliverable(deliverable)}
+                >
+                  Delete
+                </a>
+              </div>
             </div>
           </div>
         ))}

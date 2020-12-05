@@ -497,7 +497,7 @@ function dropCourse(resolve, reject, studentId, courseId) {
   });
 }
 
-function getRegisteredCourse(resolve, reject, studentId) {
+function getRegisteredCourses(resolve, reject, studentId) {
   const connection = getDBConnection();
   connection.query('SELECT admitted FROM student WHERE student_id = ?;', [studentId], (error, results) => {
     if (error) {
@@ -508,12 +508,41 @@ function getRegisteredCourse(resolve, reject, studentId) {
       if (admitted <= 0) {
         return reject('You are not admitted to be a student yet');
       }
-      connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'courseId\', r.course_id, \'courseName\', c.course_name, \'studentId\', r.student_id, \'registrationDate\', ' +
+      connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'registrationId\', r.registration_id, \'courseId\', r.course_id, \'courseName\', c.course_name, \'studentId\', r.student_id, \'registrationDate\', ' +
+        ' r.registration_date, \'dropDate\', r.drop_date, \'lateRegistration\', r.late_registration, \'lateRegistrationApproval\', r.late_registration_approval, ' +
+        ' \'lateDrop\', r.late_drop, \'lateDropApproval\', r.late_drop_approval, \'finalGrade\', r.final_grade, \'courseSlots\', COALESCE(s.slots, JSON_ARRAY()))) AS result FROM registration as r ' +
+        ' LEFT JOIN course as c ON r.course_id = c.course_id LEFT JOIN (SELECT JSON_ARRAYAGG(JSON_OBJECT(\'day\', course_slots_day, \'time\', course_slots_time)) ' +
+        ' AS slots, course_id FROM course_slots group by course_id) s ON s.course_id = c.course_id ' +
+        ' WHERE student_id = ?;', [studentId], (error, results) => {
+        if (error) {
+          console.log(error);
+          return reject(error);
+        } else {
+          const registration = results[0].result;
+          return resolve(registration);
+        }
+      });
+    }
+  });
+}
+
+function getRegisteredCourse(resolve, reject, courseId, studentId) {
+  const connection = getDBConnection();
+  connection.query('SELECT admitted FROM student WHERE student_id = ?;', [studentId], (error, results) => {
+    if (error) {
+      console.log(error);
+      return reject(error);
+    } else {
+      const admitted = results[0] ? results[0].admitted : -1;
+      if (admitted <= 0) {
+        return reject('You are not admitted to be a student yet');
+      }
+      connection.query('SELECT JSON_ARRAYAGG(JSON_OBJECT(\'registrationId\', r.registration_id, \'courseId\', r.course_id, \'courseName\', c.course_name, \'studentId\', r.student_id, \'registrationDate\', ' +
       ' r.registration_date, \'dropDate\', r.drop_date, \'lateRegistration\', r.late_registration, \'lateRegistrationApproval\', r.late_registration_approval, ' +
       ' \'lateDrop\', r.late_drop, \'lateDropApproval\', r.late_drop_approval, \'finalGrade\', r.final_grade, \'courseSlots\', COALESCE(s.slots, JSON_ARRAY()))) AS result FROM registration as r ' +
       ' LEFT JOIN course as c ON r.course_id = c.course_id LEFT JOIN (SELECT JSON_ARRAYAGG(JSON_OBJECT(\'day\', course_slots_day, \'time\', course_slots_time)) ' +
       ' AS slots, course_id FROM course_slots group by course_id) s ON s.course_id = c.course_id ' +
-      ' WHERE student_id = ?;', [studentId], (error, results) => {
+      ' WHERE student_id = ? AND r.course_id = ?;', [studentId, courseId], (error, results) => {
         if (error) {
           console.log(error);
           return reject(error);
@@ -914,8 +943,8 @@ const createSubmission = (resolve, reject, req) => {
 
   file.mv(filePath, function (err) {
     if (err) { return reject(err); }
-    connection.query('INSERT INTO submission(registration_id, deliverable_id, submission_date, submission_file, file_type) VALUES(?,?,?, ?, ?)',
-    [registrationId, deliverableId, new Date(), file.data.toString('hex'), fileType], error => {
+    connection.query('INSERT INTO submission(registration_id, deliverable_id, submission_date, submission_file, file_type, file_name) VALUES(?,?,?, ?, ?, ?)',
+    [registrationId, deliverableId, new Date(), file.data, fileType, file.name], error => {
       if (error) {
         reject(error);
       } else {
@@ -923,6 +952,20 @@ const createSubmission = (resolve, reject, req) => {
       }
     });
   });
+};
+
+// Create new submission for a deliverable for a given deliverableId
+const getSubmission = (resolve, reject, deliverableId) => {
+  const connection = getDBConnection();
+
+  connection.query('SELECT * FROM submission WHERE deliverable_id = ?',
+    [deliverableId], (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
 };
 
 module.exports = {
@@ -958,6 +1001,7 @@ module.exports = {
   approveStudentCreation,
   registerCourse,
   getRegisteredCourse,
+  getRegisteredCourses,
   dropCourse,
   addTestDataForStudentTest,
   updateAcademicForTest,
@@ -983,5 +1027,6 @@ module.exports = {
   modifyProfUser,
   getProf,
   getAllProfs,
-  createSubmission
+  createSubmission,
+  getSubmission,
 };

@@ -6,6 +6,8 @@ import Loader from './Loader';
 import HomePage from '../pages/home';
 import RegisteredCoursesPage from '../pages/registeredCourses';
 import RegisterCoursesPage from '../pages/registerCourses';
+import StudentCoursePage from '../pages/studentCourse';
+import StudentDeliverablePage from '../pages/studentDeliverable';
 
 export const StudentDashboard = ({ user }) => {
   const location = useLocation();
@@ -75,8 +77,14 @@ export const StudentDashboard = ({ user }) => {
           </nav>
           <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <Switch>
+              <Route path="/courses/:courseId/deliverables/:deliverableId">
+                <StudentDeliverablePage user={user} />
+              </Route>
               <Route path="/courses/register">
                 <RegisterCoursesPage user={user} />
+              </Route>
+              <Route path="/courses/:id">
+                <StudentCoursePage user={user} />
               </Route>
               <Route path="/courses">
                 <RegisteredCoursesPage user={user} />

@@ -60,10 +60,17 @@ export const RegisteredCoursesPage = ({ user }) => {
           {registeredCourses.map(course => (
             <tr key={course.courseId}>
               <th scope="row">{course.courseId}</th>
-              <td>{course.courseName}</td>
+              <td>
+                <Link to={`/courses/${course.courseId}`}>
+                  {course.courseName}
+                </Link>
+              </td>
               <td>{course.registrationDate}</td>
               <td>{course.finalGrade}</td>
               <td>
+                <Link to={`/courses/${course.courseId}`} className="mr-2">
+                  Edit
+                </Link>
                 <a href="#" onClick={event => handleDropCourse(event, course)}>Drop</a>
               </td>
             </tr>

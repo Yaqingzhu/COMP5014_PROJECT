@@ -113,7 +113,7 @@ function listCourse(req, res) {
   }
    // Perform operation in DB
    new Promise((resolve, reject) => {
-       mysql.getRegisteredCourse(resolve, reject, req.query.studentId);
+       mysql.getRegisteredCourses(resolve, reject, req.query.studentId);
    }).then(result => {
        return res.status(200).json({
            responseCode: 0,
@@ -128,6 +128,38 @@ function listCourse(req, res) {
            errorMessage: error
        });
    });
+}
+
+function getCourse(req, res) {
+  // Validation
+  if (!util.validateLogin(req)) {
+    return res.status(403).json({
+      responseCode: -1,
+      errorMessage: 'You need to login before doing this operation.',
+    });
+  } else if (!util.validateStudent(req)) {
+    return res.status(403).json({
+      responseCode: -1,
+      errorMessage: 'You do not have permission to do this operation.',
+    });
+  }
+  // Perform operation in DB
+  new Promise((resolve, reject) => {
+    mysql.getRegisteredCourse(resolve, reject, req.query.courseId, req.query.studentId);
+  }).then(result => {
+    return res.status(200).json({
+      responseCode: 0,
+      errorMessage: '',
+      success: true,
+      course: JSON.parse(result)[0],
+    });
+  }).catch(error => {
+    console.error(error);
+    return res.status(500).json({
+      responseCode: -1,
+      errorMessage: error
+    });
+  });
 }
 
 function submitDeliverable(req, res) {
@@ -166,5 +198,6 @@ module.exports = {
     registerCourse,
     dropCourse,
     listCourse,
+    getCourse,
     submitDeliverable
 };

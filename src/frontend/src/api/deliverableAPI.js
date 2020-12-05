@@ -59,3 +59,22 @@ export const deleteDeliverable = id => new Promise((resolve, reject) => {
     }
   });
 });
+
+export const submitDeliverable = (deliverableId, registrationId, file) => new Promise((resolve, reject) => {
+  const data = new window.FormData();
+  data.append('deliverableId', deliverableId);
+  data.append('registrationId', registrationId);
+  data.append('submission', file);
+
+  window.fetch(`${apiurl}/submitdeliverable`, {
+    method: 'POST',
+    credentials: 'include',
+    body: data,
+  }).then(res => res.json()).then(res => {
+    if (res.responseCode === 0) {
+      resolve(res.deliverableId);
+    } else {
+      reject(new Error(res.errorMessage));
+    }
+  });
+});
