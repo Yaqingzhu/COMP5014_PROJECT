@@ -1015,6 +1015,20 @@ const setGradeOnSubmission = (resolve, reject, submissionId, grade) => {
     });
 };
 
+// Updates the grade of a submission on a given submissionId
+const setGradeOnFinal = (resolve, reject, registrationid, courseid, studentid, grade) => {
+  const connection = getDBConnection();
+
+  connection.query('UPDATE registration SET final_grade = ? WHERE (registration_id = ?) OR (course_id = ? AND student_id = ?)',
+    [grade, registrationid, courseid, studentid], (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -1078,4 +1092,5 @@ module.exports = {
   getSubmission,
   getSubmissions,
   setGradeOnSubmission,
+  setGradeOnFinal
 };
