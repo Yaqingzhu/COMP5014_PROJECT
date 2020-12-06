@@ -109,7 +109,7 @@ When('I create the deliverable {string} for the last of my courses', deliverable
             cy.get(':nth-child(5) > .card-body > :nth-child(2) > form > .mb-3 > [data-testid=type]').should('have.attr', 'placeholder', 'Some type').and('not.be.disabled').type(deliverable);
             cy.get(':nth-child(5) > .card-body > :nth-child(2) > form > .mb-3 > [for="deliverableDeadline"]').should('have.text', 'Deadline');
             cy.get(':nth-child(5) > .card-body > :nth-child(2) > form > .mb-3 > .react-datepicker-wrapper > .react-datepicker__input-container > .form-control').should('not.be.disabled').type('{selectall}'+"12/11/2020");
-            cy.get('.col-md-9 > :nth-child(1) > :nth-child(6)').should('have.text', 'Students registered in the course');
+            cy.get('.col-md-9 > :nth-child(1) > :nth-child(9)').should('have.text', 'Students registered in the course');
             cy.click_button('Save changes', ':nth-child(5) > .card-body > :nth-child(2) > form > .btn');
         });
     });
