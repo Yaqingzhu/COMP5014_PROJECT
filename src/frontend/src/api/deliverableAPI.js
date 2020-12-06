@@ -78,3 +78,23 @@ export const submitDeliverable = (deliverableId, registrationId, file) => new Pr
     }
   });
 });
+
+export const gradeDeliverable = (submissionId, grade) => new Promise((resolve, reject) => {
+  window.fetch(`${apiurl}/gradesubmission`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      submissionId,
+      grade,
+    }),
+  }).then(res => res.json()).then(res => {
+    if (res.responseCode === 0) {
+      resolve();
+    } else {
+      reject(new Error(res.errorMessage));
+    }
+  });
+});

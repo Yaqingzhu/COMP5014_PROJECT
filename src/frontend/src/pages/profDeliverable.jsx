@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { useDeliverable } from '../api/useDeliverable';
 import { useDeliverableSubmissions } from '../api/useDeliverableSubmissions';
 import { useCourseStudents } from '../api/useCourseStudents';
+import { gradeDeliverable } from '../api/deliverableAPI';
 import Loader from '../components/Loader';
 import moment from 'moment';
 
@@ -13,11 +14,10 @@ export const ProfDeliverablePage = () => {
   const { loading: studentsLoading, students } = useCourseStudents(courseId);
   const { loading: deliverableLoading, submissions, reload } = useDeliverableSubmissions(deliverableId);
 
-  const handleSaveGrade = event => {
-    console.log(event.target.value);
-    // createDeliverable(parseInt(id), data).then(() => {
+  const handleSaveGrade = submission => event => {
+    gradeDeliverable(submission.submissionId, event.target.value).then(() => {
       reload();
-    // });
+    });
   };
 
   if (loading || deliverableLoading || studentsLoading || !students) {
@@ -88,9 +88,8 @@ export const ProfDeliverablePage = () => {
                     type="number"
                     name={`${student.studentId} _grade`}
                     data-testid={`${student.studentId} _grade`}
-                    value={student.submission.submissionGrade || ''}
-                    onBlur={handleSaveGrade}
-                    readOnly
+                    defaultValue={student.submission.submissionGrade || ''}
+                    onBlur={handleSaveGrade(student.submission)}
                   />
                 ) : 'No submission'}
               </td>

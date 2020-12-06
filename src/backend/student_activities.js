@@ -20,12 +20,13 @@ function applyCreateStudent(req, res) {
    // Perform operation in DB
    new Promise((resolve, reject) => {
        mysql.createStudentUser(resolve, reject, email, birthDate, name, password, admitted);
-   }).then(() => {
-       return res.status(200).json({
-           responseCode: 0,
-           errorMessage: '',
-           success: true,
-           admitted: false
+   }).then(result => {
+      return res.status(200).json({
+         responseCode: 0,
+         errorMessage: '',
+         success: true,
+         admitted: false,
+         studentId: result,
        });
    }).catch(error => {
        return res.status(500).json({
@@ -54,9 +55,10 @@ function registerCourse(req, res) {
    }).then(result => {
        return res.status(200).json({
            responseCode: 0,
-           errorMessage: result,
+           errorMessage: result.message,
            success: true,
-           CourseId: req.body.courseId
+           courseId: req.body.courseId,
+           registrationId: result.registrationId,
        });
    }).catch(error => {
      console.error(error);
@@ -186,6 +188,7 @@ function submitDeliverable(req, res) {
            courses: result
        });
    }).catch(error => {
+     console.error(error);
        return res.status(500).json({
            responseCode: -1,
            errorMessage: error

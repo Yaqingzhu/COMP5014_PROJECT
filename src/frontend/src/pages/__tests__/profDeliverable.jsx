@@ -74,4 +74,53 @@ describe('Deliverable component', () => {
 
     expect(screen.getByText('Loading...')).toBeDefined();
   });
+
+  it('Send a grade update when changing the value of an input', async () => {
+    const newGrade = 100;
+
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      deliverable,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      students: registrations,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      submissions: [submission],
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      submissions: [submission],
+    }));
+
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ProfDeliverablePage />
+        </MemoryRouter>
+      );
+    });
+
+    await waitFor(() => screen.getByText(`Student submissions for deliverable ${deliverable.deliverableId}`));
+
+    const student = registrations.find(student => student.registrationId === submission.registrationId);
+    const gradeInput = screen.getByTestId(`${student.studentId} _grade`);
+
+    await act(async () => {
+      fireEvent.blur(gradeInput, { target: { value: newGrade } });
+      await new Promise(resolve => setTimeout(resolve, 100));
+    });
+
+    const calls = fetchMock.mock.calls;
+
+    expect(calls).toHaveLength(5);
+    expect(calls[3][0]).toContain('/gradesubmission');
+    expect(calls[3][1].body).toContain(`"submissionId":${submission.submissionId}`);
+    expect(calls[3][1].body).toContain(`"grade":"${newGrade}"`);
+  });
 });
