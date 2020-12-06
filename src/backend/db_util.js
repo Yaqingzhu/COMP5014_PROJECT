@@ -982,6 +982,20 @@ const getSubmissions = (resolve, reject, deliverableId) => {
     });
 };
 
+// Updates the grade of a submission on a given submissionId
+const setGradeOnSubmission = (resolve, reject, submissionId, grade) => {
+  const connection = getDBConnection();
+
+  connection.query('UPDATE submission SET submission_grade = ? WHERE submission_id = ?',
+    [grade, submissionId], (error, result) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(result);
+      }
+    });
+};
+
 module.exports = {
   getDBConnection,
   checkUserRole,
@@ -1044,4 +1058,5 @@ module.exports = {
   createSubmission,
   getSubmission,
   getSubmissions,
+  setGradeOnSubmission,
 };

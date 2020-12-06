@@ -221,6 +221,42 @@ const deleteCourseDeliverable = async (req, res) => {
     }
 };
 
+// Changes teh grade on a given submission
+const gradeSubmission = async (req, res) => {
+    // Validation
+    if (!util.validateLogin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You need to login before doing this operation.',
+        });
+    } else if (!util.validateProf(req) && !util.validateAdmin(req)) {
+        return res.status(403).json({
+            responseCode: -1,
+            errorMessage: 'You do not have permission to do this operation.',
+        });
+    }
+
+    try {
+        const submissionId = req.body.submissionId;
+        const grade = req.body.grade;
+
+        await new Promise((resolve, reject) => {
+            mysql.setGradeOnSubmission(resolve, reject, submissionId, grade);
+        });
+
+        return res.status(200).json({
+            responseCode: 0,
+            success: true,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            responseCode: -1,
+            errorMessage: 'Error in updating the grade of a submission. Are your inputs correct?'
+        });
+    }
+};
+
 module.exports = {
     listCourses,
     // Create a course deliverable
@@ -228,4 +264,5 @@ module.exports = {
     markDeliverable,
     modifyCourseDeliverable,
     deleteCourseDeliverable,
+    gradeSubmission,
 };
