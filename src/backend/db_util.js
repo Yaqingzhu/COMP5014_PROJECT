@@ -422,7 +422,10 @@ function registerCourse(resolve, reject, studentId, courseId) {
                     console.log(error);
                     return reject(error);
                   } else {
-                    resolve('Your registration for course ' + courseId + ' is done!');
+                    resolve({
+                      registrationId: results.insertId,
+                      message: 'Your registration for course ' + courseId + ' is done!',
+                    });
                   }
                 });
               } else {
@@ -438,7 +441,10 @@ function registerCourse(resolve, reject, studentId, courseId) {
                     console.log(error);
                     return reject(error);
                   } else {
-                    resolve('You missed the deadline. So, your late registration for course ' + courseId + ' is subject to be approved by admin');
+                    resolve({
+                      registrationId: results.insertId,
+                      message: 'You missed the deadline. So, your late registration for course ' + courseId + ' is subject to be approved by admin',
+                    });
                   }
                 });
               }
@@ -588,10 +594,10 @@ function addTestDataForStudentTest() {
         if (error) {
           console.log(error);
         }
-      });
 
-      console.log('Inserting deliverables');
-      connection.query('INSERT IGNORE INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) VALUES(?, ?, ?,?)', ['1', '123', 'assignment', date.toISOString().substring(0, 10)]);
+        console.log('Inserting deliverables');
+        connection.query('INSERT IGNORE INTO deliverable (deliverable_id, course_id, deliverable_type, deliverable_deadline) VALUES(?, ?, ?,?)', ['1', '123', 'assignment', date.toISOString().substring(0, 10)]);
+      });
     });
   });
 }
@@ -938,6 +944,19 @@ const createSubmission = (resolve, reject, req) => {
   const fileType = req.files.submission.mimetype;
   const filePath = '/temp/upload/' + req.files.submission.name;
   const file = req.files.submission;
+
+  if (process.env.NODE_ENV === 'test') {
+    // Test only code without file management.
+    connection.query('INSERT INTO submission(registration_id, deliverable_id, submission_date, submission_file, file_type, file_name) VALUES(?,?,?, ?, ?, ?)',
+      [registrationId, deliverableId, new Date(), file.data, fileType, file.name], error => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve({ deliverableId: deliverableId, registrationId: registrationId });
+        }
+      });
+    return;
+  }
 
   fs.mkdirSync('/temp/upload/', { recursive: true });
 

@@ -245,7 +245,7 @@ const ModifyStudent = async (req, res) => {
 
     // Validate email
     if (email !== '' && !util.validateEmail(email)) {
-        return res.status(403).json({
+        return res.status(500).json({
             responseCode: -1,
             errorMessage: 'Invalid email format'
         });
