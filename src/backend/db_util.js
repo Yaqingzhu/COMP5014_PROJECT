@@ -1015,12 +1015,15 @@ const setGradeOnSubmission = (resolve, reject, submissionId, grade) => {
     });
 };
 
-// Updates the grade of a submission on a given submissionId
-const setGradeOnFinal = (resolve, reject, registrationid, courseid, studentid, grade) => {
+// Updates the grade of a deliverable for a specific student
+const setGradeOnFinal = (resolve, reject, courseId, registrationid) => {
   const connection = getDBConnection();
 
-  connection.query('UPDATE registration SET final_grade = ? WHERE (registration_id = ?) OR (course_id = ? AND student_id = ?)',
-    [grade, registrationid, courseid, studentid], (error, result) => {
+  connection.query('UPDATE registration SET final_grade = COALESCE((SELECT ' +
+    'SUM(submission.submission_grade) / COUNT(submission.submission_grade) FROM submission ' +
+    'INNER JOIN deliverable ON deliverable.deliverable_id = submission.deliverable_id ' +
+    'WHERE deliverable.course_id = ? AND registration_id = ?), \'N/A\') WHERE registration_id = ?;',
+    [courseId, registrationid, registrationid], (error, result) => {
       if (error) {
         reject(error);
       } else {

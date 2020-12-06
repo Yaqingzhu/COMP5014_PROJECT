@@ -19,6 +19,8 @@ export const StudentCoursePage = ({ user }) => {
     );
   }
 
+  const calculatedGrade = parseFloat(course.finalGrade);
+
   return (
     <div>
       <div
@@ -26,6 +28,11 @@ export const StudentCoursePage = ({ user }) => {
       >
         <h1 className="h2">{course.courseName}</h1>
       </div>
+      {!isNaN(calculatedGrade) && (
+        <div className="mb-3">
+          <strong>Your grade is: </strong> {calculatedGrade.toFixed(2)}
+        </div>
+      )}
       <h2 className="h3">Deliverables</h2>
       <div className="row row-cols-1 row-cols-md-4">
         {deliverables.map(deliverable => (
