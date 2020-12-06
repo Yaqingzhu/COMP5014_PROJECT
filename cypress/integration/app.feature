@@ -52,6 +52,14 @@ Feature: Placeholder Test
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
     And I see the "CompGeom" course in the course dashboard
     Then I want to cancel the last course created
+    
+  Scenario: I create academic deadlines
+    Given I log in with valid credentials
+    When I click on "Academic deadlines" button with tag ":nth-child(5)>.nav-link"
+    Then I see "Academic deadlines" in a ".h2" tag
+    And I see "Deadlines for registration" in a ":nth-child(1) > label" tag
+    And I see "Deadlines for dropping courses" in a ":nth-child(2) > label" tag
+    And I change deadlines to "12/25/2020" successfully
 
   Scenario: I delete a course
     Given I log in with valid credentials

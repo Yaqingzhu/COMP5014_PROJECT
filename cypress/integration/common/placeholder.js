@@ -366,3 +366,19 @@ Then('The drop operation is successful', () => {
         });
     });
 });
+
+Then('I change deadlines to {string} successfully', date => {
+    cy.get(':nth-child(1) > .react-datepicker-wrapper > .react-datepicker__input-container > .form-control').should('not.be.disabled').type('{selectall}'+date+'{enter}');
+    cy.get(':nth-child(2) > .react-datepicker-wrapper > .react-datepicker__input-container > .form-control').should('not.be.disabled').type('{selectall}'+date+'{enter}');
+
+    cy.click_button('Save changes', '.btn');
+    cy.click_button('Courses', ':nth-child(2) > .nav-link');
+    cy.click_button('Academic deadlines', ':nth-child(5) > .nav-link');
+
+    cy.get(':nth-child(1) > .react-datepicker-wrapper > .react-datepicker__input-container > .form-control').invoke('val').should(text => {
+        expect(text).to.eq(date.toString());
+    });
+    cy.get(':nth-child(2) > .react-datepicker-wrapper > .react-datepicker__input-container > .form-control').invoke('val').should(text => {
+        expect(text).to.eq(date.toString());
+    });
+});
