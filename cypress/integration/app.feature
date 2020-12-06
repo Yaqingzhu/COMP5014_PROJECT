@@ -1,6 +1,6 @@
 Feature: Placeholder Test
   I want to see the Login page for this placeholder test
-
+  
   Scenario: Opening the main page and Login in
     Given I open the "/" page
     When I see a page
@@ -21,7 +21,7 @@ Feature: Placeholder Test
     And I log out
 
   Scenario: I create a course
-    Given I log in with valid credentials
+   Given I log in with valid credentials
     When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
     And I see "Available courses" in a ".h2" tag
     And I click on "New course" button with tag ".btn"
@@ -93,3 +93,32 @@ Feature: Placeholder Test
     And I create the course "Course2" with capacity 20
     And I see the "Course2" course in the course dashboard
     Then I unschedule the last course created
+
+  Scenario: I create a prof
+    Given I log in with valid credentials
+    When I click on "Profs" button with tag ":nth-child(4)>.nav-link"
+    And I see "Available profs" in a ".h2" tag
+    And I click on "New prof" button with tag ".btn"
+    And I see "New prof" in a "h1.mb-3" tag
+    Then I fill in the name as "Prof3", and the password as "prof2" of the prof to be created
+    And I see the prof "Prof3" in the prof dashboard
+
+  Scenario: I assign a prof to a course
+    Given I log in with valid credentials
+    When I click on "Courses" button with tag ":nth-child(2)>.nav-link"
+    And I create the course "Course2" with capacity 20
+    And I assign prof "Prof3" to the last course created
+    Then I log in with valid prof credentials
+    And I click on "My courses" button with tag ":nth-child(2) > .nav-link"
+    And I see the "Course2" course in My courses
+
+  Scenario: I create a deliverable
+    Given I log in with valid prof credentials
+    When I click on "My courses" button with tag ":nth-child(2) > .nav-link"
+    Then I create the deliverable "Project1" for the last of my courses
+
+  Scenario: I delete a prof
+    Given I log in with valid credentials
+    When I click on "Profs" button with tag ":nth-child(4)>.nav-link"
+    And I see the profs in a table
+    Then I want to delete the last prof created
