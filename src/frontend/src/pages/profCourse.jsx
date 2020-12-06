@@ -1,15 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { useCourse } from '../api/useCourse';
 import { useCourseDeliverables } from '../api/useCourseDeliverables';
 import { useCourseStudents } from '../api/useCourseStudents';
 import { createDeliverable, editDeliverable, deleteDeliverable } from '../api/deliverableAPI';
+import { submitFinalGrade } from '../api/courseAPI';
 import Loader from '../components/Loader';
 import DeliverableForm from '../components/DeliverableForm';
 
 export const ProfCoursePage = () => {
   const { id } = useParams();
+  const [loaded, setLoaded] = useState(false);
   const { loading, course } = useCourse(id);
   const { loading: deliverableLoading, deliverables, reload } = useCourseDeliverables(id);
   const { loading: studentsLoading, students } = useCourseStudents(id);
@@ -29,6 +31,12 @@ export const ProfCoursePage = () => {
   const handleDeleteDeliverable = data => {
     deleteDeliverable(parseInt(data.deliverableId)).then(() => {
       reload();
+    });
+  };
+
+  const handleSubmitFinalGrades = () => {
+    submitFinalGrade(course).then(() => {
+      setLoaded(true);
     });
   };
 
@@ -80,26 +88,43 @@ export const ProfCoursePage = () => {
           <DeliverableForm handleSave={handleNewDeliverable} />
         </div>
       </div>
+      <hr className="my-3" />
+      <div>
+        <h4>Are you ready to submit the final grades?</h4>
+        {loaded && (
+          <div className="alert alert-success" role="alert">
+            Grades were successfully computed.
+          </div>
+        )}
+        <button
+          className="btn btn-primary btn-lg btn-block"
+          type="button"
+          onClick={handleSubmitFinalGrades}
+        >
+          Submit final grades
+        </button>
+      </div>
+      <hr className="my-3" />
       <h2 className="h3">Students registered in the course</h2>
       {students.length > 0 ? (
         <table className="table table-striped">
           <thead className="thead-dark">
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Name</th>
-            <th scope="col">Email</th>
-          </tr>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+            </tr>
           </thead>
           <tbody>
-          {students.map(student => (
-            <tr key={student.studentId}>
-              <th scope="row">{student.studentId}</th>
-              <td>
-                {student.studentName}
-              </td>
-              <td>{student.studentEmail}</td>
-            </tr>
-          ))}
+            {students.map(student => (
+                <tr key={student.studentId}>
+                  <th scope="row">{student.studentId}</th>
+                  <td>
+                    {student.studentName}
+                  </td>
+                  <td>{student.studentEmail}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       ) : (

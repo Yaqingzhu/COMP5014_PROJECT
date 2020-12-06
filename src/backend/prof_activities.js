@@ -257,7 +257,7 @@ const gradeSubmission = async (req, res) => {
     }
 };
 
-// Changes teh grade on a given submission
+// Triggers a calculation of the final grade for a course
 const finalGradeSubmission = async (req, res) => {
     // Validation
     if (!util.validateLogin(req)) {
@@ -273,13 +273,17 @@ const finalGradeSubmission = async (req, res) => {
     }
 
     try {
-        const registrationId = req.body.registrationId;
         const courseId = req.body.courseId;
-        const studentId = req.body.studentId;
-        const grade = req.body.grade;
-        await new Promise((resolve, reject) => {
-            mysql.setGradeOnFinal(resolve, reject, registrationId, courseId, studentId, grade);
+
+        const students = await new Promise((resolve, reject) => {
+            mysql.getCourseStudents(resolve, reject, courseId);
         });
+
+        await Promise.all(students.map(async student => {
+            return new Promise((resolve, reject) => {
+                mysql.setGradeOnFinal(resolve, reject, courseId, student.registration_id);
+            });
+        }));
 
         return res.status(200).json({
             responseCode: 0,

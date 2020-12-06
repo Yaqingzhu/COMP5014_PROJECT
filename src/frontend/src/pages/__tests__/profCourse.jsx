@@ -218,4 +218,45 @@ describe('Course component', () => {
     expect(calls).toHaveLength(5);
     expect(calls[3][0]).toContain('/deletedeliverable');
   });
+
+  it('Submits the final grades when the button is clicked', async () => {
+    const course = courses[0];
+
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      coursePayload: JSON.stringify(course),
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      deliverables,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+      students,
+    }));
+    fetchMock.mockOnce(JSON.stringify({
+      responseCode: 0,
+    }));
+    await act(async () => {
+      render(
+        <MemoryRouter>
+          <ProfCoursePage />
+        </MemoryRouter>
+      );
+    });
+
+    await waitFor(() => screen.getByText(course.courseName));
+    expect(screen.getByText(course.courseName)).toBeDefined();
+
+    await act(async () => {
+      fireEvent.click(screen.getByText('Submit final grades'));
+      await new Promise(resolve => setTimeout(resolve, 100));
+    });
+
+    const calls = fetchMock.mock.calls;
+
+    expect(calls).toHaveLength(4);
+    expect(calls[3][0]).toContain('/submitfinalgrade');
+    expect(calls[3][1].body).toContain(`"courseId":${course.courseId}`);
+  });
 });

@@ -90,6 +90,7 @@ app.post('/submitdeliverable', student.submitDeliverable);
 app.get('/submissions', general.getSubmissions);
 app.get('/submission', general.getSubmission);
 app.post('/gradesubmission', prof.gradeSubmission);
+app.post('/submitfinalgrade', prof.finalGradeSubmission);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
