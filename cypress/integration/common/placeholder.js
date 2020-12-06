@@ -114,7 +114,7 @@ When('I create the deliverable {string} for the last of my courses', deliverable
         });
     });
     cy.get(':nth-child(3)').its('length').then($length => {
-        const rows = ($length - 1)/3;
+        const rows = ($length - 1)/3 - 1;
         cy.get(`:nth-child(${rows}) > .card > .card-body > :nth-child(2) > form > .mb-3 > [data-testid=type]`).invoke('val').should(text => {
             expect(text).to.eq(deliverable.toString());
         });;
