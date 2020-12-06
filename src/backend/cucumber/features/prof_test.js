@@ -46,9 +46,21 @@ Given('{string} a prof with this payload {string}', function (arg1, arg2) {
     .send({ id: 1, password: 'admin' })
     .expect(200)
     .then(function () {
+      if (arg1 === 'delete') {
+        return testSession
+          .delete(url)
+          .send({ profId: profId })
+          .expect(200)
+          .then(function (rr) {
+            res = rr;
+            if (arg1 === 'create') {
+              profId = rr.body.profId;
+            }
+          });
+      }
       return testSession
         .post(url)
-        .send(arg1 !== 'delete' ? jreq : { profId: profId })
+        .send(jreq)
         .expect(200)
         .then(function (rr) {
           res = rr;
