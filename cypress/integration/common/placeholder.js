@@ -159,7 +159,7 @@ When('I submit deliverable {string} of course {string} with prof {string}', (del
             expect(text).to.eq(deliverable.toString());
         });
         cy.get(':nth-child(1) > .card-body > :nth-child(1)').should('contain', 'Deliverable').click();
-        cy.get('.h2').should('have.text', 'Edit your submission');
+        cy.get('.d-flex').should('have.text', 'Edit your submission');
         cy.get('[data-testid=due-date]').should('contain', 'This deliverable is due on the');
         cy.get('label').should('have.text', 'Submission file');
         const file = 'example.json';
