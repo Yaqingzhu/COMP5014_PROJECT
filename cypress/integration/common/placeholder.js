@@ -32,7 +32,6 @@ Given('I see student {string} delivered {string} for {string} course', (name, de
         expect(text).to.eq(deliverable.toString());
     });
     cy.get('.col > .card > .card-body > .card-title').should('contain', 'Deliverable').click();
-    cy.get('h1').should('contain', 'Student submissions for deliverable');
     cy.get('.thead-dark > tr > :nth-child(1)').should('have.text', '#');
     cy.get('.thead-dark > tr > :nth-child(2)').should('have.text', 'Name');
     cy.get('.thead-dark > tr > :nth-child(3)').should('have.text', 'Submitted file');
