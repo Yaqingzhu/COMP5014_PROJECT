@@ -125,6 +125,13 @@ Feature: Placeholder Test
     When I click on "My courses" button with tag ":nth-child(2) > .nav-link"
     Then I create the deliverable "Project1" for the last of my courses
 
+  Scenario: I submit a deliverable
+     Given The deliverable "Project1" of course "Course" with prof "prof" is created
+     And I log in with valid student credentials
+     And I register on a course
+     When I submit deliverable "Project1" of course "Course" with prof "prof"
+     Then I see the deliver of course "Course"
+     
   Scenario: I delete a prof
     Given I log in with valid credentials
     When I click on "Profs" button with tag ":nth-child(4)>.nav-link"

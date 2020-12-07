@@ -13,6 +13,16 @@ Given('I am a student without account', () => {
     cy.click_button('Register to the university', 'a');
 });
 
+Given('I register on a course', () => {
+    cy.register_course();
+});
+
+Given('The deliverable {string} of course {string} with prof {string} is created', (deliverable, course, prof) => {
+    cy.create_prof(prof, prof);
+    cy.assign_prof(course, 20, prof);
+    cy.create_deliverable(prof, deliverable, "12/11/2020");
+});
+
 Then('I log in with valid student credentials', () => {
     cy.log_in(223, 'test');
 });
@@ -118,6 +128,25 @@ When('I create the deliverable {string} for the last of my courses', deliverable
         cy.get(`:nth-child(${rows}) > .card > .card-body > :nth-child(2) > form > .mb-3 > [data-testid=type]`).invoke('val').should(text => {
             expect(text).to.eq(deliverable.toString());
         });;
+    });
+});
+
+When('I submit deliverable {string} of course {string} with prof {string}', (deliverable, course, prof) => {
+    cy.click_button('My courses', ':nth-child(2) > .nav-link');
+    cy.get('tr').its('length').then($length => {
+        const rows = $length - 1;
+        cy.click_button(course, `tbody > :nth-child(${rows}) > :nth-child(2) > a`);
+        cy.get('.h3').should('have.text', 'Deliverables');
+        cy.get(':nth-child(1) > .card-body > :nth-child(3)').invoke('val').should(text => {
+            expect(text).to.eq(deliverable.toString());
+        });
+        cy.get(':nth-child(1) > .card-body > :nth-child(1)').should('contain', 'Deliverable').click();
+        cy.get('.h2').should('have.text', 'Edit your submission');
+        cy.get('[data-testid=due-date]').should('contain', 'This deliverable is due on the');
+        cy.get('label').should('have.text', 'Submission file');
+        const file = 'example.json';
+        cy.get('[data-testid=file').attachFile(file);
+        cy.click_button('Upload submission', '.btn');
     });
 });
 
@@ -380,5 +409,18 @@ Then('I change deadlines to {string} successfully', date => {
     });
     cy.get(':nth-child(2) > .react-datepicker-wrapper > .react-datepicker__input-container > .form-control').invoke('val').should(text => {
         expect(text).to.eq(date.toString());
+    });
+});
+
+Then('I see the deliver of course {string}', course => {
+   cy.click_button('My courses', ':nth-child(2) > .nav-link');
+    cy.get('tr').its('length').then($length => {
+        const rows = $length - 1;
+        cy.click_button(course, `tbody > :nth-child(${rows}) > :nth-child(2) > a`);
+        cy.get(':nth-child(1) > .card-body > :nth-child(1)').click();
+        cy.get('.h4').should('have.text', 'Submitted file');
+        cy.get('.col-md-9 > :nth-child(1) > :nth-child(2) > a').should('have.text', 'example.json');
+        cy.get('[data-testid=submission-date]').should('contain', 'Was submitted');
+        cy.get('.col-md-9 > :nth-child(1) > :nth-child(2) > div').should('contain', 'Not yet graded');
     });
 });
