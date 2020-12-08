@@ -108,7 +108,7 @@ Feature: Placeholder Test
     And I see "Available profs" in a ".h2" tag
     And I click on "New prof" button with tag ".btn"
     And I see "New prof" in a "h1.mb-3" tag
-    Then I fill in the name as "Prof3", and the password as "prof2" of the prof to be created
+    Then I fill in the name as "Prof3", and the password as "prof" of the prof to be created
     And I see the prof "Prof3" in the prof dashboard
 
   Scenario: I assign a prof to a course
@@ -131,6 +131,12 @@ Feature: Placeholder Test
      And I register on a course
      When I submit deliverable "Project1" of course "Course" with prof "prof"
      Then I see the deliver of course "Course"
+     
+  Scenario: I grade a deliverable
+    Given I log in with valid prof credentials
+    And I see student "test" delivered "Project1" for "Course" course
+    When I submit the grade 1
+    Then The student sees the grade 1 of course "Course"
      
   Scenario: I delete a prof
     Given I log in with valid credentials
