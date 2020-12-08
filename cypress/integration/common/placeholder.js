@@ -34,7 +34,7 @@ Given('I see student {string} delivered {string} for {string} course', (name, de
     cy.get('.col > .card > .card-body > .card-title').should('contain', 'Deliverable').click();
     cy.get('.thead-dark > tr > :nth-child(1)').should('have.text', '#');
     cy.get('.thead-dark > tr > :nth-child(2)').should('have.text', 'Name');
-    cy.get('.thead-dark > tr > :nth-child(3)').should('have.text', 'Submitted file');
+    cy.get('.thead-dark > tr > :nth-child(3)').screenshot().should('have.text', 'Submitted file');
     cy.get('.thead-dark > tr > :nth-child(4)').should('have.text', 'Grade');
     cy.get('tbody > tr > th').should('have.text', 223);
     cy.get('tbody > tr > :nth-child(2)').should('have.text', name);
