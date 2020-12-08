@@ -36,6 +36,27 @@ Given('I see student {string} delivered {string} for {string} course', (name, de
     cy.get('tbody > tr > :nth-child(2)').should('have.text', name);
 });
 
+Given('Prof {string} wants to grade course {string}', (name, course) => {
+    cy.log_in(1, 'admin');
+    cy.click_button('Profs', ':nth-child(4) > .nav-link');
+    cy.get('tr').its('length').then($length => {
+        const rows = $length - 1;
+        cy.get(`tbody > :nth-child(${rows}) > :nth-child(1)`).each($elem => {
+            const prof = $elem.text();
+            cy.log_in(prof, name);
+            cy.click_button('My courses', ':nth-child(2) > .nav-link');
+            cy.get('tbody > tr > :nth-child(2)').should('have.text', course);
+            cy.click_button('Edit', ':nth-child(3) > a');
+        });
+    });
+});
+
+When('The grades are computed', () => {
+    cy.get('h4').should('have.text', 'Are you ready to submit the final grades?');
+    cy.click_button('Submit final grades', ':nth-child(7) > .btn');
+    cy.get(':nth-child(7) > .alert').should('have.text', 'Grades were successfully computed.');
+});
+
 Then('I log in with valid student credentials', () => {
     cy.log_in(223, 'test');
 });
@@ -154,7 +175,7 @@ When('I submit deliverable {string} of course {string} with prof {string}', (del
             expect(text).to.eq(deliverable.toString());
         });
         cy.get(':nth-child(1) > .card-body > :nth-child(1)').should('contain', 'Deliverable').click();
-        cy.get('.d-flex').should('have.text', 'Edit your submission');
+        cy.get('.h2').should('have.text', 'Edit your submission');
         cy.get('[data-testid=due-date]').should('contain', 'This deliverable is due on the');
         cy.get('label').should('have.text', 'Submission file');
         const file = 'example.json';
@@ -164,7 +185,7 @@ When('I submit deliverable {string} of course {string} with prof {string}', (del
 });
 
 When('I submit the grade {int}', grade => {
-    cy.get('tbody > tr > :nth-child(4)').type(grade+"{enter}");
+    cy.get('[data-testid="223 _grade"]').type(grade+"{enter}");
     cy.get('tbody > tr > :nth-child(2)').click();
 });
 
@@ -451,5 +472,15 @@ Then('The student sees the grade {int} of course {string}', (grade, course) => {
         cy.click_button(course, `tbody > :nth-child(${rows}) > :nth-child(2) > a`);
         cy.get(':nth-child(1) > .card-body > :nth-child(1)').click();
         cy.get('.col-md-9 > :nth-child(1) > :nth-child(2) > div').should('contain', grade);
+    });
+});
+
+Then('The student sees the final grade of course {string}', course => {
+    cy.log_in(223, 'test');
+    cy.click_button('My courses', ':nth-child(2) > .nav-link');
+    cy.get('tr').its('length').then($length => {
+        const rows = $length - 1;
+        cy.click_button(course, `tbody > :nth-child(${rows}) > :nth-child(2) > a`);
+        cy.get('.col-md-9 > :nth-child(1) > :nth-child(2)').should('contain', 'Your grade is:');
     });
 });
