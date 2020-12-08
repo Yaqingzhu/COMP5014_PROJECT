@@ -131,12 +131,18 @@ Feature: Placeholder Test
      And I register on a course
      When I submit deliverable "Project1" of course "Course" with prof "prof"
      Then I see the deliver of course "Course"
-     
+
   Scenario: I grade a deliverable
     Given I log in with valid prof credentials
     And I see student "test" delivered "Project1" for "Course" course
     When I submit the grade 1
     Then The student sees the grade 1 of course "Course"
+
+  Scenario: I grade a course
+    Given I log in with valid prof credentials
+    And Prof "prof" wants to grade course "Course"
+    When The grades are computed
+    Then The student sees the final grade of course "Course"
      
   Scenario: I delete a prof
     Given I log in with valid credentials
