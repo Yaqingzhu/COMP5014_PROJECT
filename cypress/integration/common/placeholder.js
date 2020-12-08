@@ -164,7 +164,7 @@ When('I submit deliverable {string} of course {string} with prof {string}', (del
 });
 
 When('I submit the grade {int}', grade => {
-    cy.get('[data-testid="223 _grade"]').type(grade+"{enter}");
+    cy.get('tbody > tr > :nth-child(4)').type(grade+"{enter}");
     cy.get('tbody > tr > :nth-child(2)').click();
 });
 
