@@ -31,7 +31,8 @@ Given('I see student {string} delivered {string} for {string} course', (name, de
     cy.get('.col > .card > .card-body > :nth-child(2) > form > .mb-3 > [data-testid=type]').invoke('val').should(text => {
         expect(text).to.eq(deliverable.toString());
     });
-    cy.get('.col > .card > .card-body > .card-title').should('contain', 'Deliverable').click();
+    cy.get('.col > .card > .card-body > .card-title').should('contain', 'Deliverable');
+    cy.click_button('View submissions', '.card-body > :nth-child(3)');
     cy.get('tbody > tr > th').should('have.text', 223);
     cy.get('tbody > tr > :nth-child(2)').should('have.text', name);
 });
@@ -185,7 +186,7 @@ When('I submit deliverable {string} of course {string} with prof {string}', (del
 });
 
 When('I submit the grade {int}', grade => {
-    cy.get('[data-testid="223 _grade"]').type(grade+"{enter}");
+    cy.get('tbody > tr > :nth-child(4)').type(grade+"{enter}");
     cy.get('tbody > tr > :nth-child(2)').click();
 });
 
