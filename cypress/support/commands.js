@@ -45,7 +45,7 @@ Cypress.Commands.add('log_in', (username, password) => {
 
 Cypress.Commands.add('log_out', () => {
     cy.get('.navbar-nav').should('be.visible').and('have.text', 'Sign out').and('not.be.disabled').click();
-    cy.url().should('eq', 'http://localhost:8081/login#');
+    cy.url().should('eq', 'http://localhost:8081/');
 });
 
 Cypress.Commands.add('click_button', (name, tag) => {
