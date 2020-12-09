@@ -11,8 +11,8 @@ import Dashboard from './Dashboard';
 
 export const App = () => (
   <WithUser>
-    {({ user }) => user ? (
-      <Dashboard user={user} />
+    {({ user, setUser }) => user ? (
+      <Dashboard user={user} setUser={setUser} />
     ) : (
       <Switch>
         <Route path="/register">

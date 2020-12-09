@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Link, useLocation, matchPath } from 'react-router-dom';
+import { Switch, Route, Link, useLocation, matchPath, useHistory } from 'react-router-dom';
 
 import HomePage from '../pages/home';
 import CoursesPage from '../pages/courses';
@@ -12,13 +12,22 @@ import ProfsPage from '../pages/profs';
 import ProfPage from '../pages/prof';
 import NewProfPage from '../pages/newProf';
 import DeadlinesPage from '../pages/deadlines';
+import { logOut } from '../api/loginAPI';
 
-export const AdminDashboard = () => {
+export const AdminDashboard = ({ setUser }) => {
   const location = useLocation();
+  const history = useHistory();
 
   const getActive = path => matchPath(location.pathname, {
     path,
   }) !== null ? ' active' : '';
+
+  const handleLogOut = () => {
+    logOut().then(() => {
+      history.push('/');
+      setUser(null);
+    });
+  };
 
   return (
     <>
@@ -26,7 +35,7 @@ export const AdminDashboard = () => {
         <Link className="navbar-brand col-md-3 col-lg-2 mr-0 px-3" to="/">Carleton CMS</Link>
         <ul className="navbar-nav px-3">
           <li className="nav-item text-nowrap">
-            <a className="nav-link" href="#">Sign out</a>
+            <a className="nav-link" href="#" onClick={handleLogOut}>Sign out</a>
           </li>
         </ul>
       </nav>

@@ -17,6 +17,6 @@ export const UserProvider = ({ children }) => {
 
 export const WithUser = ({ children }) => (
   <UserContext.Consumer>
-    {({ user }) => children({ user })}
+    {({ user, setUser }) => children({ user, setUser })}
   </UserContext.Consumer>
 );

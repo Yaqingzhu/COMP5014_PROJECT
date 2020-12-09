@@ -44,6 +44,7 @@ app.get('/', (req, res) => {
 });
 
 app.post('/login', login.loginRequestProcess);
+app.post('/logout', login.setLogout);
 
 createAdminUser();
 addTestDataForStudentTest();
@@ -91,7 +92,6 @@ app.get('/submissions', general.getSubmissions);
 app.get('/submission', general.getSubmission);
 app.post('/gradesubmission', prof.gradeSubmission);
 app.post('/submitfinalgrade', prof.finalGradeSubmission);
-app.post('/logout', login.setLogout);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {

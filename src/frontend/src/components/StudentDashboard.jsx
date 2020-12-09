@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route, Link, useLocation, matchPath } from 'react-router-dom';
+import { Switch, Route, Link, useLocation, matchPath, useHistory } from 'react-router-dom';
 
 import { useStudent } from '../api/useStudent';
 import Loader from './Loader';
@@ -8,14 +8,23 @@ import RegisteredCoursesPage from '../pages/registeredCourses';
 import RegisterCoursesPage from '../pages/registerCourses';
 import StudentCoursePage from '../pages/studentCourse';
 import StudentDeliverablePage from '../pages/studentDeliverable';
+import { logOut } from '../api/loginAPI';
 
-export const StudentDashboard = ({ user }) => {
+export const StudentDashboard = ({ user, setUser }) => {
   const location = useLocation();
+  const history = useHistory();
   const { student, loading } = useStudent(user.loginId);
 
   if (loading || !student) {
     return <Loader />;
   }
+
+  const handleLogOut = () => {
+    logOut().then(() => {
+      history.push('/');
+      setUser(null);
+    });
+  };
 
   if (!student.admitted) {
     return (
@@ -45,7 +54,7 @@ export const StudentDashboard = ({ user }) => {
         <Link className="navbar-brand col-md-3 col-lg-2 mr-0 px-3" to="/">Carleton CMS</Link>
         <ul className="navbar-nav px-3">
           <li className="nav-item text-nowrap">
-            <a className="nav-link" href="#">Sign out</a>
+            <a className="nav-link" href="#" onClick={handleLogOut}>Sign out</a>
           </li>
         </ul>
       </nav>
