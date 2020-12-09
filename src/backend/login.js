@@ -88,4 +88,19 @@ function setUserRole(session, id, res) {
   });
 }
 
-module.exports = { loginRequestProcess };
+function setLogout(req, res) {
+  if (req.session && req.session.isLogin) {
+    req.session.isLogin = false;
+    res.status(200).json({
+      loginStatus: -1,
+      message: 'you are logout!',
+    });
+  } else {
+    res.status(403).json({
+      loginStatus: -2,
+      message: 'logout failed. Please login before logout',
+    });
+  }
+}
+
+module.exports = { loginRequestProcess, setLogout };
