@@ -391,69 +391,72 @@ function registerCourse(resolve, reject, studentId, courseId) {
       if (admitted <= 0) {
         return reject('You are not admitted to be a student yet');
       }
-      connection.query('SELECT course_status AS result FROM course WHERE course_id = ?;', [courseId], (error, results) => {
-        if (error) {
-          console.log(error);
-          return reject(error);
-        } else {
-          const courseStatus = results[0] ? results[0].result : -1;
+      connection.query(
+        'SELECT course_status, course_capacity, (SELECT COUNT(registration.registration_id) FROM registration ' +
+        'WHERE registration.course_id = course.course_id) as registeredCount FROM course WHERE course_id = ?;',
+        [courseId], (error, results) => {
+          if (error) {
+            console.log(error);
+            return reject(error);
+          } else {
+            const courseStatus = results[0] ? results[0].course_status : -1;
+            const courseCapacity = results[0] ? results[0].course_capacity : -1;
+            const registeredCount = results[0] ? results[0].registeredCount : -1;
 
-          if (!String(courseStatus).includes('scheduled')) {
-            return reject('This course is not open for registration');
-          }
-
-          connection.query('SELECT registration_deadline FROM academic;', [], (error, results) => {
-            if (error) {
-              console.log(error);
-              return reject(error);
-            } else {
-              const deadline = results[0] ? results[0].registration_deadline : -1;
-              const today = new Date();
-              if (Date.parse(deadline) > today) {
-                connection.query('INSERT INTO registration(registration_id, course_id, student_id, registration_date, drop_date, late_registration, late_registration_approval, late_drop, late_drop_approval) ' +
-                  ' VALUES(null,?,?,?,null,0,null,0,null)' +
-                  ' ON DUPLICATE KEY UPDATE ' +
-                  ' registration_date = VALUES(registration_date), ' +
-                  ' drop_date = null, ' +
-                  ' late_registration_approval = VALUES(late_registration_approval), ' +
-                  ' late_drop = VALUES(late_drop), ' +
-                  ' late_registration = VALUES(late_registration)', [courseId, studentId, today], (error, results) => {
-                  if (error) {
-                    console.log(error);
-                    return reject(error);
-                  } else {
-                    resolve({
-                      registrationId: results.insertId,
-                      message: 'Your registration for course ' + courseId + ' is done!',
-                    });
-                  }
-                });
-              } else {
-                connection.query('INSERT INTO registration(registration_id, course_id, student_id, registration_date, drop_date, late_registration, late_registration_approval, late_drop, late_drop_approval) ' +
-                  ' VALUES(null,?,?,?,null,1,0,0,null) ' +
-                  ' ON DUPLICATE KEY UPDATE ' +
-                  ' registration_date = VALUES(registration_date), ' +
-                  ' drop_date = null, ' +
-                  ' late_registration_approval = VALUES(late_registration_approval), ' +
-                  ' late_drop = VALUES(late_drop), ' +
-                  ' late_registration = VALUES(late_registration)', [courseId, studentId, today], (error, results) => {
-                  if (error) {
-                    console.log(error);
-                    return reject(error);
-                  } else {
-                    resolve({
-                      registrationId: results.insertId,
-                      message: 'You missed the deadline. So, your late registration for course ' + courseId + ' is subject to be approved by admin',
-                    });
-                  }
-                });
-              }
+            if (!String(courseStatus).includes('scheduled')) {
+              return reject('This course is not open for registration');
             }
-          });
-        }
-      })
 
-      ;
+            if (registeredCount >= courseCapacity) {
+              return reject('There are no slots remaining for this course');
+            }
+
+            connection.query('SELECT registration_deadline FROM academic;', [], (error, results) => {
+              if (error) {
+                console.log(error);
+                return reject(error);
+              } else {
+                const deadline = results[0] ? results[0].registration_deadline : -1;
+                const today = new Date();
+                if (Date.parse(deadline) > today) {
+                  connection.query('CALL insert_student(?, ?, ?, 0);', [courseId, studentId, today], (error, results) => {
+                    if (error) {
+                      console.log(error);
+                      return reject(error);
+                    } else {
+                      // Will happen if there are no more slots in the course during the insertion
+                      if (results[0][0]['-1']) {
+                        return reject('There are no slots remaining for this course');
+                      }
+
+                      resolve({
+                        registrationId: Object.values(results[0][0])[0],
+                        message: 'Your registration for course ' + courseId + ' is done!',
+                      });
+                    }
+                  });
+                } else {
+                  connection.query('CALL insert_student(?, ?, ?, 1);', [courseId, studentId, today], (error, results) => {
+                    if (error) {
+                      console.log(error);
+                      return reject(error);
+                    } else {
+                      // Will happen if there are no more slots in the course during the insertion
+                      if (results[0][0]['-1']) {
+                        return reject('There are no slots remaining for this course');
+                      }
+
+                      resolve({
+                        registrationId: Object.values(results[0][0])[0],
+                        message: 'You missed the deadline. So, your late registration for course ' + courseId + ' is subject to be approved by admin',
+                      });
+                    }
+                  });
+                }
+              }
+            });
+          }
+        });
     }
   });
 }

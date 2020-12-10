@@ -9,11 +9,11 @@ const session = require('supertest-session');
 let server;
 
 let adminSession = null;
-const students = {};
-const courses = {};
-const profs = {};
-const deliverables = {};
-const submissions = [];
+let students = {};
+let courses = {};
+let profs = {};
+let deliverables = {};
+let submissions = [];
 
 const deadlines = {
   registrationDeadline: '2020-11-12',
@@ -28,6 +28,13 @@ BeforeAll(() => {
 AfterAll(() => {
   server.close();
   mysql.getDBConnection().destroy();
+
+  adminSession = null;
+  students = {};
+  courses = {};
+  profs = {};
+  deliverables = {};
+  submissions = [];
 });
 
 Given('admin is logged in', function () {
@@ -228,6 +235,35 @@ When('student {int} and student {int} register into course {int}', function (stu
         .expect(200)
         .then(reponse => {
           students[student2Index].registrationId = reponse.body.registrationId;
+        }),
+    ]
+  );
+});
+
+When('student {int} and student {int} fail to both register into course {int}', function (student1Index, student2Index, courseIndex) {
+  return Promise.all(
+    [
+      students[student1Index].session
+        .post('/registercourse')
+        .send({
+          studentId: students[student1Index].studentId,
+          courseId: courses[courseIndex].courseId,
+        })
+        .then(response => {
+          if (response.statusCode === 200) {
+            students[student1Index].registrationId = response.body.registrationId;
+          }
+        }),
+      students[student2Index].session
+        .post('/registercourse')
+        .send({
+          studentId: students[student2Index].studentId,
+          courseId: courses[courseIndex].courseId,
+        })
+        .then(response => {
+          if (response.statusCode === 200) {
+            students[student2Index].registrationId = response.body.registrationId;
+          }
         }),
     ]
   );
@@ -459,4 +495,14 @@ Then('the scenario completed successfully', async () => {
 
     assert.equal(response.body.submission.submissionGrade, grade);
   }));
+});
+
+Then('One student could not register into course {int}', async courseIndex => {
+  const registrationsResponse = await adminSession
+    .get('/coursestudents')
+    .query({
+      courseId: courses[courseIndex].courseId,
+    });
+
+  assert.equal(registrationsResponse.body.students.length, 2);
 });

@@ -250,6 +250,57 @@ CREATE TABLE IF NOT EXISTS `comp4004`.`submission` (
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
+-- -----------------------------------------------------
+-- Stored procedure `insert_student`
+-- -----------------------------------------------------
+
+DELIMITER $$
+CREATE DEFINER=`root`@`%` PROCEDURE `insert_student`(
+	IN courseId INT,
+    IN studentId INT,
+    IN today DATETIME,
+    IN late TINYINT
+)
+BEGIN
+	START TRANSACTION;
+		IF EXISTS (
+			SELECT
+				course_id
+			FROM
+				course
+			WHERE
+				course_id = courseId AND
+				(SELECT COUNT(registration.registration_id) FROM registration WHERE registration.course_id = course.course_id) >= course.course_capacity
+	) THEN
+		ROLLBACK;
+		SELECT -1;
+	ELSE
+		INSERT INTO
+			registration(
+				registration_id,
+                course_id,
+                student_id,
+                registration_date,
+                drop_date,
+                late_registration,
+				late_registration_approval,
+                late_drop,
+                late_drop_approval
+			)
+			VALUES(null, courseId, studentId, today, null, late, 0, 0, null)
+			ON DUPLICATE KEY UPDATE
+				registration_date = VALUES(registration_date),
+				drop_date = null,
+				late_registration_approval = VALUES(late_registration_approval),
+				late_drop = VALUES(late_drop),
+				late_registration = VALUES(late_registration);
+		COMMIT;
+		SELECT LAST_INSERT_ID();
+	END IF;
+END $$
+
+DELIMITER ;
+
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
