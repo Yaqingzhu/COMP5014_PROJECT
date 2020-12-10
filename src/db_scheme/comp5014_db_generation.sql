@@ -270,8 +270,14 @@ BEGIN
 				course
 			WHERE
 				course_id = courseId AND
-				(SELECT COUNT(registration.registration_id) FROM registration WHERE registration.course_id = course.course_id) >= course.course_capacity
-	) THEN
+				(
+				    SELECT
+				        COUNT(registration.registration_id)
+                    FROM
+                        registration
+                    WHERE
+                        registration.course_id = course.course_id AND registration.drop_date IS NULL) >= course.course_capacity
+                ) THEN
 		ROLLBACK;
 		SELECT -1;
 	ELSE

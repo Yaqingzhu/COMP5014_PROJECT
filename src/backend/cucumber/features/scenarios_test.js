@@ -497,12 +497,23 @@ Then('the scenario completed successfully', async () => {
   }));
 });
 
-Then('One student could not register into course {int}', async courseIndex => {
+Then('one student could not register into course {int}', async courseIndex => {
   const registrationsResponse = await adminSession
     .get('/coursestudents')
     .query({
       courseId: courses[courseIndex].courseId,
     });
 
+  assert.equal(registrationsResponse.body.students.length, 2);
+});
+
+Then('all students could register into course {int}', async courseIndex => {
+  const registrationsResponse = await adminSession
+    .get('/coursestudents')
+    .query({
+      courseId: courses[courseIndex].courseId,
+    });
+
+  // Does not include the dropped student
   assert.equal(registrationsResponse.body.students.length, 2);
 });

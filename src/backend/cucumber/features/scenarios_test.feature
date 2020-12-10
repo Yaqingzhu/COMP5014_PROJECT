@@ -56,4 +56,18 @@ Feature: Specific scenario testing
     And  all users log in
     And  student 1 registers into course 1
     And  student 2 and student 3 fail to both register into course 1
-    Then One student could not register into course 1
+    Then one student could not register into course 1
+
+  Scenario: Resource contention scenario 2
+    # S2 registers in C1 (which has a seat limit of 2)
+    # then simultaneously S2 drops C1 and S1 and S3  attempt to register in C1
+    Given admin is logged in
+    When student 1 requests creation with this payload "{\"email\": \"test1@carleton.ca\",\"birthDate\": \"2020-09-10\",\"name\": \"test1\",\"password\": \"1234\"}"
+    And  student 2 and student 3 request creation with this payload "[{\"email\": \"test2@carleton.ca\",\"birthDate\": \"2020-09-10\",\"name\": \"test2\",\"password\": \"1234\"},{\"email\": \"test3@carleton.ca\",\"birthDate\": \"2020-09-10\",\"name\": \"test3\",\"password\": \"1234\"}]"
+    And  course 1 is created with this payload "{\"courseName\": \"Test1\",\"courseStatus\": \"scheduled\",\"courseCapacity\": 2}"
+    And  all students are admitted
+    And  all users log in
+    And  student 1 registers into course 1
+    And  student 1 drops course 1
+    And  student 2 and student 3 register into course 1
+    Then all students could register into course 1

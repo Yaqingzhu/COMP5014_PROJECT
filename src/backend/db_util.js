@@ -260,7 +260,7 @@ const getCourseStudents = (resolve, reject, courseId) => {
   const connection = getDBConnection();
 
   connection.query(`
-    SELECT s.*, r.registration_id, r.final_grade FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
+    SELECT s.*, r.registration_id, r.final_grade FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id AND r.drop_date IS NULL WHERE r.course_id = ?;
   `, [courseId], (error, results) => {
     if (error) {
       reject(error);
@@ -393,7 +393,7 @@ function registerCourse(resolve, reject, studentId, courseId) {
       }
       connection.query(
         'SELECT course_status, course_capacity, (SELECT COUNT(registration.registration_id) FROM registration ' +
-        'WHERE registration.course_id = course.course_id) as registeredCount FROM course WHERE course_id = ?;',
+        'WHERE registration.course_id = course.course_id AND registration.drop_date IS NULL) as registeredCount FROM course WHERE course_id = ?;',
         [courseId], (error, results) => {
           if (error) {
             console.log(error);
