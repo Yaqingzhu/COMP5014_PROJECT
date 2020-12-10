@@ -260,7 +260,7 @@ const getCourseStudents = (resolve, reject, courseId) => {
   const connection = getDBConnection();
 
   connection.query(`
-    SELECT s.*, r.registration_id FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
+    SELECT s.*, r.registration_id, r.final_grade FROM student as s INNER JOIN registration as r ON r.student_id = s.student_id WHERE r.course_id = ?;
   `, [courseId], (error, results) => {
     if (error) {
       reject(error);
@@ -948,11 +948,15 @@ const createSubmission = (resolve, reject, req) => {
   if (process.env.NODE_ENV === 'test') {
     // Test only code without file management.
     connection.query('INSERT INTO submission(registration_id, deliverable_id, submission_date, submission_file, file_type, file_name) VALUES(?,?,?, ?, ?, ?)',
-      [registrationId, deliverableId, new Date(), file.data, fileType, file.name], error => {
+      [registrationId, deliverableId, new Date(), file.data, fileType, file.name], (error, result) => {
         if (error) {
           reject(error);
         } else {
-          resolve({ deliverableId: deliverableId, registrationId: registrationId });
+          resolve({
+            deliverableId: deliverableId,
+            registrationId: registrationId,
+            submissionId: result.insertId,
+          });
         }
       });
     return;

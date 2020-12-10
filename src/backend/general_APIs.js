@@ -198,6 +198,7 @@ const getCourseStudents = async (req, res) => {
                     studentEmail: student.student_email,
                     admitted: student.admitted,
                     birthDate: student.birth_date,
+                    finalGrade: student.final_grade,
                 };
             }),
         });

@@ -90,7 +90,7 @@ function dropCourse(req, res) {
            responseCode: 0,
            errorMessage: result,
            success: true,
-           CourseId: req.body.courseId
+           courseId: req.body.courseId
        });
    }).catch(error => {
        return res.status(500).json({
@@ -185,7 +185,7 @@ function submitDeliverable(req, res) {
            responseCode: 0,
            errorMessage: '',
            success: true,
-           courses: result
+            submission: result
        });
    }).catch(error => {
      console.error(error);
