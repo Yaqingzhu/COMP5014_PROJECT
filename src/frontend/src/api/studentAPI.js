@@ -90,6 +90,8 @@ export const registerCourse = (student, course) => new Promise((resolve, reject)
     } else {
       reject(new Error(res.errorMessage));
     }
+  }).catch(err => {
+    reject(err);
   });
 });
 

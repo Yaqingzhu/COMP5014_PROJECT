@@ -7,14 +7,19 @@ import { registerCourse } from '../api/studentAPI';
 import { Loader } from '../components/Loader';
 
 export const RegisterCoursesPage = ({ user }) => {
-  const { loading: studentLoading, courses: studentCourses } = useStudentCourses(user);
+  const { loading: studentLoading, courses: studentCourses, reload } = useStudentCourses(user);
   const { loading: availableLoading, courses } = useCourses();
   const [selectedCourses, setSelectedCourses] = useState([]);
+  const [error, setError] = useState(null);
   const history = useHistory();
 
   const handleRegisterCourse = () => {
+    setError(null);
     Promise.all(selectedCourses.map(course => registerCourse(user, course))).then(() => {
       history.push('/courses');
+    }).catch(err => {
+      setError(err);
+      reload();
     });
   };
 
@@ -84,6 +89,11 @@ export const RegisterCoursesPage = ({ user }) => {
       ) : (
         <div className="alert alert-info" role="alert">
           There are not available courses at this time
+        </div>
+      )}
+      {error && (
+        <div className="alert alert-danger mt-3" role="alert">
+          We could not register you in the selected courses: {error.message}
         </div>
       )}
     </div>
